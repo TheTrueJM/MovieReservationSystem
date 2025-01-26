@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from database import db
 from models import Users, Movies, Showings, Reservations, Seats
+# from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices
 from auth import auth_ns
 from movies import movies_ns
 
