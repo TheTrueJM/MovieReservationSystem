@@ -1,11 +1,10 @@
 from flask_restx import Resource, Namespace, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
-from flask import request
+from flask import request, jsonify, make_response, abort, Response
 
 from models import Users
 from inital_data import DEFAULT_USER_ROLE
-from http_responses import http_ok, http_created, http_bad_request, http_unauthorised
 
 
 
@@ -29,51 +28,56 @@ login_model = auth_ns.model(
 
 
 
+def json_response(code: int, data: list | dict) -> Response:
+    return make_response(jsonify(data), code)
+
+
+
 @auth_ns.route("/signup")
-class SignUp(Resource):
+class AuthSignUp(Resource):
     @auth_ns.expect(signup_model, validate=True)
     def post(self):
         data: dict = request.get_json()
-        username = data.get("username")
-        password = data.get("password")
+        username: str = data.get("username")
+        password: str = data.get("password")
         
         if not username or not password:
-            return http_bad_request("Feedback on missing values")
+            abort(400, "Feedback on missing values")
 
         if Users.query.filter_by(username=username).first():
-            return http_unauthorised(f"User '{username}' already exists")
+            abort(401, f"User '{username}' already exists")
 
-        new_user = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
+        new_user: Users = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
         new_user.save()
 
-        return http_created(f"User '{username}' created successfuly")
+        return json_response(201, {"message": f"User '{username}' created successfuly"})
 
 
 @auth_ns.route("/login")
-class Login(Resource):
+class AuthLogin(Resource):
     @auth_ns.expect(login_model)
     def post(self):
         data: dict = request.get_json()
-        username = data.get("username")
-        password = data.get("password")
+        username: str = data.get("username")
+        password: str = data.get("password")
 
         if not username or not password:
-            return http_bad_request("Feedback on missing values")
+            abort(400, "Feedback on missing values")
 
-        db_user: Users = Users.query.filter_by(username=username).first()
+        db_user: Users | None = Users.query.filter_by(username=username).first()
 
-        if db_user and check_password_hash(db_user.password, password):
+        if isinstance(db_user, Users) and check_password_hash(db_user.password, password):
             access_token = create_access_token(identity=db_user.username) ### expires_delta
             refresh_token = create_refresh_token(identity=db_user.username)
-            return http_ok({"access_token": access_token, "refresh_token": refresh_token})
+            return json_response(200, {"access_token": access_token, "refresh_token": refresh_token})
         else:
-            return http_unauthorised("Invalid username or password")
+            abort(401, "Invalid username or password")
 
 
 @auth_ns.route("/refresh")
-class RefreshResource(Resource):
+class AuthTokenRefresh(Resource):
     @jwt_required(refresh=True)
-    def post(self):
+    def get(self):
         current_user = get_jwt_identity()
         new_access_token = create_access_token(identity=current_user)
-        return http_ok({"access_token": new_access_token})
+        return json_response(200, {"access_token": new_access_token})

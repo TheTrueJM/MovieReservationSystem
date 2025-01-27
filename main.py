@@ -6,6 +6,7 @@ from flask_cors import CORS
 from database import db
 from inital_data import initialise_data
 from auth import auth_ns
+from admin import admin_ns
 from movies import movies_ns
 
 
@@ -25,6 +26,7 @@ def create_app(config):
     api = Api(app, doc="/docs") ### Disable?
 
     api.add_namespace(auth_ns)
+    api.add_namespace(admin_ns)
     api.add_namespace(movies_ns)
 
     # @app.route("/")

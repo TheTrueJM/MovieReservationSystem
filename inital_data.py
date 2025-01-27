@@ -11,7 +11,7 @@ ADMIN_ROLE: str = "admin"
 
 def initialise_data():
     create_user_roles({DEFAULT_USER_ROLE, ADMIN_ROLE})
-    create_admin_user("AdminUser", "TestingPass")
+    create_admin_user("AdminUser", "TestingPass") ### 
 
     create_theatre_types({"standard", "premium"})
     create_customer_types({"child", "student", "adult", "senior"})

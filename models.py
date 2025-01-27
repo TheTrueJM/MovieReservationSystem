@@ -1,6 +1,6 @@
 from database import db
 
-
+### Implement Relationships, Cascading, and Value Derivations
 
 class UserRoles(db.Model):
     role = db.Column(db.String, primary_key=True) # Regular, Admin
@@ -27,12 +27,24 @@ class Movies(db.Model):
     description = db.Column(db.String) # Length
     genre = db.Column(db.String, nullable=False) # Length, Multiple (new table)?
     image_url = db.Column(db.String, nullable=False) # URL
-    length = db.Column(db.Integer, nullable=False) # Integer Minutes
+    length = db.Column(db.Integer, nullable=False) # Integer Minutes, Min Value?
 
     # Title, Description, Poster Image, Genre, Length, Age Rating
 
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update(self, title: str, description: str, genre: str, image_url: str, length: int):
+        self.title = title
+        self.description = description
+        self.genre = genre
+        self.image_url = image_url
+        self.length = length
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
 
@@ -49,9 +61,9 @@ class Showings(db.Model):
     movie_id = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False)
     time_start = db.Column(db.Time, nullable=False) # Time High Constraint?
-    time_end = db.Column(db.Time, nullable=False) # Time Low Constraint
+    time_end = db.Column(db.Time, nullable=False) # Time Low Constraint?
     seats_total = db.Column(db.Integer, nullable=False) # Max Value?
-    seats_available = db.Column(db.Integer, nullable=False) # Max Value?
+    seats_available = db.Column(db.Integer, nullable=False) # Max Value?, Value Calculation?
     theatre = db.Column(db.String, db.ForeignKey(TheatreTypes.theatre), nullable=False) # Standard, Premium
 
     def save(self):
