@@ -6,8 +6,9 @@ load_dotenv()
 
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "secret") ### Change
-    DEBUG = False
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "secret") ### Change
+    SQLALCHEMY_DATABASE_URI: str = os.getenv("DATABASE_URI")
+    DEBUG: bool = False
 
 
 class ProdConfig(Config):

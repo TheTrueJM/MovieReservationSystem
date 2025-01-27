@@ -4,7 +4,6 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 from database import db
-from models import Users, Movies, Showings, Reservations, Seats
 from inital_data import initialise_data
 from auth import auth_ns
 from movies import movies_ns
@@ -23,7 +22,7 @@ def create_app(config):
 
     JWTManager(app)
 
-    api = Api(app, doc="/docs")
+    api = Api(app, doc="/docs") ### Disable?
 
     api.add_namespace(auth_ns)
     api.add_namespace(movies_ns)
@@ -35,17 +34,5 @@ def create_app(config):
     # @app.errorhandler(404)
     # def not_found(err):
     #     return app.send_static_file("index.html")
-
-    # model (serializer)
-    @app.shell_context_processor
-    def make_shell_context():
-        return {
-            "db": db,
-            "Users": Users,
-            "Movies": Movies,
-            "Showings": Showings,
-            "Reservations": Reservations,
-            "Seats": Seats
-        }
 
     return app
