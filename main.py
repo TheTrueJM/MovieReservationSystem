@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 from database import db
 from models import Users, Movies, Showings, Reservations, Seats
-# from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices
+from inital_data import initialise_data
 from auth import auth_ns
 from movies import movies_ns
 
@@ -19,6 +19,7 @@ def create_app(config):
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        initialise_data()
 
     JWTManager(app)
 
