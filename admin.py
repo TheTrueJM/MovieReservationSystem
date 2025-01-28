@@ -1,10 +1,10 @@
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask import request, jsonify, make_response, abort, Response
+from flask import request, abort
 from functools import wraps
 from datetime import datetime, date, time
 
-from models import * ###
+from models import Users, Movies, ShowTimes, TheatreTypes
 from inital_data import ADMIN_ROLE
 from api_model_fields import DateField, TimeField
 
@@ -23,7 +23,7 @@ movie_model = admin_ns.model(
     }
 )
 
-movie_marshal = movie_model.extend("movie", {"id": fields.Integer(required=True)})
+movie_marshal = admin_ns.inherit("movie_response", movie_model, {"id": fields.Integer(required=True)})
 
 
 showtime_model = admin_ns.model(
@@ -32,19 +32,17 @@ showtime_model = admin_ns.model(
         "date": DateField(required=True),
         "time_start": TimeField(required=True),
         "time_end": TimeField(required=True),
-        "seats": fields.Integer(required=True),
+        "seats_total": fields.Integer(required=True),
         "theatre": fields.String(required=True)
     }
 )
 
-showtime_marshal = showtime_model.extend(
-    "showtime", {
+showtime_marshal = admin_ns.inherit(
+    "showtime_response", showtime_model, {
         "id": fields.Integer(required=True),
-        "seats_total": fields.Integer(required=True),
         "seats_available": fields.Integer(required=True)
     }
 )
-showtime_marshal.pop("seats")
 
 
 
@@ -98,7 +96,7 @@ class AdminMovies(Resource):
 class AdminMovie(Resource):
     @admin_required
     @admin_ns.marshal_with(movie_marshal)
-    def get(self, id: int): # Revenue and Shows
+    def get(self, id: int): # Revenue and All Shows
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
 
@@ -136,11 +134,13 @@ class AdminMovie(Resource):
 @admin_ns.route("/showtimes")
 class AdminShowTimes(Resource):
     @admin_required
+    @admin_ns.marshal_list_with(showtime_marshal)
     def get(self):
         # id, title, description, genre, image, length
         # id, date, times, seats_available, theatre
         # id, show_id, seats, cost
-        return jsonify({"message": f"epik showtimes read"})
+        showtimes: list[ShowTimes] = ShowTimes.query.all()
+        return showtimes, 200
 
     @admin_required
     @admin_ns.expect(showtime_model, validate=True)
@@ -160,16 +160,18 @@ class AdminShowTimes(Resource):
         date_: date = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
         time_start: time = datetime.strptime(data.get("time_start"), "%H:%M:%S").time()
         time_end: time = datetime.strptime(data.get("time_end"), "%H:%M:%S").time()
-        seats: int = data.get("seats")
+        seats: int = data.get("seats_total")
 
-        # if date_ < current_date:
-        #     pass
+        if date_ < date.today():
+            abort(400, "Feedback on invalid date before today")
+        
         if time_end <= time_start: # end of the day
             abort(400, "Feedback on invalid time range")
+        
         if seats < 1:
             abort(400, "Seating capacity must be at least 1")
 
-        new_showtime = Showings(movie_id=movie_id, date=date_, time_start=time_start, time_end=time_end, seats_total=seats, seats_available=seats, theatre=theatre)
+        new_showtime = ShowTimes(movie_id=movie_id, date=date_, time_start=time_start, time_end=time_end, seats_total=seats, seats_available=seats, theatre=theatre)
         new_showtime.save()
 
         return new_showtime, 201
@@ -177,10 +179,18 @@ class AdminShowTimes(Resource):
 
 @admin_ns.route("/showtimes/<int:id>")
 class AdminShowTime(Resource):
-    @jwt_required()
+    @admin_required
+    @admin_ns.marshal_with(showtime_marshal)
     def get(self, id):
         # id, title, description, genre, image, length
         # id, date, times, seats_total, seats_available, theatre
         # id, show_id, seats, cost
         # reservation_id, seat_no
-        return jsonify({"message": f"epik showtime get"})
+        showtime: ShowTimes = ShowTimes.query.get_or_404(id)
+        return showtime, 200
+    
+    @admin_required
+    def delete(self, id):
+        showtime: ShowTimes = ShowTimes.query.get_or_404(id)
+        showtime.delete()
+        return {}, 204

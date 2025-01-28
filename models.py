@@ -28,7 +28,7 @@ class Movies(db.Model):
     genre = db.Column(db.String, nullable=False) # Length, Multiple (new table)?
     image_url = db.Column(db.String, nullable=False) # URL
     length = db.Column(db.Integer, nullable=False) # Integer Minutes, Min Value?
-    showings = db.relationship("Showings", backref="movies") # cascade
+    showtimes = db.relationship("ShowTimes", backref="movies") # cascade
 
     # Title, Description, Poster Image, Genre, Length, Age Rating
 
@@ -57,7 +57,7 @@ class TheatreTypes(db.Model):
         db.session.add(self)
         db.session.commit()
 
-class Showings(db.Model):
+class ShowTimes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey(Movies.id), nullable=False)
     date = db.Column(db.Date, nullable=False)
@@ -66,10 +66,17 @@ class Showings(db.Model):
     seats_total = db.Column(db.Integer, nullable=False) # Max Value?
     seats_available = db.Column(db.Integer, nullable=False) # Max Value?, Value Calculation?
     theatre = db.Column(db.String, db.ForeignKey(TheatreTypes.theatre), nullable=False) # Standard, Premium
-    reservations = db.relationship("Reservations", backref="showings") # cascade
+    reservations = db.relationship("Reservations", backref="showtimes") # cascade
 
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def remove_seat(self):
+        self.seats_available -= 1
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
 
@@ -94,8 +101,8 @@ class SeatPrices(db.Model):
 class Reservations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(Users.id), nullable=False)
-    show_id = db.Column(db.Integer, db.ForeignKey(Showings.id), nullable=False)
-    seats = db.Column(db.Integer, nullable=False, default=0) # Value Calculation?
+    show_id = db.Column(db.Integer, db.ForeignKey(ShowTimes.id), nullable=False)
+    # seats = db.Column(db.Integer, nullable=False, default=0) # Value Calculation?
     cost = db.Column(db.Float, nullable=False, default=0.0) # Currency, Value Calculation?
     seats = db.relationship("Seats", backref="reservations") # cascade
 
@@ -104,11 +111,11 @@ class Reservations(db.Model):
         db.session.commit()
     
     def add_seat(self, customer: str):
-        show: Showings = Showings.query.get(self.show_id)
+        show: ShowTimes = ShowTimes.query.get(self.show_id)
+        show.remove_seat()
         seat_prices: SeatPrices = SeatPrices.query.get((customer, show.theatre))
-
-        self.seats += 1
         self.cost += seat_prices.price
+        # self.seats += 1
 
 class Seats(db.Model):
     reservation_id = db.Column(db.Integer, db.ForeignKey(Reservations.id), primary_key=True)
