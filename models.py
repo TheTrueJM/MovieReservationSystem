@@ -28,6 +28,7 @@ class Movies(db.Model):
     genre = db.Column(db.String, nullable=False) # Length, Multiple (new table)?
     image_url = db.Column(db.String, nullable=False) # URL
     length = db.Column(db.Integer, nullable=False) # Integer Minutes, Min Value?
+    showings = db.relationship("Showings", backref="movies") # cascade
 
     # Title, Description, Poster Image, Genre, Length, Age Rating
 
@@ -58,13 +59,14 @@ class TheatreTypes(db.Model):
 
 class Showings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey(Movies.id), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time_start = db.Column(db.Time, nullable=False) # Time High Constraint?
     time_end = db.Column(db.Time, nullable=False) # Time Low Constraint?
     seats_total = db.Column(db.Integer, nullable=False) # Max Value?
     seats_available = db.Column(db.Integer, nullable=False) # Max Value?, Value Calculation?
     theatre = db.Column(db.String, db.ForeignKey(TheatreTypes.theatre), nullable=False) # Standard, Premium
+    reservations = db.relationship("Reservations", backref="showings") # cascade
 
     def save(self):
         db.session.add(self)
@@ -95,6 +97,7 @@ class Reservations(db.Model):
     show_id = db.Column(db.Integer, db.ForeignKey(Showings.id), nullable=False)
     seats = db.Column(db.Integer, nullable=False, default=0) # Value Calculation?
     cost = db.Column(db.Float, nullable=False, default=0.0) # Currency, Value Calculation?
+    seats = db.relationship("Seats", backref="reservations") # cascade
 
     def save(self):
         db.session.add(self)

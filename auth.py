@@ -15,7 +15,7 @@ signup_model = auth_ns.model(
     "signup", {
         "username": fields.String(required=True),
         "password": fields.String(required=True)
-    },
+    }
 )
 
 

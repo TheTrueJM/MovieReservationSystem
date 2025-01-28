@@ -71,6 +71,7 @@ class MovieReservation(Resource):
         # id, date, times, seats_total, seats_available, theatre
         # id, show_id
         # reservation_id, seat_no
+        # customer, theatre, price
         return movie
 
     @jwt_required()

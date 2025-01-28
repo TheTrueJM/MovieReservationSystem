@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from jsonschema import FormatChecker
 
 from database import db
 from inital_data import initialise_data
@@ -23,7 +24,7 @@ def create_app(config):
 
     JWTManager(app)
 
-    api = Api(app, doc="/docs") ### Disable?
+    api = Api(app, doc="/docs", format_checker=FormatChecker()) ### Disable?
 
     api.add_namespace(auth_ns)
     api.add_namespace(admin_ns)

@@ -2,10 +2,11 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, jsonify, make_response, abort, Response
 from functools import wraps
+from datetime import datetime, date, time
 
 from models import * ###
 from inital_data import ADMIN_ROLE
-# from http_response import http_ok, http_ok_message, http_created, http_bad_request, http_unauthorised, http_not_found
+from api_model_fields import DateField, TimeField
 
 
 
@@ -19,10 +20,31 @@ movie_model = admin_ns.model(
         "genre": fields.String(required=True),
         "image_url": fields.String(required=True),
         "length": fields.Integer(required=True)
-    },
+    }
 )
 
 movie_marshal = movie_model.extend("movie", {"id": fields.Integer(required=True)})
+
+
+showtime_model = admin_ns.model(
+    "showtime", {
+        "movie_id": fields.Integer(required=True),
+        "date": DateField(required=True),
+        "time_start": TimeField(required=True),
+        "time_end": TimeField(required=True),
+        "seats": fields.Integer(required=True),
+        "theatre": fields.String(required=True)
+    }
+)
+
+showtime_marshal = showtime_model.extend(
+    "showtime", {
+        "id": fields.Integer(required=True),
+        "seats_total": fields.Integer(required=True),
+        "seats_available": fields.Integer(required=True)
+    }
+)
+showtime_marshal.pop("seats")
 
 
 
@@ -121,9 +143,36 @@ class AdminShowTimes(Resource):
         return jsonify({"message": f"epik showtimes read"})
 
     @admin_required
+    @admin_ns.expect(showtime_model, validate=True)
+    @admin_ns.marshal_with(showtime_marshal)
     def post(self):
-        #
-        return jsonify({"message": f"epik showtimes create"})
+        data: dict = request.get_json()
+
+        movie_id: int = data.get("movie_id")
+        movie: Movies | None = Movies.query.get(movie_id)
+        if not movie:
+            abort(400, "Feedback on movie doesn't exist")
+
+        theatre: str = data.get("theatre")
+        if not TheatreTypes.query.get(theatre):
+            abort(400, "Feedback on theatre type doesn't exist")
+
+        date_: date = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
+        time_start: time = datetime.strptime(data.get("time_start"), "%H:%M:%S").time()
+        time_end: time = datetime.strptime(data.get("time_end"), "%H:%M:%S").time()
+        seats: int = data.get("seats")
+
+        # if date_ < current_date:
+        #     pass
+        if time_end <= time_start: # end of the day
+            abort(400, "Feedback on invalid time range")
+        if seats < 1:
+            abort(400, "Seating capacity must be at least 1")
+
+        new_showtime = Showings(movie_id=movie_id, date=date_, time_start=time_start, time_end=time_end, seats_total=seats, seats_available=seats, theatre=theatre)
+        new_showtime.save()
+
+        return new_showtime, 201
     
 
 @admin_ns.route("/showtimes/<int:id>")
