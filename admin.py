@@ -18,12 +18,12 @@ movie_model = admin_ns.model(
         "title": fields.String(required=True),
         "description": fields.String(required=True),
         "genre": fields.String(required=True),
-        "image_url": fields.String(required=True),
+        "image_url": fields.String(required=True), # fields.URL
         "length": fields.Integer(required=True)
     }
 )
 
-movie_marshal = admin_ns.inherit("movie_response", movie_model, {"id": fields.Integer(required=True)})
+movie_marshal = admin_ns.inherit("movie_details", movie_model, {"id": fields.Integer(required=True)})
 
 
 showtime_model = admin_ns.model(
@@ -38,9 +38,22 @@ showtime_model = admin_ns.model(
 )
 
 showtime_marshal = admin_ns.inherit(
-    "showtime_response", showtime_model, {
+    "showtime_details", showtime_model, {
         "id": fields.Integer(required=True),
         "seats_available": fields.Integer(required=True)
+    }
+)
+
+
+movie_showtimes_marshal = admin_ns.inherit(
+    "movie_showtimes_details", movie_marshal, {
+        "showtimes": fields.Nested(showtime_marshal, required=True)
+    }
+)
+
+movie_showtime_marshal = admin_ns.inherit(
+    "movie_showtime_details", showtime_marshal, {
+        "movie": fields.Nested(movie_marshal, required=True, attribute="movies")
     }
 )
 
@@ -95,7 +108,7 @@ class AdminMovies(Resource):
 @admin_ns.route("/movies/<int:id>")
 class AdminMovie(Resource):
     @admin_required
-    @admin_ns.marshal_with(movie_marshal)
+    @admin_ns.marshal_with(movie_showtimes_marshal)
     def get(self, id: int): # Revenue and All Shows
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
@@ -134,17 +147,17 @@ class AdminMovie(Resource):
 @admin_ns.route("/showtimes")
 class AdminShowTimes(Resource):
     @admin_required
-    @admin_ns.marshal_list_with(showtime_marshal)
+    @admin_ns.marshal_list_with(movie_showtime_marshal)
     def get(self):
-        # id, title, description, genre, image, length
-        # id, date, times, seats_available, theatre
+        # id, title, description, genre, image, length | DONE
+        # id, date, times, seats_available, theatre | DONE
         # id, show_id, seats, cost
         showtimes: list[ShowTimes] = ShowTimes.query.all()
         return showtimes, 200
 
     @admin_required
     @admin_ns.expect(showtime_model, validate=True)
-    @admin_ns.marshal_with(showtime_marshal)
+    @admin_ns.marshal_with(movie_showtime_marshal)
     def post(self):
         data: dict = request.get_json()
 
@@ -180,10 +193,10 @@ class AdminShowTimes(Resource):
 @admin_ns.route("/showtimes/<int:id>")
 class AdminShowTime(Resource):
     @admin_required
-    @admin_ns.marshal_with(showtime_marshal)
+    @admin_ns.marshal_with(movie_showtime_marshal)
     def get(self, id):
-        # id, title, description, genre, image, length
-        # id, date, times, seats_total, seats_available, theatre
+        # id, title, description, genre, image, length | DONE
+        # id, date, times, seats_total, seats_available, theatre | DONE
         # id, show_id, seats, cost
         # reservation_id, seat_no
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)

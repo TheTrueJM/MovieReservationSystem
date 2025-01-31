@@ -25,7 +25,7 @@ def initialise_data():
         ("child", "premium"): 15.0,
         ("student", "premium"): 18.0,
         ("adult", "premium"): 20.0,
-        ("senior", "premium"): 15.0,
+        ("senior", "premium"): 15.0
     })
 
 

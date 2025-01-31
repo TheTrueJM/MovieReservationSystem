@@ -11,19 +11,19 @@ movies_ns = Namespace("movies", description="A namespace for Movies")
 
 
 movie_marshal = movies_ns.model(
-    "movie", {
+    "movie_details", {
         "id": fields.Integer(required=True),
         "title": fields.String(required=True),
         "description": fields.String(required=True),
         "genre": fields.String(required=True),
-        "image_url": fields.String(required=True),
+        "image_url": fields.String(required=True), # fields.URL
         "length": fields.Integer(required=True)
     }
 )
 
 
 showtime_marshal = movies_ns.model(
-    "showtime", {
+    "showtime_details", {
         "id": fields.Integer(required=True),
         "movie_id": fields.Integer(required=True),
         "date": DateField(required=True),
@@ -32,6 +32,19 @@ showtime_marshal = movies_ns.model(
         "seats_total": fields.Integer(required=True),
         "seats_available": fields.Integer(required=True),
         "theatre": fields.String(required=True)
+    }
+)
+
+
+movie_showtimes_marshal = movies_ns.inherit(
+    "movie_showtimes_details", movie_marshal, {
+        "showtimes": fields.Nested(showtime_marshal, required=True)
+    }
+)
+
+movie_showtime_marshal = movies_ns.inherit(
+    "movie_showtime_details", showtime_marshal, {
+        "movie": fields.Nested(movie_marshal, required=True, attribute="movies")
     }
 )
 
@@ -51,12 +64,35 @@ seat_marshal = movies_ns.model(
 )
 
 reservation_marshal = movies_ns.model(
-    "reservation", {
+    "reservation_details", {
         "id": fields.Integer(required=True),
         "user_id": fields.Integer(required=True),
         "show_id": fields.Integer(required=True),
         "cost": fields.Float(required=True),
         "seats": fields.Nested(seat_marshal, required=True)
+    }
+)
+
+
+showtime_reservations_marshal = movies_ns.inherit(
+    "showtime_reservations_details", movie_showtime_marshal, {
+        "reservations": fields.Nested({
+            "seats": fields.Nested({"seat_no": fields.Integer(required=True)}, required=True)
+        }, required=True)
+    }
+)
+
+seat_price_marshal = movies_ns.model(
+    "seat_price", {
+        "customer": fields.String(required=True),
+        "price": fields.Float(required=True)
+    }
+)
+
+showtime_reservation_marshal = movies_ns.model(
+    "showtime_reservation_details", {
+        "showtime": fields.Nested(showtime_reservations_marshal, required=True),
+        "seat_prices": fields.Nested(seat_price_marshal, required=True)
     }
 )
 
@@ -80,10 +116,10 @@ class MoviesResource(Resource):
 
 @movies_ns.route("/<int:id>")
 class MovieResource(Resource):
-    @movies_ns.marshal_with(movie_marshal)
+    @movies_ns.marshal_with(movie_showtimes_marshal)
     def get(self, id):
-        # id, title, description, genre, image, length
-        # id, date, times, seats_available, theatre
+        # id, title, description, genre, image, length | DONE
+        # id, date, times, seats_available, theatre | DONE
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
     
@@ -91,25 +127,28 @@ class MovieResource(Resource):
 
 @movies_ns.route("/showtimes")
 class MovieShowTimes(Resource):
+    @movies_ns.marshal_list_with(movie_showtime_marshal)
     def get(self): # Filter Date + Time, Theatre
-        movies = Movies.query.all()
-        # id, title, description, genre, image, length
-        # id, date, times, seats_available, theatre
-        return movies
+        # id, title, description, genre, image, length | DONE
+        # id, date, times, seats_available, theatre | DONE
+        showtimes: list[ShowTimes] = ShowTimes.query.all()
+        return showtimes, 200
 
 
 
 @movies_ns.route("/showtimes/<int:show_id>")
 class MovieReservation(Resource):
     @jwt_required()
+    @movies_ns.marshal_with(showtime_reservation_marshal)
     def get(self, show_id: int):
-        movie = Movies.query.get_or_404(show_id)
-        # id, title, description, genre, image, length
-        # id, date, times, seats_total, seats_available, theatre
-        # id, show_id
-        # reservation_id, seat_no
-        # customer, theatre, price
-        return movie
+        # id, title, description, genre, image, length | DONE
+        # id, date, times, seats_total, seats_available, theatre | DONE
+        # id, show_id | Done
+        # reservation_id, seat_no | Done
+        # customer, theatre, price | Done
+        showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
+        seat_prices: SeatPrices = SeatPrices.query.filter_by(theatre=showtime.theatre).all()
+        return {"showtime": showtime, "seat_prices": seat_prices}, 200
 
     @jwt_required()
     @movies_ns.expect(reservation_model, validate=True)
@@ -120,14 +159,17 @@ class MovieReservation(Resource):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
 
         data = request.get_json()
-        seats = data["seats"] ### Check Seats aren't Already Reserved
+        seats = data["seats"]
         customers = data["customers"]
 
         if len(seats) != len(customers):
             abort(400, "Feedback on seats reserved to customers mismatch")
 
-        if any(seat_no < 1 or showtime.seats_total < seat_no for seat_no in seats):
-            abort(400, "Feedback on invalid seat selected")
+        for seat_no in seats:
+            if seat_no < 1 or showtime.seats_total < seat_no:
+                abort(400, "Feedback on invalid seat selected")
+            if Seats.query.get((showtime.id, seat_no)):
+                abort(400, "Feedback on seat already reserved")
 
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
             abort(400, "Feedback on invalid customer selected")
@@ -144,24 +186,3 @@ class MovieReservation(Resource):
             new_seat.save()
 
         return new_reservation, 201
-
-
-
-# @movies_ns.route("/test")
-# class TestResource(Resource):
-#     def get(self):
-
-#         reservation = Reservations(user_id=1, show_id=1)
-#         reservation.save()
-
-#         seats = {2: "adult", 3: "child", 14: "senior"}
-#         for seat_no in seats:
-#             seat = Seats(reservation_id=reservation.id, seat_no=seat_no, customer=seats[seat_no])
-#             seat.save()
-
-
-#         print(reservation.seats, reservation.cost)
-#         print(Seats.query.all())
-
-
-#         return {"message": "Hello World"}
