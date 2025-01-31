@@ -1,9 +1,10 @@
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, abort
-from datetime import date, time
+from functools import wraps
+from datetime import date
 
-from models import * ###
+from models import Users, Movies, ShowTimes, Reservations, Seats, SeatPrices
 from api_model_fields import DateField, TimeField
 
 
@@ -56,20 +57,17 @@ reservation_model = movies_ns.model(
     }
 )
 
-seat_marshal = movies_ns.model(
-    "seat", {
-        "seat_no": fields.Integer(required=True),
-        "customer": fields.String(required=True)
-    }
-)
-
 reservation_marshal = movies_ns.model(
     "reservation_details", {
         "id": fields.Integer(required=True),
         "user_id": fields.Integer(required=True),
         "show_id": fields.Integer(required=True),
         "cost": fields.Float(required=True),
-        "seats": fields.Nested(seat_marshal, required=True)
+        "seats": fields.Nested({
+            "seat_no": fields.Integer(required=True),
+            "customer": fields.String(required=True),
+            "cost": fields.Float(required=True)
+        }, required=True)
     }
 )
 
@@ -77,7 +75,9 @@ reservation_marshal = movies_ns.model(
 showtime_reservations_marshal = movies_ns.inherit(
     "showtime_reservations_details", movie_showtime_marshal, {
         "reservations": fields.Nested({
-            "seats": fields.Nested({"seat_no": fields.Integer(required=True)}, required=True)
+            "seats": fields.Nested({
+                "seat_no": fields.Integer(required=True)
+            }, required=True)
         }, required=True)
     }
 )
@@ -98,17 +98,22 @@ showtime_reservation_marshal = movies_ns.model(
 
 
 
-def get_user() -> Users:
-    current_user_name = get_jwt_identity()
-    current_user: Users = Users.query.filter_by(username=current_user_name).first()
-    return current_user
+def login_required(f):
+    @wraps(f)
+    @jwt_required()
+    def decorated(*args, **kwargs):
+        current_user_name = get_jwt_identity()
+        current_user: Users = Users.query.filter_by(username=current_user_name).first()
+        kwargs["user_id"] = current_user.id
+        return f(*args, **kwargs)
+    return decorated
 
 
 
 @movies_ns.route("/")
 class MoviesResource(Resource):
     @movies_ns.marshal_list_with(movie_marshal)
-    def get(self):
+    def get(self): # Filter Genre
         movies: list[Movies] = Movies.query.all()
         return movies, 200
 
@@ -118,8 +123,6 @@ class MoviesResource(Resource):
 class MovieResource(Resource):
     @movies_ns.marshal_with(movie_showtimes_marshal)
     def get(self, id):
-        # id, title, description, genre, image, length | DONE
-        # id, date, times, seats_available, theatre | DONE
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
     
@@ -129,38 +132,29 @@ class MovieResource(Resource):
 class MovieShowTimes(Resource):
     @movies_ns.marshal_list_with(movie_showtime_marshal)
     def get(self): # Filter Date + Time, Theatre
-        # id, title, description, genre, image, length | DONE
-        # id, date, times, seats_available, theatre | DONE
-        showtimes: list[ShowTimes] = ShowTimes.query.all()
+        showtimes: list[ShowTimes] = ShowTimes.query.filter(date.today() <= ShowTimes.date).all()
         return showtimes, 200
 
 
 
 @movies_ns.route("/showtimes/<int:show_id>")
 class MovieReservation(Resource):
-    @jwt_required()
+    @login_required
     @movies_ns.marshal_with(showtime_reservation_marshal)
     def get(self, show_id: int):
-        # id, title, description, genre, image, length | DONE
-        # id, date, times, seats_total, seats_available, theatre | DONE
-        # id, show_id | Done
-        # reservation_id, seat_no | Done
-        # customer, theatre, price | Done
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
         seat_prices: SeatPrices = SeatPrices.query.filter_by(theatre=showtime.theatre).all()
         return {"showtime": showtime, "seat_prices": seat_prices}, 200
 
-    @jwt_required()
+    @login_required
     @movies_ns.expect(reservation_model, validate=True)
     @movies_ns.marshal_with(reservation_marshal)
-    def post(self, show_id: int):
-        # show_id, user_id, [seat_no], [customer_type]
-
+    def post(self, show_id: int, user_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
 
-        data = request.get_json()
-        seats = data["seats"]
-        customers = data["customers"]
+        data: dict = request.get_json()
+        seats: set = set(data["seats"])
+        customers: list = data["customers"]
 
         if len(seats) != len(customers):
             abort(400, "Feedback on seats reserved to customers mismatch")
@@ -168,17 +162,15 @@ class MovieReservation(Resource):
         for seat_no in seats:
             if seat_no < 1 or showtime.seats_total < seat_no:
                 abort(400, "Feedback on invalid seat selected")
-            if Seats.query.get((showtime.id, seat_no)):
+            if Seats.query.join(Reservations).filter(Seats.seat_no==seat_no, Reservations.show_id==showtime.id).first():
                 abort(400, "Feedback on seat already reserved")
 
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
             abort(400, "Feedback on invalid customer selected")
 
-        user: Users = get_user()
-
         # Database Transaction
 
-        new_reservation = Reservations(user_id=user.id, show_id=show_id)
+        new_reservation = Reservations(user_id=user_id, show_id=show_id)
         new_reservation.save()
 
         for seat_no, customer in zip(seats, customers):

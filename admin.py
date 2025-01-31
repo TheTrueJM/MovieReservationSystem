@@ -40,13 +40,15 @@ showtime_model = admin_ns.model(
 showtime_marshal = admin_ns.inherit(
     "showtime_details", showtime_model, {
         "id": fields.Integer(required=True),
-        "seats_available": fields.Integer(required=True)
+        "seats_available": fields.Integer(required=True),
+        "revenue": fields.Float(required=True)
     }
 )
 
 
 movie_showtimes_marshal = admin_ns.inherit(
     "movie_showtimes_details", movie_marshal, {
+        "revenue": fields.Float(required=True),
         "showtimes": fields.Nested(showtime_marshal, required=True)
     }
 )
@@ -56,6 +58,22 @@ movie_showtime_marshal = admin_ns.inherit(
         "movie": fields.Nested(movie_marshal, required=True, attribute="movies")
     }
 )
+
+showtime_reservations_marshal = admin_ns.inherit(
+    "showtime_reservations_details", movie_showtime_marshal, {
+        "reservations": fields.Nested({
+            "id": fields.Integer(required=True),
+            "user_id": fields.Integer(required=True),
+            "cost": fields.Float(required=True),
+            "seats": fields.Nested({
+                "seat_no": fields.Integer(required=True),
+                "customer": fields.String(required=True),
+                "cost": fields.Float(required=True)
+            }, required=True)
+        }, required=True)
+    }
+)
+
 
 
 
@@ -78,7 +96,7 @@ def admin_required(f):
 class AdminMovies(Resource):
     @admin_required
     @admin_ns.marshal_list_with(movie_marshal)
-    def get(self):
+    def get(self): # Filter Genre
         movies: list[Movies] = Movies.query.all()
         return movies, 200
     
@@ -109,7 +127,7 @@ class AdminMovies(Resource):
 class AdminMovie(Resource):
     @admin_required
     @admin_ns.marshal_with(movie_showtimes_marshal)
-    def get(self, id: int): # Revenue and All Shows
+    def get(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
 
@@ -137,7 +155,7 @@ class AdminMovie(Resource):
         return movie, 200
 
     @admin_required
-    def delete(self, id):
+    def delete(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
         movie.delete()
         return {}, 204
@@ -148,10 +166,7 @@ class AdminMovie(Resource):
 class AdminShowTimes(Resource):
     @admin_required
     @admin_ns.marshal_list_with(movie_showtime_marshal)
-    def get(self):
-        # id, title, description, genre, image, length | DONE
-        # id, date, times, seats_available, theatre | DONE
-        # id, show_id, seats, cost
+    def get(self): # Filter Date + Time, Theatre
         showtimes: list[ShowTimes] = ShowTimes.query.all()
         return showtimes, 200
 
@@ -193,17 +208,13 @@ class AdminShowTimes(Resource):
 @admin_ns.route("/showtimes/<int:id>")
 class AdminShowTime(Resource):
     @admin_required
-    @admin_ns.marshal_with(movie_showtime_marshal)
-    def get(self, id):
-        # id, title, description, genre, image, length | DONE
-        # id, date, times, seats_total, seats_available, theatre | DONE
-        # id, show_id, seats, cost
-        # reservation_id, seat_no
+    @admin_ns.marshal_with(showtime_reservations_marshal)
+    def get(self, id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)
         return showtime, 200
     
     @admin_required
-    def delete(self, id):
+    def delete(self, id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)
         showtime.delete()
         return {}, 204

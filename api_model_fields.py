@@ -20,7 +20,7 @@ class DateField(fields.Raw):
         elif isinstance(value, date):
             return value
         else:
-            raise ValueError("Unsupported DateTime format")
+            raise ValueError("Unsupported Date format")
     
     def format(self, value):
         try:
@@ -50,7 +50,7 @@ class TimeField(fields.Raw):
         elif isinstance(value, time):
             return value
         else:
-            raise ValueError("Unsupported DateTime format")
+            raise ValueError("Unsupported Time format")
     
     def format(self, value):
         try:
