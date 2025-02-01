@@ -23,7 +23,7 @@ movie_model = admin_ns.model(
     }
 )
 
-movie_marshal = admin_ns.inherit("movie_details", movie_model, {"id": fields.Integer(required=True)})
+base_movie_marshal = admin_ns.inherit("movie_details", movie_model, {"id": fields.Integer(required=True)})
 
 
 showtime_model = admin_ns.model(
@@ -37,8 +37,8 @@ showtime_model = admin_ns.model(
     }
 )
 
-showtime_marshal = admin_ns.inherit(
-    "showtime_details", showtime_model, {
+extended_showtime_marshal = admin_ns.inherit(
+    "showtime_details_extended", showtime_model, {
         "id": fields.Integer(required=True),
         "seats_available": fields.Integer(required=True),
         "revenue": fields.Float(required=True)
@@ -46,21 +46,22 @@ showtime_marshal = admin_ns.inherit(
 )
 
 
-movie_showtimes_marshal = admin_ns.inherit(
-    "movie_showtimes_details", movie_marshal, {
+extended_movie_showtimes_marshal = admin_ns.inherit(
+    "movie_showtimes_details_extended", base_movie_marshal, {
         "revenue": fields.Float(required=True),
-        "showtimes": fields.Nested(showtime_marshal, required=True)
+        "showtimes": fields.Nested(extended_showtime_marshal, required=True)
     }
 )
 
-movie_showtime_marshal = admin_ns.inherit(
-    "movie_showtime_details", showtime_marshal, {
-        "movie": fields.Nested(movie_marshal, required=True, attribute="movies")
+extended_movie_showtime_marshal = admin_ns.inherit(
+    "movie_showtime_details_extended", extended_showtime_marshal, {
+        "movie": fields.Nested(base_movie_marshal, required=True, attribute="movies")
     }
 )
 
-showtime_reservations_marshal = admin_ns.inherit(
-    "showtime_reservations_details", movie_showtime_marshal, {
+
+extended_showtime_reservations_marshal = admin_ns.inherit(
+    "showtime_reservations_details_extended", extended_movie_showtime_marshal, {
         "reservations": fields.Nested({
             "id": fields.Integer(required=True),
             "user_id": fields.Integer(required=True),
@@ -95,14 +96,14 @@ def admin_required(f):
 @admin_ns.route("/movies")
 class AdminMovies(Resource):
     @admin_required
-    @admin_ns.marshal_list_with(movie_marshal)
+    @admin_ns.marshal_list_with(base_movie_marshal)
     def get(self): # Filter Genre
         movies: list[Movies] = Movies.query.all()
         return movies, 200
     
     @admin_required
     @admin_ns.expect(movie_model, validate=True)
-    @admin_ns.marshal_with(movie_marshal)
+    @admin_ns.marshal_with(base_movie_marshal)
     def post(self):
         data: dict = request.get_json()
         title: str = data.get("title")
@@ -126,14 +127,14 @@ class AdminMovies(Resource):
 @admin_ns.route("/movies/<int:id>")
 class AdminMovie(Resource):
     @admin_required
-    @admin_ns.marshal_with(movie_showtimes_marshal)
+    @admin_ns.marshal_with(extended_movie_showtimes_marshal)
     def get(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
 
     @admin_required
     @admin_ns.expect(movie_model, validate=True)
-    @admin_ns.marshal_with(movie_marshal)
+    @admin_ns.marshal_with(base_movie_marshal)
     def put(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
 
@@ -165,14 +166,14 @@ class AdminMovie(Resource):
 @admin_ns.route("/showtimes")
 class AdminShowTimes(Resource):
     @admin_required
-    @admin_ns.marshal_list_with(movie_showtime_marshal)
+    @admin_ns.marshal_list_with(extended_movie_showtime_marshal)
     def get(self): # Filter Date + Time, Theatre
         showtimes: list[ShowTimes] = ShowTimes.query.all()
         return showtimes, 200
 
     @admin_required
     @admin_ns.expect(showtime_model, validate=True)
-    @admin_ns.marshal_with(movie_showtime_marshal)
+    @admin_ns.marshal_with(extended_movie_showtime_marshal)
     def post(self):
         data: dict = request.get_json()
 
@@ -208,7 +209,7 @@ class AdminShowTimes(Resource):
 @admin_ns.route("/showtimes/<int:id>")
 class AdminShowTime(Resource):
     @admin_required
-    @admin_ns.marshal_with(showtime_reservations_marshal)
+    @admin_ns.marshal_with(extended_showtime_reservations_marshal)
     def get(self, id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)
         return showtime, 200

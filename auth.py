@@ -1,7 +1,7 @@
 from flask_restx import Resource, Namespace, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
-from flask import request, jsonify, make_response, abort, Response
+from flask import request, abort
 
 from models import Users
 from inital_data import DEFAULT_USER_ROLE
@@ -18,6 +18,12 @@ signup_model = auth_ns.model(
     }
 )
 
+signup_marshal = auth_ns.model(
+    "signup_response", {
+        "message": fields.String(required=True)
+    }
+)
+
 
 login_model = auth_ns.model(
     "login", {
@@ -26,16 +32,26 @@ login_model = auth_ns.model(
     }
 )
 
+login_marshal = auth_ns.model(
+    "login_response", {
+        "message": fields.String(required=True),
+        "access_token": fields.String(required=True),
+        "refresh_token": fields.String(required=True)
+    }
+)
 
 
-def json_response(code: int, data: list | dict) -> Response:
-    return make_response(jsonify(data), code)
-
+refresh_marshal = auth_ns.model(
+    "refresh_response", {
+        "access_token": fields.String(required=True)
+    }
+)
 
 
 @auth_ns.route("/signup")
 class AuthSignUp(Resource):
     @auth_ns.expect(signup_model, validate=True)
+    @auth_ns.marshal_with(signup_marshal)
     def post(self):
         data: dict = request.get_json()
         username: str = data.get("username")
@@ -50,12 +66,13 @@ class AuthSignUp(Resource):
         new_user: Users = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
         new_user.save()
 
-        return json_response(201, {"message": f"User '{username}' created successfuly"})
+        return {"message": f"User '{username}' created successfuly"}, 201
 
 
 @auth_ns.route("/login")
 class AuthLogin(Resource):
     @auth_ns.expect(login_model)
+    @auth_ns.marshal_with(login_marshal)
     def post(self):
         data: dict = request.get_json()
         username: str = data.get("username")
@@ -69,7 +86,10 @@ class AuthLogin(Resource):
         if isinstance(db_user, Users) and check_password_hash(db_user.password, password):
             access_token = create_access_token(identity=db_user.username) ### expires_delta
             refresh_token = create_refresh_token(identity=db_user.username)
-            return json_response(200, {"access_token": access_token, "refresh_token": refresh_token})
+            return {
+                "message": "Login successful",
+                "access_token": access_token, "refresh_token": refresh_token
+            }, 200
         else:
             abort(401, "Invalid username or password")
 
@@ -77,7 +97,8 @@ class AuthLogin(Resource):
 @auth_ns.route("/refresh")
 class AuthTokenRefresh(Resource):
     @jwt_required(refresh=True)
+    @auth_ns.marshal_with(refresh_marshal)
     def get(self):
         current_user = get_jwt_identity()
         new_access_token = create_access_token(identity=current_user)
-        return json_response(200, {"access_token": new_access_token})
+        return {"access_token": new_access_token}, 200

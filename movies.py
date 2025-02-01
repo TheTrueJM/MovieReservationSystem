@@ -11,7 +11,7 @@ from api_model_fields import DateField, TimeField
 movies_ns = Namespace("movies", description="A namespace for Movies")
 
 
-movie_marshal = movies_ns.model(
+base_movie_marshal = movies_ns.model(
     "movie_details", {
         "id": fields.Integer(required=True),
         "title": fields.String(required=True),
@@ -22,8 +22,7 @@ movie_marshal = movies_ns.model(
     }
 )
 
-
-showtime_marshal = movies_ns.model(
+base_showtime_marshal = movies_ns.model(
     "showtime_details", {
         "id": fields.Integer(required=True),
         "movie_id": fields.Integer(required=True),
@@ -38,17 +37,41 @@ showtime_marshal = movies_ns.model(
 
 
 movie_showtimes_marshal = movies_ns.inherit(
-    "movie_showtimes_details", movie_marshal, {
-        "showtimes": fields.Nested(showtime_marshal, required=True)
+    "movie_showtimes_details", base_movie_marshal, {
+        "showtimes": fields.Nested(base_showtime_marshal, required=True)
     }
 )
 
 movie_showtime_marshal = movies_ns.inherit(
-    "movie_showtime_details", showtime_marshal, {
-        "movie": fields.Nested(movie_marshal, required=True, attribute="movies")
+    "movie_showtime_details", base_showtime_marshal, {
+        "movie": fields.Nested(base_movie_marshal, required=True, attribute="movies")
     }
 )
 
+
+showtime_reservations_marshal = movies_ns.inherit(
+    "showtime_reservations_details", movie_showtime_marshal, {
+        "reservations": fields.Nested({
+            "seats": fields.Nested({
+                "seat_no": fields.Integer(required=True)
+            }, required=True)
+        }, required=True)
+    }
+)
+
+seat_price_marshal = movies_ns.model(
+    "seat_price_details", {
+        "customer": fields.String(required=True),
+        "price": fields.Float(required=True)
+    }
+)
+
+showtime_reservation_marshal = movies_ns.model(
+    "showtime_reservation_details", {
+        "showtime": fields.Nested(showtime_reservations_marshal, required=True),
+        "seat_prices": fields.Nested(seat_price_marshal, required=True)
+    }
+)
 
 reservation_model = movies_ns.model(
     "reservation", {
@@ -72,31 +95,6 @@ reservation_marshal = movies_ns.model(
 )
 
 
-showtime_reservations_marshal = movies_ns.inherit(
-    "showtime_reservations_details", movie_showtime_marshal, {
-        "reservations": fields.Nested({
-            "seats": fields.Nested({
-                "seat_no": fields.Integer(required=True)
-            }, required=True)
-        }, required=True)
-    }
-)
-
-seat_price_marshal = movies_ns.model(
-    "seat_price", {
-        "customer": fields.String(required=True),
-        "price": fields.Float(required=True)
-    }
-)
-
-showtime_reservation_marshal = movies_ns.model(
-    "showtime_reservation_details", {
-        "showtime": fields.Nested(showtime_reservations_marshal, required=True),
-        "seat_prices": fields.Nested(seat_price_marshal, required=True)
-    }
-)
-
-
 
 def login_required(f):
     @wraps(f)
@@ -104,15 +102,14 @@ def login_required(f):
     def decorated(*args, **kwargs):
         current_user_name = get_jwt_identity()
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
-        kwargs["user_id"] = current_user.id
-        return f(*args, **kwargs)
+        return f(*args, current_user.id, **kwargs)
     return decorated
 
 
 
 @movies_ns.route("/")
 class MoviesResource(Resource):
-    @movies_ns.marshal_list_with(movie_marshal)
+    @movies_ns.marshal_list_with(base_movie_marshal)
     def get(self): # Filter Genre
         movies: list[Movies] = Movies.query.all()
         return movies, 200
@@ -125,7 +122,7 @@ class MovieResource(Resource):
     def get(self, id):
         movie: Movies = Movies.query.get_or_404(id)
         return movie, 200
-    
+
 
 
 @movies_ns.route("/showtimes")
@@ -139,7 +136,6 @@ class MovieShowTimes(Resource):
 
 @movies_ns.route("/showtimes/<int:show_id>")
 class MovieReservation(Resource):
-    @login_required
     @movies_ns.marshal_with(showtime_reservation_marshal)
     def get(self, show_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
@@ -149,7 +145,7 @@ class MovieReservation(Resource):
     @login_required
     @movies_ns.expect(reservation_model, validate=True)
     @movies_ns.marshal_with(reservation_marshal)
-    def post(self, show_id: int, user_id: int):
+    def post(self, user_id: int, show_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
 
         data: dict = request.get_json()

@@ -19,6 +19,15 @@ class Users(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self, username: str, password: str):
+        self.username = username
+        self.password = password
+        db.session.commit()
+
+    def change_role(self, role: str):
+        self.role = role
+        db.session.commit()
+
 
 
 class Movies(db.Model):
@@ -116,7 +125,7 @@ class Reservations(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(Users.id), nullable=False)
     show_id = db.Column(db.Integer, db.ForeignKey(ShowTimes.id), nullable=False)
     cost = db.Column(db.Float, nullable=False, default=0.0)
-    seats = db.relationship("Seats", backref="reservations") # cascade
+    seats = db.relationship("Seats", backref="reservations", cascade="all, delete") # cascade
 
     def save(self):
         db.session.add(self)
