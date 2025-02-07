@@ -155,6 +155,9 @@ class MovieReservation(Resource):
         if len(seats) != len(customers):
             abort(400, "Feedback on seats reserved to customers mismatch")
 
+        if not seats:
+            abort(400, "Feedback on at least 1 seat must be reserved")
+
         for seat_no in seats:
             if seat_no < 1 or showtime.seats_total < seat_no:
                 abort(400, "Feedback on invalid seat selected")

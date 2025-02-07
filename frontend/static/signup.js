@@ -1,4 +1,6 @@
-const API = "http://localhost:5000/"
+import { API } from "./api.js";
+
+window.signup=signup;
 
 function signup() {
     const username = document.getElementById("username").value;
@@ -16,18 +18,17 @@ function signup() {
                 "password": password
             })
         })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                return response.json().then(err => { throw new Error(err.message); });
-            }
-        })
-        .then(data => {
-            console.log(data)
-            localStorage.setItem("access_token", data.access_token);
-            localStorage.setItem("refresh_token", data.refresh_token);
-        })
-        .catch(error => console.error("Error validating data:", error));
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(error => { throw new Error(error.message); });
+                }
+            })
+            .then(data => {
+                localStorage.setItem("access_token", data.access_token);
+                localStorage.setItem("refresh_token", data.refresh_token);
+            })
+            .catch(error => {});
     }
 }

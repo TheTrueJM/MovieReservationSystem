@@ -1,12 +1,13 @@
-const API = "http://localhost:5000/"
+import { API } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
+    fetchMovies();
 
     function fetchMovies() {
         fetch(API + "movies")
             .then(response => response.json())
-            .then(data => {displayMovies(data)})
-            .catch(error => console.error("Error fetching data:", error));
+            .then(data => displayMovies(data))
+            .catch(error => {});
     }
 
     function displayMovies(movies) {
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
         movies.forEach(movie => {
             const movieDiv = document.createElement("a");
             movieDiv.classList.add("card");
-            movieDiv.href = `http://localhost:4000/movie/${movie.id}`
+            movieDiv.href = `http://localhost:4000/movie/${movie.id}`;
 
             movieDiv.innerHTML = `
                 <img src="${movie.image_url}" alt="${movie.title} image">
@@ -26,6 +27,4 @@ document.addEventListener("DOMContentLoaded", function() {
             movieList.appendChild(movieDiv);
         });
     }
-
-    fetchMovies();
 });

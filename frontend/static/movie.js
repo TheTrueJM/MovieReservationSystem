@@ -1,6 +1,7 @@
-const API = "http://localhost:5000/"
+import { API } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
+    fetchMovie(); // Edit Date and Time Displays
 
     function fetchMovie() {
         const url = window.location.pathname;
@@ -12,15 +13,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => {});
     }
 
     function displayMovie(movie) {
-        document.title += " " + movie.title
+        document.title += " " + movie.title;
 
         const movieDetails = document.getElementById("movieDetails");
-        movieDetails.innerHTML = "";
-
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <div>${movie.title}</div>
@@ -36,20 +35,18 @@ document.addEventListener("DOMContentLoaded", function() {
         let current_date; let showtimeList;
         showtimes.forEach(showtime => { // LIST ORDERING -> Dates
             if (showtime.date != current_date) {
-                current_date = showtime.date
+                current_date = showtime.date;
 
-                const showtimeDate = document.createElement("h2");
-                showtimeDate.textContent = showtime.date;
-                movieAside.appendChild(showtimeDate);
+                movieAside.innerHTML += `<h2>${showtime.date}</h2>`;
 
                 showtimeList = document.createElement("div");
-                showtimeList.id = "showtimeList"
+                showtimeList.id = "showtimeList";
                 movieAside.appendChild(showtimeList);
             }
 
             const showtimeDiv = document.createElement("a");
             showtimeDiv.classList.add("card");
-            showtimeDiv.href = `http://localhost:4000/showtime/${showtime.id}`
+            showtimeDiv.href = `http://localhost:4000/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
                 <div class="details">
@@ -62,7 +59,4 @@ document.addEventListener("DOMContentLoaded", function() {
             showtimeList.appendChild(showtimeDiv);
         });
     }
-
-
-    fetchMovie();
 });

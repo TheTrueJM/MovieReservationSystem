@@ -1,9 +1,10 @@
-const API = "http://localhost:5000/"
+import { API } from "./api.js";
 
 let selectedSeats = [];
 let customerSeats = {};
 
 document.addEventListener("DOMContentLoaded", function() {
+    fetchMovieShowtime();
 
     function fetchMovieShowtime() {
         const url = window.location.pathname;
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch(API + "movies/showtimes/" + id)
             .then(response => response.json())
             .then(data => {
-                let {showtime, seat_prices} = data
+                const {showtime, seat_prices} = data
                 displayMovie(showtime.movie);
                 displayShowtime(showtime);
                 displayReservation(showtime, seat_prices);
@@ -21,11 +22,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayMovie(movie) {
-        document.title += " " + movie.title
+        document.title += " " + movie.title + " | Reservation";
 
         const movieDetails = document.getElementById("movieDetails");
-        movieDetails.innerHTML = "";
-
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <div>${movie.title}</div>
@@ -37,8 +36,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function displayShowtime(showtime) {
         const showtimeDetails = document.getElementById("showtimeDetails");
-        showtimeDetails.innerHTML = "";
-
         showtimeDetails.innerHTML = `
             <h1>${showtime.date} | ${showtime.time_start}-${showtime.time_end}</h1>
             <div>${showtime.theatre}</div>
@@ -57,10 +54,8 @@ document.addEventListener("DOMContentLoaded", function() {
         reservationButton.addEventListener("click", function() {
             let customers = [];
             for (const customer in customerSeats) {
-                if (0 < customerSeats[customer]) {
-                    for (i = 0; i < customerSeats[customer]; i++) {
-                        customers.push(customer)
-                    }
+                for (let i = 0; i < customerSeats[customer]; i++) {
+                    customers.push(customer);
                 }
             }
 
@@ -75,27 +70,28 @@ document.addEventListener("DOMContentLoaded", function() {
                     "customers": customers
                 })
             })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.json().then(err => { throw new Error(err.message); });
-                }
-            })
-            .then(data => {
-                console.log(data)
-            })
-            .catch(error => console.error("Error validating data:", error));
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        return response.json().then(error => { throw new Error(error.message); });
+                    }
+                })
+                .then(data => {
+                    // location.reload();
+                    console.log(data);
+                })
+                .catch(error => {});
         });
 
         showtimeReservation.appendChild(reservationButton);
     }
 
     function displayShowtimeSeats(showtime, showtimeReservation) {
-        let reserved = [];
+        let reservedSeats = [];
         showtime.reservations.forEach(reservation => {
             reservation.seats.forEach(seat => {
-                reserved.push(seat.seat_no)
+                reservedSeats.push(seat.seat_no);
             });
         });
 
@@ -103,13 +99,12 @@ document.addEventListener("DOMContentLoaded", function() {
         seatSelector.id = "selection";
         showtimeReservation.appendChild(seatSelector);
 
-        for (i = 1; i <= showtime.seats_total; i++) {
-            const seatOption = document.createElement("div");
-            seatOption.classList.add("option");
+        for (let i = 1; i <= showtime.seats_total; i++) {
+            const seatOption = document.createElement("button");
             seatOption.textContent = i;
 
-            if (reserved.includes(i)) {
-                seatOption.classList.add("disabled");
+            if (reservedSeats.includes(i)) {
+                seatOption.disabled = true;
             } else {
                 seatOption.addEventListener("click", function() {
                     const optionValue = parseInt(this.textContent);
@@ -126,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             seatSelector.appendChild(seatOption);
         };
-    };
+    }
 
     function displaySeatPrices(seat_prices, showtimeReservation) {
         const seatPrices = document.createElement("div");
@@ -147,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div class="count">0</div>
                     <button class="increase">+</button>
                 </div>
-            `
+            `;
 
             const decreaseButton = seatPrice.querySelector(".decrease");
             const increaseButton = seatPrice.querySelector(".increase");
@@ -168,6 +163,4 @@ document.addEventListener("DOMContentLoaded", function() {
             seatPrices.appendChild(seatPrice);
         });
     }
-
-    fetchMovieShowtime();
 });

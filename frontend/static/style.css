@@ -204,7 +204,7 @@ main {
     background: white;
 }
 
-#showtimeReservation #selection .option {
+#showtimeReservation #selection button {
     width: 3.75rem;
     height: 3.75rem;
     align-content: center;
@@ -213,15 +213,13 @@ main {
     color: black;
     font-weight: bold;
     text-align: center;
-    cursor: pointer;
 }
 
-#showtimeReservation #selection .option.disabled {
+#showtimeReservation #selection button:disabled {
     background-color: rgb(235, 106, 106);
-    cursor: default;
 }
 
-#showtimeReservation #selection .option.selected {
+#showtimeReservation #selection .selected {
     background-color: rgb(106, 235, 106);
 }
 

@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, get_jw
 from flask import request, abort
 
 from models import Users
-from inital_data import DEFAULT_USER_ROLE
+from inital_data import DEFAULT_USER_ROLE, ADMIN_ROLE
 
 
 
@@ -37,6 +37,13 @@ auth_response_marshal = auth_ns.model(
 refresh_marshal = auth_ns.model(
     "refresh_response", {
         "access_token": fields.String(required=True)
+    }
+)
+
+
+admin_marshal = auth_ns.model(
+    "admin_status_response", {
+        "admin_status": fields.Boolean(required=True)
     }
 )
 
@@ -100,3 +107,13 @@ class AuthTokenRefresh(Resource):
         current_user = get_jwt_identity()
         new_access_token = create_access_token(identity=current_user)
         return {"access_token": new_access_token}, 200
+    
+
+@auth_ns.route("/admin_status")
+class AuthTokenRefresh(Resource):
+    @jwt_required()
+    @auth_ns.marshal_with(admin_marshal)
+    def get(self):
+        current_user_name = get_jwt_identity()
+        current_user: Users = Users.query.filter_by(username=current_user_name).first()
+        return {"admin_status": current_user.role == ADMIN_ROLE}, 200
