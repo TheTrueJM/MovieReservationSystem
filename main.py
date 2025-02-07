@@ -13,7 +13,7 @@ from movies import movies_ns
 
 
 def create_app(config):
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="frontend/templates", static_folder="frontend/static")
     app.config.from_object(config)
 
     CORS(app)
@@ -31,13 +31,5 @@ def create_app(config):
     api.add_namespace(admin_ns)
     api.add_namespace(user_ns)
     api.add_namespace(movies_ns)
-
-    # @app.route("/")
-    # def index():
-    #     return app.send_static_file("index.html")
-
-    # @app.errorhandler(404)
-    # def not_found(err):
-    #     return app.send_static_file("index.html")
 
     return app

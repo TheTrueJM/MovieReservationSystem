@@ -18,13 +18,6 @@ signup_model = auth_ns.model(
     }
 )
 
-signup_marshal = auth_ns.model(
-    "signup_response", {
-        "message": fields.String(required=True)
-    }
-)
-
-
 login_model = auth_ns.model(
     "login", {
         "username": fields.String(required=True),
@@ -32,8 +25,8 @@ login_model = auth_ns.model(
     }
 )
 
-login_marshal = auth_ns.model(
-    "login_response", {
+auth_response_marshal = auth_ns.model(
+    "auth_response", {
         "message": fields.String(required=True),
         "access_token": fields.String(required=True),
         "refresh_token": fields.String(required=True)
@@ -51,7 +44,7 @@ refresh_marshal = auth_ns.model(
 @auth_ns.route("/signup")
 class AuthSignUp(Resource):
     @auth_ns.expect(signup_model, validate=True)
-    @auth_ns.marshal_with(signup_marshal)
+    @auth_ns.marshal_with(auth_response_marshal)
     def post(self):
         data: dict = request.get_json()
         username: str = data.get("username")
@@ -66,13 +59,18 @@ class AuthSignUp(Resource):
         new_user: Users = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
         new_user.save()
 
-        return {"message": f"User '{username}' created successfuly"}, 201
+        access_token = create_access_token(identity=new_user.username) ### expires_delta
+        refresh_token = create_refresh_token(identity=new_user.username)
+        return {
+            "message": "Login successful",
+            "access_token": access_token, "refresh_token": refresh_token
+        }, 201
 
 
 @auth_ns.route("/login")
 class AuthLogin(Resource):
     @auth_ns.expect(login_model)
-    @auth_ns.marshal_with(login_marshal)
+    @auth_ns.marshal_with(auth_response_marshal)
     def post(self):
         data: dict = request.get_json()
         username: str = data.get("username")

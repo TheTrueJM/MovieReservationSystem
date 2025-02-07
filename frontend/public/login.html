@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieSiteName | Login</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <header>
+        MovieSiteName
+    </header>
+
+    <nav>
+        <div id="links">
+            <a href="/">Movies</a>
+            <a href="/showtimes">Showtimes</a>
+        </div>
+        <div id="user">
+            <a href="/login">Login</a>
+            <a href="/signup">Sign Up</a>
+        </div>
+    </nav>
+
+    <main id="centerContent">
+        <div id="centerCard">
+            <h2>User Login</h2>
+            <input type="text" id="username" placeholder="Enter username..." />
+            <input type="password" id="password" placeholder="Enter password..." />
+            <button onclick="login()">Login</button>
+        </div>
+    </main>
+
+    <script src="static/login.js"></script>
+</body>
+
+</html>
