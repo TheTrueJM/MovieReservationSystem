@@ -114,7 +114,7 @@ def login_required(f):
 
 
 @user_ns.route("/update_username")
-class UserResource(Resource):
+class UsernameResource(Resource):
     @login_required
     @user_ns.expect(username_model, validate=True)
     @user_ns.marshal_with(username_marshal)
@@ -139,7 +139,7 @@ class UserResource(Resource):
 
 
 @user_ns.route("/update_password")
-class UserResource(Resource):
+class UserPasswordResource(Resource):
     @login_required
     @user_ns.expect(password_model, validate=True)
     @user_ns.marshal_with(password_marshal)

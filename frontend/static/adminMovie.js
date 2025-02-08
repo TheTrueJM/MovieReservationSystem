@@ -1,19 +1,23 @@
 import { API, SITE } from "./api.js";
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     fetchMovie(); // Edit Date and Time Displays
 
     function fetchMovie() {
         const url = window.location.pathname;
         const id = url.split("/").pop();
 
-        fetch(API + "movies/" + id)
+        fetch(API + "admin/movies/" + id, {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        })
             .then(response => response.json())
             .then(movie => {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
             })
-            .catch(error => {});
+            .catch(error => { });
     }
 
     function displayMovie(movie) {
@@ -25,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div>${movie.title}</div>
             <div>${movie.genre}</div>
             <div>${movie.length} minutes</div>
+            <div>Revenue: $${movie.revenue}</div>
             <div>${movie.description}</div>
         `;
     }
@@ -46,15 +51,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
             const showtimeDiv = document.createElement("a");
             showtimeDiv.classList.add("card");
-            showtimeDiv.href = `${SITE}showtime/${showtime.id}`;
+            showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
                 <div class="details">
                     <p>${showtime.theatre.toUpperCase()}</p>
-                    <p>${showtime.seats_available} Seats Available</p>
+                    <p>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</p>
                 </div>
                 <div class="time">${showtime.date} | ${showtime.time_start}</div>
-            `;
+                <div class="revenue">Current Revenue: $${showtime.revenue}</div>
+            `; // Current vs Total Revenue for Showtime Dates
 
             showtimeList.appendChild(showtimeDiv);
         });

@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayMovie(movie) {
-        document.title += " " + movie.title + " | Reservation";
+        document.title += " " + movie.title + " | Showtime Reservation";
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `

@@ -8,6 +8,11 @@ app.use("/static", express.static(path.join(__dirname, "/static")));
 
 
 
+app.get("/", (req, res) => {
+    res.redirect('/movies')
+});
+
+
 app.get("/signup", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "signup.html"));
 });
@@ -17,11 +22,11 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/settings", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "user_settings.html"));
+    res.sendFile(path.join(__dirname, "public", "userSettings.html"));
 });
 
 
-app.get(["/", "/movies"], (req, res) => {
+app.get("/movies", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "movies.html"));
 });
 
@@ -39,20 +44,21 @@ app.get("/showtime/:id", (req, res) => { // Not Number Routes
 
 
 app.get("/admin/movies", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "movies.html"));
+    res.sendFile(path.join(__dirname, "public", "adminMovies.html"));
 });
 
 app.get("/admin/movie/:id", (req, res) => { // Not Number Routes
-    res.sendFile(path.join(__dirname, "public", "movie.html"));
+    res.sendFile(path.join(__dirname, "public", "adminMovie.html"));
 });
 
 app.get("/admin/showtimes", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "showtimes.html"));
+    res.sendFile(path.join(__dirname, "public", "adminShowtimes.html"));
 });
 
 app.get("/admin/showtime/:id", (req, res) => { // Not Number Routes
-    res.sendFile(path.join(__dirname, "public", "showtime.html"));
+    res.sendFile(path.join(__dirname, "public", "adminShowtime.html"));
 });
+
 
 
 app.listen(port, () => {

@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const userDiv = document.getElementById("user");
 
         fetch(API + "auth/refresh", {
-            method: "GET",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("refresh_token")}`
             }
@@ -22,7 +21,11 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 localStorage.setItem("access_token", data.access_token);
 
-                userDiv.innerHTML = `<a href="/settings">User Settings</a>`;
+                userDiv.innerHTML = `
+                    <a href="/settings">User Settings</a>
+                    <a href="/" onclick="localStorage.clear()">Logout</a>
+                `;
+
                 checkAdmin();
             })
             .catch(error => {
@@ -34,8 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function checkAdmin() {
-        fetch(API + "auth/admin_status", {
-            method: "GET",
+        fetch(API + "auth/adminStatus", {
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }

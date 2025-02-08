@@ -25,6 +25,8 @@ movie_model = admin_ns.model(
 
 base_movie_marshal = admin_ns.inherit("movie_details", movie_model, {"id": fields.Integer(required=True)})
 
+extended_movie_marshal = admin_ns.inherit("movie_details_extended", base_movie_marshal, {"revenue": fields.Float(required=True)})
+
 
 showtime_model = admin_ns.model(
     "showtime", {
@@ -47,15 +49,14 @@ extended_showtime_marshal = admin_ns.inherit(
 
 
 extended_movie_showtimes_marshal = admin_ns.inherit(
-    "movie_showtimes_details_extended", base_movie_marshal, {
-        "revenue": fields.Float(required=True),
+    "movie_showtimes_details_extended", extended_movie_marshal, {
         "showtimes": fields.Nested(extended_showtime_marshal, required=True)
     }
 )
 
 extended_movie_showtime_marshal = admin_ns.inherit(
     "movie_showtime_details_extended", extended_showtime_marshal, {
-        "movie": fields.Nested(base_movie_marshal, required=True, attribute="movies")
+        "movie": fields.Nested(extended_movie_marshal, required=True, attribute="movies")
     }
 )
 
@@ -96,7 +97,7 @@ def admin_required(f):
 @admin_ns.route("/movies")
 class AdminMovies(Resource):
     @admin_required
-    @admin_ns.marshal_list_with(base_movie_marshal)
+    @admin_ns.marshal_list_with(extended_movie_marshal)
     def get(self): # Filter Genre
         movies: list[Movies] = Movies.query.all()
         return movies, 200

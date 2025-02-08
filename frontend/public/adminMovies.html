@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieSiteName | Admin | Movies</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        MovieSiteName
+    </header>
+
+    <nav>
+        <div id="links">
+            <a href="/movies">Movies</a>
+            <a href="/showtimes">Showtimes</a>
+        </div>
+        <div id="user">
+        </div>
+    </nav>
+
+    <main>
+        <h1>Movies</h1>
+        <button onclick="openModal()">Create Movie</button>
+
+        <dialog id="modal">
+            <h2>Create New Movie</h2>
+            <input type="text" id="title" placeholder="Enter movie title..." />
+            <input type="text" id="genre" placeholder="Enter movie genre..." />
+            <input type="textarea" id="description" placeholder="Enter movie description..." />
+            <input type="text" id="image" placeholder="Enter url to movie poster..." />
+            <input type="number" id="length" min=1 default=1 placeholder="Enter movie minute length..." />
+            <button onclick="cancelModal()">Cancel</button>
+            <button onclick="createMovie()">Create</button>
+        </dialog>
+
+        <div id="movieList">
+        </div>
+    </main>
+
+    <script type="module" src="../static/user.js"></script>
+    <script type="module" src="../static/adminMovies.js"></script>
+</body>
+
+</html>

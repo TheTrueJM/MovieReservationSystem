@@ -109,8 +109,8 @@ class AuthTokenRefresh(Resource):
         return {"access_token": new_access_token}, 200
     
 
-@auth_ns.route("/admin_status")
-class AuthTokenRefresh(Resource):
+@auth_ns.route("/adminStatus")
+class AuthAdminStatus(Resource):
     @jwt_required()
     @auth_ns.marshal_with(admin_marshal)
     def get(self):

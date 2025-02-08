@@ -4,9 +4,13 @@ document.addEventListener("DOMContentLoaded", function() {
     fetchMovies();
 
     function fetchMovies() {
-        fetch(API + "movies")
+        fetch(API + "admin/movies", {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+            }
+        })
             .then(response => response.json())
-            .then(movies => displayMovies(movies))
+            .then(data => displayMovies(data))
             .catch(error => {});
     }
 
@@ -17,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
         movies.forEach(movie => {
             const movieDiv = document.createElement("a");
             movieDiv.classList.add("card");
-            movieDiv.href = `${SITE}movie/${movie.id}`;
+            movieDiv.href = `${SITE}admin/movie/${movie.id}`;
 
             movieDiv.innerHTML = `
                 <img src="${movie.image_url}" alt="${movie.title} image">
@@ -28,3 +32,24 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+
+const modal = document.getElementById("modal")
+
+window.openModal=openModal;
+window.cancelModal=cancelModal;
+
+function openModal() {
+    modal.showModal() 
+}
+
+function cancelModal() {
+    modal.close() 
+}
+
+
+window.createMovie=createMovie;
+
+function createMovie() {
+
+}
