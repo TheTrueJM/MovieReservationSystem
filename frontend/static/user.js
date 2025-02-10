@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem("access_token", data.access_token);
 
                 userDiv.innerHTML = `
-                    <a href="/settings">User Settings</a>
+                    <a href="/user">User Options</a>
                     <a href="/" onclick="localStorage.clear()">Logout</a>
                 `;
 

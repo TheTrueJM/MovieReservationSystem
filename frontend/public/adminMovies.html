@@ -27,6 +27,9 @@
         <h1>Movies</h1>
         <button onclick="openModal()">Create Movie</button>
 
+        <div id="movieList">
+        </div>
+
         <dialog id="modal">
             <h2>Create New Movie</h2>
             <input type="text" id="title" placeholder="Enter movie title..." />
@@ -37,9 +40,6 @@
             <button onclick="cancelModal()">Cancel</button>
             <button onclick="createMovie()">Create</button>
         </dialog>
-
-        <div id="movieList">
-        </div>
     </main>
 
     <script type="module" src="../static/user.js"></script>

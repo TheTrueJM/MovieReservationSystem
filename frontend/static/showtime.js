@@ -1,9 +1,9 @@
 import { API } from "./api.js";
 
-let selectedSeats = [];
-let customerSeats = {};
-
 document.addEventListener("DOMContentLoaded", function() {
+    let selectedSeats = [];
+    let customerSeats = {};
+
     fetchMovieShowtime();
 
     function fetchMovieShowtime() {
@@ -12,11 +12,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         fetch(API + "movies/showtimes/" + id)
             .then(response => response.json())
-            .then(data => {
-                const {showtime, seat_prices} = data
+            .then(showtime => {
                 displayMovie(showtime.movie);
                 displayShowtime(showtime);
-                displayReservation(showtime, seat_prices);
+                displayReservation(showtime);
             })
             .catch(error => console.error("Error fetching data:", error));
     }
@@ -42,11 +41,17 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
     }
 
-    function displayReservation(showtime, seat_prices) {
+    function displayReservation(showtime) {
         const showtimeReservation = document.getElementById("showtimeReservation");
 
         displayShowtimeSeats(showtime, showtimeReservation);
-        displaySeatPrices(seat_prices, showtimeReservation)
+        fetch(API + "movies/seatPricing?theatre=" + showtime.theatre)
+            .then(response => response.json())
+            .then(seat_prices => {
+                displaySeatPrices(seat_prices, showtimeReservation)
+            })
+            .catch(error => console.error("Error fetching data:", error));
+
 
         const reservationButton = document.createElement("button");
         reservationButton.textContent = "Create Reservation";

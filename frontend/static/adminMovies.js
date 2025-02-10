@@ -34,22 +34,54 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-const modal = document.getElementById("modal")
+const modal = document.getElementById("modal");
 
 window.openModal=openModal;
 window.cancelModal=cancelModal;
 
 function openModal() {
-    modal.showModal() 
+    modal.showModal();
 }
 
 function cancelModal() {
-    modal.close() 
+    modal.close();
 }
 
 
 window.createMovie=createMovie;
 
 function createMovie() {
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const genre = document.getElementById("genre").value;
+    const image = document.getElementById("image").value;
+    const length = parseInt(document.getElementById("length").value);
 
+    // Validate Variables
+
+    fetch(API + "admin/movies", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "title": title,
+            "description": description,
+            "genre": genre,
+            "image_url": image,
+            "length": length
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(error => { throw new Error(error.message); });
+            }
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {});
 }

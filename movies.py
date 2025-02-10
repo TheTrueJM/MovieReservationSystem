@@ -4,7 +4,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import date
 
-from models import Users, Movies, ShowTimes, Reservations, Seats, SeatPrices
+from models import Users, Movies, ShowTimes, Reservations, Seats, SeatPrices, TheatreTypes
 from api_model_fields import DateField, TimeField
 
 
@@ -59,20 +59,6 @@ showtime_reservations_marshal = movies_ns.inherit(
     }
 )
 
-seat_price_marshal = movies_ns.model(
-    "seat_price_details", {
-        "customer": fields.String(required=True),
-        "price": fields.Float(required=True)
-    }
-)
-
-showtime_reservation_marshal = movies_ns.model(
-    "showtime_reservation_details", {
-        "showtime": fields.Nested(showtime_reservations_marshal, required=True),
-        "seat_prices": fields.Nested(seat_price_marshal, required=True)
-    }
-)
-
 reservation_model = movies_ns.model(
     "reservation", {
         "seats": fields.List(fields.Integer, required=True),
@@ -91,6 +77,21 @@ reservation_marshal = movies_ns.model(
             "customer": fields.String(required=True),
             "cost": fields.Float(required=True)
         }, required=True)
+    }
+)
+
+
+theatre_marshal = movies_ns.model(
+    "theatre_details", {
+        "theatre": fields.String(required=True),
+    }
+)
+
+seat_price_marshal = movies_ns.model(
+    "seat_price_details", {
+        "theatre": fields.String(required=True),
+        "customer": fields.String(required=True),
+        "price": fields.Float(required=True)
     }
 )
 
@@ -136,11 +137,10 @@ class MovieShowTimes(Resource):
 
 @movies_ns.route("/showtimes/<int:show_id>")
 class MovieReservation(Resource):
-    @movies_ns.marshal_with(showtime_reservation_marshal)
+    @movies_ns.marshal_with(showtime_reservations_marshal)
     def get(self, show_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
-        seat_prices: SeatPrices = SeatPrices.query.filter_by(theatre=showtime.theatre).all()
-        return {"showtime": showtime, "seat_prices": seat_prices}, 200
+        return showtime, 200
 
     @login_required
     @movies_ns.expect(reservation_model, validate=True)
@@ -177,3 +177,25 @@ class MovieReservation(Resource):
             new_seat.save()
 
         return new_reservation, 201
+    
+
+
+@movies_ns.route("/theatres")
+class TheatresResource(Resource):
+    @movies_ns.marshal_list_with(theatre_marshal)
+    def get(self):
+        theatres: list[TheatreTypes] = TheatreTypes.query.all()
+        return theatres, 200
+
+
+
+@movies_ns.route("/seatPricing")
+class SeatPricingResource(Resource):
+    @movies_ns.marshal_list_with(seat_price_marshal)
+    def get(self):
+        theatre: str = request.args.get("theatre")
+        if theatre:
+            seat_prices: list[SeatPrices] = SeatPrices.query.filter_by(theatre=theatre).all()
+        else:
+            seat_prices: list[SeatPrices] = SeatPrices.query.all()
+        return seat_prices, 200

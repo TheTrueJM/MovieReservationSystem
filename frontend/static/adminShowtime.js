@@ -1,8 +1,5 @@
 import { API } from "./api.js";
 
-let selectedSeats = [];
-let customerSeats = {};
-
 document.addEventListener("DOMContentLoaded", function () {
     fetchMovieShowtime();
 
@@ -73,3 +70,20 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 });
+
+
+window.deleteShowtime=deleteShowtime;
+
+function deleteShowtime() {
+    const url = window.location.pathname;
+    const id = url.split('/').pop();
+
+    fetch(API + "admin/showtimes/" + id, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+    })
+        .then(response => console.log(response))
+        .catch(error => console.error("Error fetching data:", error));
+}

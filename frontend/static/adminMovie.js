@@ -66,3 +66,77 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+
+const modal = document.getElementById("modal");
+
+window.openModal=openModal;
+window.cancelModal=cancelModal;
+
+function openModal() {
+    modal.showModal();
+}
+
+function cancelModal() {
+    modal.close();
+}
+
+
+window.createShowtime=createShowtime;
+
+function createShowtime() {
+    const url = window.location.pathname;
+    const id = parseInt(url.split("/").pop());
+
+    const date = document.getElementById("date").value;
+    const timeStart = document.getElementById("startTime").value + ":00";
+    const timeEnd = document.getElementById("endTime").value + ":00";
+    const seatsTotal = parseInt(document.getElementById("totalSeats").value);
+    const theatre = document.getElementById("theatre").value;
+
+    // // Validate Variables
+
+    fetch(API + "admin/showtimes", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "movie_id": id,
+            "date": date,
+            "time_start": timeStart,
+            "time_end": timeEnd,
+            "seats_total": seatsTotal,
+            "theatre": theatre
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(error => { throw new Error(error.message); });
+            }
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {});
+}
+
+
+window.deleteMovie=deleteMovie;
+
+function deleteMovie() {
+    const url = window.location.pathname;
+    const id = url.split('/').pop();
+
+    fetch(API + "admin/movies/" + id, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+    })
+        .then(response => console.log(response))
+        .catch(error => console.error("Error fetching data:", error));
+}

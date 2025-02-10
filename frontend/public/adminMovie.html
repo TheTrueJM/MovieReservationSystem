@@ -26,9 +26,24 @@
     <main id="flexContent">
         <div id="movieDetails">
         </div>
+        
         <div id="movieAside">
             <h1>Showtimes</h1>
+            <button onclick="openModal()">Create Showtime</button>
+            <button onclick="deleteMovie()">Delete Movie</button>
         </div>
+
+        <dialog id="modal">
+            <h2>Create New Showtime</h2>
+            <input type="date" id="date" />
+            <input type="time" id="startTime" />
+            <input type="time" id="endTime" />
+            <input type="number" id="totalSeats" min=1 default=1 placeholder="Enter total theatre seats..." />
+            <input type="text" id="theatre" placeholder="Enter theatre type..." /> <!-- Selector -->
+
+            <button onclick="cancelModal()">Cancel</button>
+            <button onclick="createShowtime()">Create</button>
+        </dialog>
     </main>
 
     <script type="module" src="../../static/user.js"></script>

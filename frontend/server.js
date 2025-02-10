@@ -21,8 +21,12 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-app.get("/settings", (req, res) => {
+app.get("/user", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "userSettings.html"));
+});
+
+app.get("/user/reservations/:id", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "reservation.html"));
 });
 
 
