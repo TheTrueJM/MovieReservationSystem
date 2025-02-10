@@ -71,6 +71,16 @@ movie_showtime_marshal = user_ns.inherit(
     }
 )
 
+showtime_reservations_marshal = user_ns.inherit(
+    "showtime_reservations_details", movie_showtime_marshal, {
+        "reservations": fields.Nested({
+            "seats": fields.Nested({
+                "seat_no": fields.Integer(required=True)
+            }, required=True)
+        }, required=True)
+    }
+)
+
 
 reservation_model = user_ns.model(
     "reservation", {
@@ -94,9 +104,15 @@ reservation_marshal = user_ns.model(
 )
 
 
+user_reservations_marshal = user_ns.inherit( ### Rename it
+    "user_reservations_details", reservation_marshal, {
+        "showtime": fields.Nested(movie_showtime_marshal, required=True, attribute="showtimes")
+    }
+)
+
 user_reservation_marshal = user_ns.inherit( ### Rename it
     "user_reservation_details", reservation_marshal, {
-        "showtime": fields.Nested(movie_showtime_marshal, required=True, attribute="showtimes")
+        "showtime": fields.Nested(showtime_reservations_marshal, required=True, attribute="showtimes")
     }
 )
 
@@ -162,7 +178,7 @@ class UserPasswordResource(Resource):
 @user_ns.route("/reservations")
 class UserReservations(Resource):
     @login_required
-    @user_ns.marshal_list_with(user_reservation_marshal)
+    @user_ns.marshal_list_with(user_reservations_marshal)
     def get(self, user: Users): # Filter Date + Time, Theatre
         reservations: list[Reservations] = Reservations.query.filter_by(user_id=user.id).all()
         return reservations, 200
