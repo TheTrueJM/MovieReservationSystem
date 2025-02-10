@@ -38,7 +38,7 @@ class Movies(db.Model):
     image_url = db.Column(db.String, nullable=False) # URL
     length = db.Column(db.Integer, nullable=False) # Integer Minutes, Min Value?
     revenue = db.Column(db.Float, nullable=False, default=0.0)
-    showtimes = db.relationship("ShowTimes", backref="movies") # cascade
+    showtimes = db.relationship("ShowTimes", backref="movies", cascade="all, delete") # cascade
 
     def save(self):
         db.session.add(self)

@@ -4,7 +4,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime, date, time
 
-from models import Users, Movies, ShowTimes, TheatreTypes
+from models import Users, Movies, ShowTimes, Reservations, TheatreTypes
 from inital_data import ADMIN_ROLE
 from api_model_fields import DateField, TimeField
 
@@ -159,6 +159,12 @@ class AdminMovie(Resource):
     @admin_required
     def delete(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
+
+        for showtime in movie.showtimes:
+            reservations: list[Reservations] = Reservations.query.filter_by(show_id=showtime.id).first()
+            if reservations:
+                abort(400, "Cannot remove movie that has showtime reservations")
+
         movie.delete()
         return {}, 204
 
@@ -218,5 +224,9 @@ class AdminShowTime(Resource):
     @admin_required
     def delete(self, id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)
+
+        if showtime.reservations:
+            abort(400, "Cannot remove showtime that has reservations")
+
         showtime.delete()
         return {}, 204
