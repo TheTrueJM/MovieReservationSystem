@@ -129,7 +129,7 @@ def login_required(f):
 
 
 
-@user_ns.route("/update_username")
+@user_ns.route("/updateUsername")
 class UsernameResource(Resource):
     @login_required
     @user_ns.expect(username_model, validate=True)
@@ -154,7 +154,7 @@ class UsernameResource(Resource):
         }, 200
 
 
-@user_ns.route("/update_password")
+@user_ns.route("/updatePassword")
 class UserPasswordResource(Resource):
     @login_required
     @user_ns.expect(password_model, validate=True)

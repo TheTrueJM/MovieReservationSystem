@@ -38,7 +38,7 @@ class Movies(db.Model):
     image_url = db.Column(db.String, nullable=False) # URL
     length = db.Column(db.Integer, nullable=False) # Integer Minutes, Min Value?
     revenue = db.Column(db.Float, nullable=False, default=0.0)
-    showtimes = db.relationship("ShowTimes", backref="movies", cascade="all, delete") # cascade
+    showtimes = db.relationship("ShowTimes", backref="movies", cascade="all, delete")
 
     def save(self):
         db.session.add(self)
@@ -125,7 +125,7 @@ class Reservations(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(Users.id), nullable=False)
     show_id = db.Column(db.Integer, db.ForeignKey(ShowTimes.id), nullable=False)
     cost = db.Column(db.Float, nullable=False, default=0.0)
-    seats = db.relationship("Seats", backref="reservations", cascade="all, delete") # cascade
+    seats = db.relationship("Seats", backref="reservations", cascade="all, delete")
 
     def save(self):
         db.session.add(self)

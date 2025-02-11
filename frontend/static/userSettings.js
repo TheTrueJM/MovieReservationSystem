@@ -46,3 +46,67 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+
+window.updateUsername=updateUsername;
+
+function updateUsername() {
+    const username = document.getElementById("username").value;
+
+    fetch(API + "user/updateUsername", {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "username": username
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(error => { throw new Error(error.message); });
+            }
+        })
+        .then(data => {
+            localStorage.setItem("access_token", data.access_token);
+            localStorage.setItem("refresh_token", data.refresh_token);
+        })
+        .catch(error => {});
+}
+
+
+window.updatePassword=updatePassword;
+
+function updatePassword() {
+    const currentPassword = document.getElementById("currentPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const confirm = document.getElementById("confirm").value;
+
+    if (newPassword == confirm) {
+        fetch(API + "user/updatePassword", {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "current_password": currentPassword,
+                "new_password": newPassword
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(error => { throw new Error(error.message); });
+                }
+            })
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => {});
+    }
+}

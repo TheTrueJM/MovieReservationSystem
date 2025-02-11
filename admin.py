@@ -149,6 +149,9 @@ class AdminMovie(Resource):
         if not title or not genre or not image_url:
             abort(400, "Feedback on missing values")
 
+        if movie.showtimes and length != movie.length:
+            abort(400, "Cannot change length of movie with showtimes")
+
         if length < 1:
             abort(400, "Movie length must be at least 1 minute")
 
