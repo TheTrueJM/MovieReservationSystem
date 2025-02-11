@@ -16,17 +16,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
         showtimes.forEach(showtime => {
             const showtimeDiv = document.createElement("a");
-            showtimeDiv.classList.add("card");
+            showtimeDiv.classList.add("card", "flex");
             showtimeDiv.href = `${SITE}showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
                 <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details">
-                    <div class="title">${showtime.movie.title}</div>
-                    <div class="time">${showtime.date} | ${showtime.time_start}</div>
-                    <div class="theatreDetails">
-                        <p>${showtime.theatre.toUpperCase()}</p>
-                        <p>${showtime.seats_available} Seats Available</p>
+                <div class="details flexCol textCenter">
+                    <div class="textBold fontLarge">${showtime.movie.title}</div>
+                    <div class="textBolder fontTitle">${showtime.date} | ${showtime.time_start}</div>
+                    <div class="theatreDetails flex fontRegular">
+                        <div>${showtime.theatre.toUpperCase()}</div>
+                        <div>${showtime.seats_available} Seats Available</div>
                     </div>
                 </div>
             `;

@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         movies.forEach(movie => {
             const movieDiv = document.createElement("a");
-            movieDiv.classList.add("card");
+            movieDiv.classList.add("card", "flexCol");
             movieDiv.href = `${SITE}admin/movie/${movie.id}`;
 
             movieDiv.innerHTML = `
                 <img src="${movie.image_url}" alt="${movie.title} image">
-                <div class="title">${movie.title}</div>
+                <div class="title  textCenter textBold">${movie.title}</div>
             `;
 
             movieList.appendChild(movieDiv);

@@ -22,15 +22,17 @@ document.addEventListener("DOMContentLoaded", function() {
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
-            <div>${movie.title}</div>
-            <div>${movie.genre}</div>
-            <div>${movie.length} minutes</div>
-            <div>${movie.description}</div>
+            <div class="textCenter textBold fontTitle">${movie.title}</div>
+            <div class="details flex fontLarge">
+                <div>${movie.length} Minutes</div>
+                <div class="textBold">${movie.genre}</div>
+            </div>
+            <div class="description">${movie.description}</div>
         `;
     }
 
     function displayShowtimes(showtimes) {
-        const movieAside = document.getElementById("movieAside");
+        const movieAside = document.getElementById("movieMain");
 
         let current_date; let showtimeList;
         showtimes.forEach(showtime => { // LIST ORDERING -> Dates
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 movieAside.innerHTML += `<h2>${showtime.date}</h2>`;
 
                 showtimeList = document.createElement("div");
+                showtimeList.classList.add("flex", "flexWrap")
                 showtimeList.id = "showtimeList";
                 movieAside.appendChild(showtimeList);
             }

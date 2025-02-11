@@ -1,4 +1,4 @@
-import { API } from "./api.js";
+import { API, SITE } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     let selectedSeats = [];
@@ -26,15 +26,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayMovie(movie) {
-        document.title += " " + movie.title + " | Showtime Reservation";
+        document.title += " " + movie.title;
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
-            <div>${movie.title}</div>
-            <div>${movie.genre}</div>
-            <div>${movie.length} minutes</div>
-            <div>${movie.description}</div>
+            <a href="${SITE}movie/${movie.id}" class="title textCenter textBold fontTitle">${movie.title}</a>
+            <div class="details flex fontLarge">
+                <div>${movie.length} Minutes</div>
+                <div class="textBold">${movie.genre}</div>
+            </div>
+            <div class="description">${movie.description}</div>
         `;
     }
 
