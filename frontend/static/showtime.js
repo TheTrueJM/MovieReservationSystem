@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <a href="${SITE}movie/${movie.id}" class="title textCenter textBold fontTitle">${movie.title}</a>
-            <div class="details flex fontLarge">
+            <div class="details flex contentSpaced fontLarge">
                 <div>${movie.length} Minutes</div>
                 <div class="textBold">${movie.genre}</div>
             </div>
@@ -53,8 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 displaySeatPrices(seat_prices, showtimeReservation)
             })
             .catch(error => console.error("Error fetching data:", error));
-
-
+        
         const reservationButton = document.createElement("button");
         reservationButton.textContent = "Create Reservation";
 
@@ -102,16 +101,25 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
+        const seatSelection = document.createElement("div");
+        seatSelection.id = "seatSelection";
+        seatSelection.classList.add("flexCol")
+        showtimeReservation.appendChild(seatSelection);
+
+        seatSelection.innerHTML = `<div class="title textCenter textBold fontSubtitle">Showtime Theatre Seats</div>`
+
         const seatSelector = document.createElement("div");
-        seatSelector.id = "selection";
-        showtimeReservation.appendChild(seatSelector);
+        seatSelector.id = "seatSelector";
+        seatSelector.classList.add("flex")
+        seatSelection.appendChild(seatSelector);
 
         for (let i = 1; i <= showtime.seats_total; i++) {
             const seatOption = document.createElement("button");
+            seatOption.classList.add("textBold", "fontSmall")
             seatOption.textContent = i;
 
             if (reservedSeats.includes(i)) {
-                seatOption.disabled = true;
+                seatOption.classList.add("disabled")
             } else {
                 seatOption.addEventListener("click", function() {
                     const optionValue = parseInt(this.textContent);
@@ -139,14 +147,16 @@ document.addEventListener("DOMContentLoaded", function() {
             customerSeats[seat_price.customer] = 0;
 
             const seatPrice = document.createElement("div");
-            seatPrice.classList.add("seatPrice");
+            seatPrice.classList.add("seatPrice", "flex", "contentSpaced", "fontLarge");
 
             seatPrice.innerHTML = `
-                <div>${seat_price.customer}</div>
-                <div>$${seat_price.price}</div>
-                <div class="numberInput">
+                <div class="details flex">
+                    <div class="customer textBold">${seat_price.customer[0].toUpperCase() + seat_price.customer.slice(1)}</div>
+                    <div class="price">$${seat_price.price}</div>
+                </div>
+                <div class="numberInput flex textBolder">
                     <button class="decrease">-</button>
-                    <div class="count">0</div>
+                    <div class="count textCenter">0</div>
                     <button class="increase">+</button>
                 </div>
             `;

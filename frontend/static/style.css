@@ -2,6 +2,7 @@
 *, *::before, *:after {box-sizing: border-box;}
 
 
+
 body {
     width: 100vw;
     height: 100vh;
@@ -12,6 +13,46 @@ body {
 }
 
 
+
+.flex {
+    display: flex;
+    flex-flow: row;
+}
+
+.flexCol {
+    display: flex;
+    flex-flow: column;
+}
+
+.contentList {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.contentCentered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.contentSpaced {justify-content: space-between;}
+
+.textCenter {text-align: center;}
+
+.textBold {font-weight: bold;}
+.textBolder {font-weight: bolder;}
+
+.fontTitle {font-size: 1.75rem;}
+.fontSubtitle {font-size: 1.5rem;}
+.fontLarge {font-size: 1.375rem;}
+.fontRegular {font-size: 1.25rem;}
+.fontSmall {font-size: 1.125rem;}
+
+
+
 header {
     background-color: hsl(0, 0%, 10%);
     color: hsl(0, 0%, 95%);
@@ -20,6 +61,7 @@ header {
     font-weight: bold;
     text-align: center;
 }
+
 
 
 nav {
@@ -64,10 +106,35 @@ nav {
 }
 
 
+
 main {
     flex: 1;
 }
 
+
+.centerCard {
+    width: 40%;
+    padding: 5rem 3.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
+    background-color: hsla(0, 0%, 0%, 25%);
+}
+
+
+.card {
+    overflow: hidden;
+    margin: 1rem;
+    border: 0.125rem solid hsla(0, 0%, 0%, 30%);
+    border-radius: 0.5rem;
+    box-shadow: 2px 2px 12px hsla(0, 0%, 0%, 25%);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.25s ease;
+}
+
+.card:hover {
+    transform: scale(1.025);
+}
 
 
 #movieList .card {
@@ -88,6 +155,22 @@ main {
 }
 
 
+#showtimeList .card {
+    width: 27.5rem;
+    height: 10rem;
+    background-color: hsl(0, 0%, 92.5%);
+}
+
+#showtimeList .card img {
+    height: 100%;
+    border-right: 0.125rem solid hsla(0, 0%, 0%, 30%);
+}
+
+#showtimeList .details {
+    width: 100%;
+    padding: 0.5rem 0.25rem;
+}
+
 
 #movieDetails {
     width: 30rem;
@@ -95,7 +178,7 @@ main {
     padding: 0.75rem;
     align-items: center;
     border-radius: 1rem;
-    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
+    box-shadow: 2px 2px 12px 4px hsla(0, 0%, 0%, 25%);
     background-color: hsla(0, 0%, 15%);
     color: hsl(0, 0%, 95%);
 }
@@ -118,36 +201,11 @@ main {
 #movieDetails .details {
     width: 100%;
     padding: 0.5rem 2rem 1rem;
-    justify-content: space-between;
 }
 
 #movieDetails .description {
     text-align: justify;
 }
-
-
-
-#showtimes #showtimeList .card {
-    width: 27.5rem;
-    height: 10rem;
-    background-color: hsl(0, 0%, 92.5%);
-}
-
-#showtimes #showtimeList .card img {
-    height: 100%;
-    border-right: 0.125rem solid hsla(0, 0%, 0%, 30%);
-}
-
-#showtimes #showtimeList .details {
-    width: 100%;
-    justify-content: space-between;
-    padding: 0.5rem 0.25rem;
-}
-
-#showtimes #showtimeList .theatreDetails {
-    justify-content: space-between;
-}
-
 
 
 #movieMain {
@@ -156,133 +214,171 @@ main {
 }
 
 
-
-/* #showtimeList {
-    display: flex;
+/* Make it be a slider? */
+#movieMain .showtimeList {
     flex-wrap: wrap;
-} */
-
-/* IMPROVE */
-#movieMain #showtimeList .card {
-    width: 20rem;
-    display: flex;
-    flex-flow: column;
-    margin: 1rem;
-    padding: 0.25rem;
-    background-color: hsl(0, 0%, 92.5%);
-    color: inherit;
-    font-size: 1.25rem;
-    border: 0.125rem solid hsl(0, 0%, 10%, 50%);
-    border-radius: 0.5rem;
-    text-decoration: none;
 }
 
-#movieMain #showtimeList .details {
-    display: flex;
-    justify-content: space-between;
+#movieMain .showtimeList .card {
+    width: 21rem;
+    padding: 0.25rem;
+    background-color: hsla(0, 0%, 100%, 75%);
+}
+
+#movieMain .showtimeList .details {
     margin-bottom: 0.25rem;
 }
 
-#movieMain #showtimeList .card .time {
+#movieMain .showtimeList .card .time {
     padding: 0.25rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    align-content: center;
 }
 
-#movieMain #showtimeList .revenue {
+#movieMain .showtimeList .revenue {
     margin-top: 0.25rem;
-    font-size: 1.375rem;
-    text-align: center;
 }
 
 
+#showtimeReservation #seatSelection {
+    margin: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    background: hsla(0, 0%, 0%, 20%);
+}
 
-#centerContent {
-    display: flex;
+#showtimeReservation #seatSelection .title {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+#showtimeReservation #seatSelector {
     justify-content: center;
-    align-items: center;
-}
-
-#centerCard {
-    display: flex;
-    flex-flow: column;
-    width: 40%;
-    height:fit-content;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
-    background-color: hsla(0, 0%, 0%, 25%);
-    text-align: center;
-}
-
-#centerCard input {
-    margin: 0.5rem 0rem;
-    padding: 0.5rem;
-}
-
-#centerCard button {
-    padding: 0.5rem;
-}
-
-#showtimeReservation #selection {
-    width: 100%;
-    display: flex;
     flex-wrap: wrap;
-    background: white;
 }
 
-#showtimeReservation #selection button {
+#showtimeReservation #seatSelector button {
     width: 3.75rem;
     height: 3.75rem;
-    align-content: center;
     margin: 0.25rem;
-    background-color: rgb(122, 122, 211);
-    color: black;
-    font-weight: bold;
-    text-align: center;
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 2px 1px 2px hsla(0, 0%, 0%, 25%);
+    background-color: hsl(215, 57.5%, 55%);
+    color: hsl(0, 0%, 15%);
+    cursor: pointer;
+    transition: background-color 0.25s ease;
 }
 
-#showtimeReservation #selection button:disabled {
-    background-color: rgb(235, 106, 106);
+#showtimeReservation #seatSelector button:hover {
+    background-color: hsl(215, 57.5%, 45%);
 }
 
-#showtimeReservation #selection .selected {
-    background-color: rgb(106, 235, 106);
+#showtimeReservation #seatSelector button:active {
+    box-shadow: 4px 2px 4px hsla(0, 0%, 0%, 25%);
+    background-color: hsl(215, 57.5%, 35%);
 }
 
+#showtimeReservation #seatSelector .disabled, #showtimeReservation #seatSelector .disabled:hover {
+    box-shadow: 2px 1px 2px hsla(0, 0%, 0%, 10%);
+    background-color: hsl(0, 55%, 57.25%);
+    cursor: default;
+}
+
+#showtimeReservation #seatSelector .selected {
+    background-color: hsl(125, 55%, 57.25%);
+}
+
+#showtimeReservation #seatSelector .selected:hover {
+    background-color: hsl(125, 55%, 47.25%);
+}
+
+#showtimeReservation #seatSelector .selected:active {
+    background-color: hsl(125, 55%, 37.25%);
+}
+
+
+#showtimeReservation #seatPrices {
+    margin: 1rem;
+    border: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
 
 #showtimeReservation #seatPrices .seatPrice {
-    display: flex;
-    justify-content: space-between;
+    border-top: 0.125rem solid hsla(0, 0%, 0%, 75%);
+}
+
+#showtimeReservation #seatPrices .seatPrice:first-child {
+    border-top: none;
+}
+
+#showtimeReservation #seatPrices .seatPrice:nth-child(odd) {
+    background: hsla(0, 0%, 0%, 30%);
+}
+
+#showtimeReservation #seatPrices .seatPrice:nth-child(even) {
+    background: hsla(0, 0%, 0%, 15%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .details .customer {
+    padding: 0.5rem;
+    width: 12.5rem;
+}
+
+#showtimeReservation #seatPrices .seatPrice .details .price {
+    padding: 0.5rem;
+    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput {
-    display: flex;
+    background-color: hsla(0, 0%, 0%, 40%);
 }
 
-
-
-#reservationList{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+#showtimeReservation #seatPrices .seatPrice .numberInput .count {
+    width: 5rem;
+    padding: 0.5rem;
+    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    border-right: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    background-color: hsla(0, 0%, 100%, 65%);
 }
+
+#showtimeReservation #seatPrices .seatPrice .numberInput button {
+    width: 3.75rem;
+    border: none;
+    font-size: inherit;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .decrease {
+    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    background-color: hsla(0, 80%, 65%, 50%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .decrease:hover {
+    background-color: hsla(0, 80%, 55%, 50%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .decrease:active {
+    background-color: hsla(0, 80%, 45%, 50%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .increase {
+    background-color: hsla(125, 85%, 70%, 50%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .increase:hover {
+    background-color: hsla(125, 85%, 60%, 50%);
+}
+
+#showtimeReservation #seatPrices .seatPrice .numberInput .increase:active {
+    background-color: hsla(125, 85%, 50%, 50%);
+}
+
 
 #reservationList .card {
     width: 27.5rem;
     height: 10rem;
-    display: flex;
-    overflow: hidden;
-    margin: 1rem;
     background-color: hsl(0, 0%, 92.5%);
-    color: inherit;
-    font-size: 1.25rem;
-    border: 0.125rem solid hsl(0, 0%, 10%, 50%);
-    border-radius: 0.5rem;
-    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
-    text-decoration: none;
 }
 
 #reservationList .card img {
@@ -292,98 +388,44 @@ main {
 
 #reservationList .details {
     width: 100%;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-between;
     padding: 0.5rem 0.25rem;
 }
 
-#reservationList .card .title {
-    width: 100%;
-    font-size: 1.375rem;
-    font-weight: bold;
-    text-align: center;
+
+#authCard .title {
+    margin-bottom: 2.5rem;
 }
 
-#reservationList .card .time {
-    padding: 0.25rem;
-    font-size: 1.75rem;
-    font-weight: bolder;
-    text-align: center;
-}
-
-#reservationList .theatreDetails {
-    display: flex;
-    justify-content: space-between;
-}
-
-#reservationList .card .cost {
-    text-align: center;
-}
-
-
-
-.flex {
-    display: flex;
-    flex-flow: row;
-}
-
-.flexCol {
-    display: flex;
-    flex-flow: column;
-}
-
-.flexWrap {flex-wrap: wrap;}
-
-.contentList {
-    display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-
-.card {
-    overflow: hidden;
-    margin: 1rem;
-    border: 0.125rem solid hsla(0, 0%, 0%, 30%);
+#authCard input {
+    margin: 0.75rem 0rem;
+    padding: 0.375rem;
+    border: 0.375rem solid hsla(125, 65%, 35%, 0.45);
     border-radius: 0.5rem;
-    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
-    color: inherit;
-    text-decoration: none;
-    transition: transform 0.25s ease;
+    background-color: hsla(0, 0%, 100%, 95%);
 }
 
-.card:hover {
-    transform: scale(1.025);
+#authCard input:placeholder-shown {
+    border: 0.375rem solid hsla(0, 0%, 0%, 50%);
+    background-color: hsla(0, 0%, 100%, 75%);
 }
 
-.textCenter {text-align: center;}
+#authCard button {
+    margin-top: 1.75rem;
+    padding: 0.5rem;
+    border: 0.25rem solid hsla(0, 0%, 0%, 80%);
+    border-radius: 0.5rem;
+    background-color: hsla(0, 0%, 100%, 75%);
+    cursor: pointer;
+}
 
-.textBold {font-weight: bold;}
-.textBolder {font-weight: bolder;}
+#authCard button:hover {
+    background-color: hsla(0, 0%, 100%, 50%);
+}
 
-.fontTitle {font-size: 1.75rem;}
-.fontSubtitle {font-size: 1.5rem;}
-.fontLarge {font-size: 1.375rem;}
-.fontRegular {font-size: 1.25rem;}
-.fontSmall {font-size: 1.125rem;}
 
 
 
 /*
-
-header {width: 100%; height: 75px; display: flex; flex-wrap: flex;}
-.container {width: 100%; height: calc(100% - 75px); display: flex; flex-wrap: flex;}
-.auth_container {width: 100%; height: 100%; display: flex; flex-wrap: flex; justify-content: center; align-items: center;}
-
-
-.title {width: 85%; display: flex; align-items: center; background-color: #1b1b1b; padding: 10px;}
-.account {width: 15%; display: flex; background-color: #000000; padding: 10px; flex-direction: column; flex-wrap: wrap; justify-content: space-around;}
-.room_list {width: 15%; height: 100%; display: flex; flex-direction: column; background-color: #222222; padding: 5px; justify-content: space-between;}
-.content {width: 75%; height: 100%; display: flex; flex-wrap: flex; flex-direction: column; justify-content: space-between; padding: 15px 5%;}
-.member_list {width: 10%; height: 100%; display: flex; background-color: #222222; padding: 10px; flex-direction: column;}
-.authenticate {width: 40%; height:fit-content; display: flex; background-color: #222222; padding: 20px; flex-direction: column;}
 
 ul {width: 100%; font-size: 18px;}
 li {padding: 5px; margin: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 5px;}
@@ -404,29 +446,5 @@ li:hover {background-color: #FFFFFF40;}
 .message {padding: 10px; margin: 15px 5px 15px 0px; border-radius: 10px;}
 .message:hover {background-color: #00000030;}
 
-.user_msg_info {font-size: 18px; font-weight: bold; margin-bottom: 5px;}
-.timestamp {color: #888787; font-size: 15px; font-weight: normal; display: inline;}
-.remove_msg {float: right; margin-right: 10px;}
-.remove_msg input {background-color: #d61a1a; color: #dbe1e2; height: 100%; padding: 2.5px; border: none; border-radius: 5px;}
-.remove_msg input:hover {background-color: #d61a1a99;}
-
-.send_message {background-color: #424242; width: 100%; display: flex; justify-content: space-between; align-content: center; margin: 20px 0px; border-radius: 10px;}
-.text_input {background: none; width: 100%; color: #dbe1e2; font-size: 16px; border: none; outline: none; padding: 10px; margin-right: 25px;}
-.file_input {color: transparent; width: 165px; padding: 5px 0px 5px 5px;}
-.file_input::-webkit-file-upload-button {background-color: #FFFFFF99; width: 125px; height: 100%; padding: 5px; border: 0px; border-radius: 5px}
-.file_input::-webkit-file-upload-button:hover {background-color: #02aef199;}
-.sumbit_message {background-color: #FFFFFF99; font-size: 14px; font-weight: bold; border: 0px; padding: 10px; border-radius: 0px 10px 10px 0px;}
-.sumbit_message:hover {background-color: #16ec6f99;}
-
-
-.authenticate h1 {text-align: center; text-decoration: underline; padding-bottom: 5px;}
-
-
-.invalid {color: red;}
-.success {color: green;}
-.update {color: blue;}
-
-.primary {color: #16ec6f;}
-.secondary {color: #02aef1;}
 
 */

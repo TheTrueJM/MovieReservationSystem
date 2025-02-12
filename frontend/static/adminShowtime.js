@@ -28,9 +28,12 @@ document.addEventListener("DOMContentLoaded", function () {
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold fontTitle">${movie.title}</a>
-            <div class="details flex fontLarge">
-                <div>${movie.length} Minutes</div>
-                <div class="textBold">${movie.genre}</div>
+            <div class="details textCenter fontLarge">
+                <div class="flex contentSpaced">
+                    <div>${movie.length} Minutes</div>
+                    <div class="textBold">${movie.genre}</div>
+                </div>
+                <div>Revenue: $${movie.revenue}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
@@ -55,17 +58,26 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
+
+        const seatSelection = document.createElement("div");
+        seatSelection.id = "seatSelection";
+        seatSelection.classList.add("flexCol")
+        showtimeReservation.appendChild(seatSelection);
+
+        seatSelection.innerHTML = `<div class="title textCenter textBold fontSubtitle">Showtime Theatre Seats</div>`
+
         const seatSelector = document.createElement("div");
-        seatSelector.id = "selection";
-        showtimeReservation.appendChild(seatSelector);
+        seatSelector.id = "seatSelector";
+        seatSelector.classList.add("flex")
+        seatSelection.appendChild(seatSelector);
 
         for (let i = 1; i <= showtime.seats_total; i++) {
             const seatOption = document.createElement("button");
             seatOption.textContent = i;
 
             if (reservedSeats.includes(i)) {
-                seatOption.disabled = true;
-            } // Do something for regular buttons
+                seatOption.classList.add("disabled");
+            }
 
             seatSelector.appendChild(seatOption);
         };

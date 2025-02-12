@@ -26,11 +26,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
             showtimeDiv.innerHTML = `
                 <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details flexCol textCenter">
-                    <div class="textBold fontLarge">${showtime.movie.title}</div>
+                <div class="details flexCol contentSpaced textCenter fontRegular">
+                    <div class="textBold">${showtime.movie.title}</div>
                     <div class="textBolder fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
-                    <div class="fontRegular">
-                        <div class="theatreDetails flex">
+                    <div>
+                        <div class="flex contentSpaced">
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</div>
                         </div>

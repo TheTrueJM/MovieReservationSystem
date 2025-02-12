@@ -24,12 +24,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.title += " " + movie.title;
 
         const movieDetails = document.getElementById("movieDetails");
+        console.log(movie)
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <div class="textCenter textBold fontTitle">${movie.title}</div>
-            <div class="details flex fontLarge">
-                <div>${movie.length} Minutes</div>
-                <div class="textBold">${movie.genre}</div>
+            <div class="details textCenter fontLarge">
+                <div class="flex contentSpaced">
+                    <div>${movie.length} Minutes</div>
+                    <div class="textBold">${movie.genre}</div>
+                </div>
+                <div>Revenue: $${movie.revenue}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
@@ -46,22 +50,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 movieAside.innerHTML += `<h2>${showtime.date}</h2>`;
 
                 showtimeList = document.createElement("div");
-                showtimeList.classList.add("flex", "flexWrap")
-                showtimeList.id = "showtimeList";
+                showtimeList.classList.add("showtimeList", "flex")
                 movieAside.appendChild(showtimeList);
             }
 
             const showtimeDiv = document.createElement("a");
-            showtimeDiv.classList.add("card");
+            showtimeDiv.classList.add("card", "flexCol", "fontRegular");
             showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
-                <div class="details">
+                <div class="details flex contentSpaced">
                     <p>${showtime.theatre.toUpperCase()}</p>
                     <p>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</p>
                 </div>
-                <div class="time">${showtime.date} | ${showtime.time_start}</div>
-                <div class="revenue">Current Revenue: $${showtime.revenue}</div>
+                <div class="time textCenter textBold fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
+                <div class="revenue textCenter">Current Revenue: $${showtime.revenue}</div>
             `; // Current vs Total Revenue for Showtime Dates
 
             showtimeList.appendChild(showtimeDiv);

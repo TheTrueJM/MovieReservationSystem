@@ -21,23 +21,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
         reservations.forEach(reservation => {
             const reservationDiv = document.createElement("a");
-            reservationDiv.classList.add("card");
+            reservationDiv.classList.add("card", "flex");
             reservationDiv.href = `${SITE}user/reservations/${reservation.id}`;
 
             const showtime = reservation.showtime;
             const movie = showtime.movie;
 
             reservationDiv.innerHTML = `
-                <img src="${movie.image_url}" alt="${movie.title} image">
-                <div class="details">
-                    <div class="title">${movie.title}</div>
-                    <div class="time">${showtime.date} | ${showtime.time_start}</div>
+                <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
+                <div class="details flexCol contentSpaced textCenter fontRegular">
+                    <div class="textBold">${showtime.movie.title}</div>
+                    <div class="textBolder fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
                     <div>
-                        <div class="theatreDetails">
-                            <p>${showtime.theatre.toUpperCase()}</p>
-                            <p>${reservation.seats.length} Seats Reserved</p>
+                        <div class="flex contentSpaced">
+                            <div>${showtime.theatre.toUpperCase()}</div>
+                            <div>${reservation.seats.length} Seats Reserved</div>
                         </div>
-                        <div class="cost">Reservation Cost: $${reservation.cost}</div>
+                        <div>Reservation Cost: $${reservation.cost}</div>
                     </div>
                 </div>
             `;
