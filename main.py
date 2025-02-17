@@ -13,23 +13,22 @@ from movies import movies_ns
 
 
 def create_app(config):
-    app = Flask(__name__, template_folder="frontend/templates", static_folder="frontend/static")
+    app = Flask(__name__)
     app.config.from_object(config)
 
     CORS(app)
+    JWTManager(app)
 
     db.init_app(app)
     with app.app_context():
         db.create_all()
         initialise_data()
 
-    JWTManager(app)
-
     api = Api(app, doc="/docs", format_checker=FormatChecker()) ### Disable?
 
     api.add_namespace(auth_ns)
+    api.add_namespace(movies_ns)
     api.add_namespace(admin_ns)
     api.add_namespace(user_ns)
-    api.add_namespace(movies_ns)
 
     return app

@@ -8,7 +8,7 @@ from inital_data import DEFAULT_USER_ROLE, ADMIN_ROLE
 
 
 
-auth_ns = Namespace("auth", description="A namespace for Authorisation")
+auth_ns = Namespace("auth", description="A namespace for User Authorisation")
 
 
 signup_model = auth_ns.model(
@@ -58,7 +58,7 @@ class AuthSignUp(Resource):
         password: str = data.get("password")
         
         if not username or not password:
-            abort(400, "Feedback on missing values")
+            abort(400, "Username and Password must be supplied")
 
         if Users.query.filter_by(username=username).first():
             abort(401, f"User '{username}' already exists")
@@ -66,10 +66,10 @@ class AuthSignUp(Resource):
         new_user: Users = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
         new_user.save()
 
-        access_token = create_access_token(identity=new_user.username) ### expires_delta
+        access_token = create_access_token(identity=new_user.username)
         refresh_token = create_refresh_token(identity=new_user.username)
         return {
-            "message": "Login successful",
+            "message": "User sign up successful",
             "access_token": access_token, "refresh_token": refresh_token
         }, 201
 
@@ -84,19 +84,19 @@ class AuthLogin(Resource):
         password: str = data.get("password")
 
         if not username or not password:
-            abort(400, "Feedback on missing values")
+            abort(400, "Username and Password must be supplied")
 
         db_user: Users | None = Users.query.filter_by(username=username).first()
 
         if isinstance(db_user, Users) and check_password_hash(db_user.password, password):
-            access_token = create_access_token(identity=db_user.username) ### expires_delta
+            access_token = create_access_token(identity=db_user.username)
             refresh_token = create_refresh_token(identity=db_user.username)
             return {
-                "message": "Login successful",
+                "message": "User login successful",
                 "access_token": access_token, "refresh_token": refresh_token
             }, 200
         else:
-            abort(401, "Invalid username or password")
+            abort(401, "Incorrect Username or Password supplied")
 
 
 @auth_ns.route("/refresh")

@@ -2,7 +2,7 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, abort
 from functools import wraps
-from datetime import datetime, date, time
+from datetime import datetime, timedelta, date, time
 
 from models import Users, Movies, ShowTimes, Reservations, TheatreTypes
 from inital_data import ADMIN_ROLE
@@ -33,7 +33,6 @@ showtime_model = admin_ns.model(
         "movie_id": fields.Integer(required=True),
         "date": DateField(required=True),
         "time_start": TimeField(required=True),
-        "time_end": TimeField(required=True),
         "seats_total": fields.Integer(required=True),
         "theatre": fields.String(required=True)
     }
@@ -42,6 +41,7 @@ showtime_model = admin_ns.model(
 extended_showtime_marshal = admin_ns.inherit(
     "showtime_details_extended", showtime_model, {
         "id": fields.Integer(required=True),
+        "time_end": TimeField(required=True),
         "seats_available": fields.Integer(required=True),
         "revenue": fields.Float(required=True)
     }
@@ -61,18 +61,26 @@ extended_movie_showtime_marshal = admin_ns.inherit(
 )
 
 
+seat_marshal = admin_ns.model(
+    "seat_details", {
+        "seat_no": fields.Integer(required=True),
+        "customer": fields.String(required=True),
+        "cost": fields.Float(required=True)
+    }
+)
+
+base_reservation_marshal = admin_ns.model(
+    "reservation_details", {
+        "id": fields.Integer(required=True),
+        "user_id": fields.Integer(required=True),
+        "cost": fields.Float(required=True),
+        "seats": fields.Nested(seat_marshal, required=True)
+    }
+)
+
 extended_showtime_reservations_marshal = admin_ns.inherit(
     "showtime_reservations_details_extended", extended_movie_showtime_marshal, {
-        "reservations": fields.Nested({
-            "id": fields.Integer(required=True),
-            "user_id": fields.Integer(required=True),
-            "cost": fields.Float(required=True),
-            "seats": fields.Nested({
-                "seat_no": fields.Integer(required=True),
-                "customer": fields.String(required=True),
-                "cost": fields.Float(required=True)
-            }, required=True)
-        }, required=True)
+    "reservations": fields.Nested(base_reservation_marshal, required=True)
     }
 )
 
@@ -87,7 +95,7 @@ def admin_required(f):
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
 
         if current_user.role != ADMIN_ROLE:
-            abort(404, "Page doesn't exist") ###
+            abort(404, "Requested page not found") ###
         
         return f(*args, **kwargs)
     return decorated
@@ -114,7 +122,7 @@ class AdminMovies(Resource):
         length: int = data.get("length")
 
         if not title or not genre or not image_url:
-            abort(400, "Feedback on missing values")
+            abort(400, "Required movie values must be supplied")
 
         if length < 1:
             abort(400, "Movie length must be at least 1 minute")
@@ -131,6 +139,7 @@ class AdminMovie(Resource):
     @admin_ns.marshal_with(extended_movie_showtimes_marshal)
     def get(self, id: int):
         movie: Movies = Movies.query.get_or_404(id)
+        movie.showtimes.sort(key = lambda showtime: showtime.date)
         return movie, 200
 
     @admin_required
@@ -147,10 +156,10 @@ class AdminMovie(Resource):
         length: int = data.get("length")
 
         if not title or not genre or not image_url:
-            abort(400, "Feedback on missing values")
+            abort(400, "Required movie values must be supplied")
 
         if movie.showtimes and length != movie.length:
-            abort(400, "Cannot change length of movie with showtimes")
+            abort(400, "Cannot change length of movie with scheduled showtimes")
 
         if length < 1:
             abort(400, "Movie length must be at least 1 minute")
@@ -164,9 +173,8 @@ class AdminMovie(Resource):
         movie: Movies = Movies.query.get_or_404(id)
 
         for showtime in movie.showtimes:
-            reservations: list[Reservations] = Reservations.query.filter_by(show_id=showtime.id).first()
-            if reservations:
-                abort(400, "Cannot remove movie that has showtime reservations")
+            if showtime.reservations:
+                abort(400, "Cannot remove movie that has a scheduled showtime with reservations")
 
         movie.delete()
         return {}, 204
@@ -178,7 +186,7 @@ class AdminShowTimes(Resource):
     @admin_required
     @admin_ns.marshal_list_with(extended_movie_showtime_marshal)
     def get(self): # Filter Date + Time, Theatre
-        showtimes: list[ShowTimes] = ShowTimes.query.all()
+        showtimes: list[ShowTimes] = ShowTimes.query.order_by(ShowTimes.date.desc(), ShowTimes.time_start).all()
         return showtimes, 200
 
     @admin_required
@@ -190,27 +198,27 @@ class AdminShowTimes(Resource):
         movie_id: int = data.get("movie_id")
         movie: Movies | None = Movies.query.get(movie_id)
         if not movie:
-            abort(400, "Feedback on movie doesn't exist")
+            abort(400, "Invalid movie ID supplied")
 
         theatre: str = data.get("theatre")
         if not TheatreTypes.query.get(theatre):
-            abort(400, "Feedback on theatre type doesn't exist")
+            abort(400, "Invalid theatre type supplied")
 
-        date_: date = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
+        _date: date = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
+        if _date < date.today():
+            abort(400, "Showtime date cannot be scheduled before the current date")
+
         time_start: time = datetime.strptime(data.get("time_start"), "%H:%M:%S").time()
-        time_end: time = datetime.strptime(data.get("time_end"), "%H:%M:%S").time()
-        seats: int = data.get("seats_total")
 
-        if date_ < date.today():
-            abort(400, "Feedback on invalid date before today")
+        datetime_end: datetime = datetime.combine(_date, time_start) + timedelta(minutes=movie.length)
+        if datetime_end.date() != _date:
+            abort(400, "Showtime must start and end on the same day. The movie's length is too long to start at the supplied time")
         
-        if time_end <= time_start: # end of the day
-            abort(400, "Feedback on invalid time range")
-        
+        seats: int = data.get("seats_total")
         if seats < 1:
             abort(400, "Seating capacity must be at least 1")
 
-        new_showtime = ShowTimes(movie_id=movie_id, date=date_, time_start=time_start, time_end=time_end, seats_total=seats, seats_available=seats, theatre=theatre)
+        new_showtime = ShowTimes(movie_id=movie_id, date=_date, time_start=time_start, time_end=datetime_end.time(), seats_total=seats, seats_available=seats, theatre=theatre)
         new_showtime.save()
 
         return new_showtime, 201

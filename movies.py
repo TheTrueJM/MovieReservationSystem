@@ -49,13 +49,21 @@ movie_showtime_marshal = movies_ns.inherit(
 )
 
 
+showtime_reservation_seat_marshal = movies_ns.model(
+    "showtime_reservation_seat_details", {
+        "seat_no": fields.Integer(required=True)
+    }
+)
+
+showtime_reservation_seats_marshal = movies_ns.model(
+    "showtime_reservation_seats_details", {
+        "seats": fields.Nested(showtime_reservation_seat_marshal, required=True)
+    }
+)
+
 showtime_reservations_marshal = movies_ns.inherit(
     "showtime_reservations_details", movie_showtime_marshal, {
-        "reservations": fields.Nested({
-            "seats": fields.Nested({
-                "seat_no": fields.Integer(required=True)
-            }, required=True)
-        }, required=True)
+        "reservations": fields.Nested(showtime_reservation_seats_marshal, required=True)
     }
 )
 
@@ -66,17 +74,22 @@ reservation_model = movies_ns.model(
     }
 )
 
-reservation_marshal = movies_ns.model(
-    "reservation_details", {
+
+seat_marshal = movies_ns.model(
+    "seat_details", {
+        "seat_no": fields.Integer(required=True),
+        "customer": fields.String(required=True),
+        "cost": fields.Float(required=True)
+    }
+)
+
+extended_reservation_marshal = movies_ns.model(
+    "reservation_details_extended", {
         "id": fields.Integer(required=True),
         "user_id": fields.Integer(required=True),
         "show_id": fields.Integer(required=True),
         "cost": fields.Float(required=True),
-        "seats": fields.Nested({
-            "seat_no": fields.Integer(required=True),
-            "customer": fields.String(required=True),
-            "cost": fields.Float(required=True)
-        }, required=True)
+        "seats": fields.Nested(seat_marshal, required=True)
     }
 )
 
@@ -122,6 +135,8 @@ class MovieResource(Resource):
     @movies_ns.marshal_with(movie_showtimes_marshal)
     def get(self, id):
         movie: Movies = Movies.query.get_or_404(id)
+        movie.showtimes.sort(key = lambda showtime: showtime.date)
+        movie.showtimes = [showtime for showtime in movie.showtimes if date.today() <= showtime.date]
         return movie, 200
 
 
@@ -130,7 +145,7 @@ class MovieResource(Resource):
 class MovieShowTimes(Resource):
     @movies_ns.marshal_list_with(movie_showtime_marshal)
     def get(self): # Filter Date + Time, Theatre
-        showtimes: list[ShowTimes] = ShowTimes.query.filter(date.today() <= ShowTimes.date).all()
+        showtimes: list[ShowTimes] = ShowTimes.query.filter(date.today() <= ShowTimes.date).order_by(ShowTimes.date, ShowTimes.time_start).all()
         return showtimes, 200
 
 
@@ -144,7 +159,7 @@ class MovieReservation(Resource):
 
     @login_required
     @movies_ns.expect(reservation_model, validate=True)
-    @movies_ns.marshal_with(reservation_marshal)
+    @movies_ns.marshal_with(extended_reservation_marshal)
     def post(self, user_id: int, show_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
 
@@ -153,19 +168,19 @@ class MovieReservation(Resource):
         customers: list = data["customers"]
 
         if len(seats) != len(customers):
-            abort(400, "Feedback on seats reserved to customers mismatch")
+            abort(400, "Invalid amount of seats reserved for supplied amount of customers")
 
         if not seats:
-            abort(400, "Feedback on at least 1 seat must be reserved")
+            abort(400, "Reservation must reserve at least 1 seat")
 
         for seat_no in seats:
             if seat_no < 1 or showtime.seats_total < seat_no:
-                abort(400, "Feedback on invalid seat selected")
+                abort(400, "An invalid seat was supplied")
             if Seats.query.join(Reservations).filter(Seats.seat_no==seat_no, Reservations.show_id==showtime.id).first():
-                abort(400, "Feedback on seat already reserved")
+                abort(400, "A supplied seat has already been reserved")
 
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
-            abort(400, "Feedback on invalid customer selected")
+            abort(400, "An invalid customer type was supplied")
 
         # Database Transaction
 
@@ -173,8 +188,8 @@ class MovieReservation(Resource):
         new_reservation.save()
 
         for seat_no, customer in zip(seats, customers):
-            new_seat = Seats(reservation_id=new_reservation.id, seat_no=seat_no, customer=customer)
-            new_seat.save()
+            seat = Seats(reservation_id=new_reservation.id, seat_no=seat_no, customer=customer)
+            seat.save()
 
         return new_reservation, 201
     
@@ -193,7 +208,7 @@ class TheatresResource(Resource):
 class SeatPricingResource(Resource):
     @movies_ns.marshal_list_with(seat_price_marshal)
     def get(self):
-        theatre: str = request.args.get("theatre")
+        theatre: str | None = request.args.get("theatre")
         if theatre:
             seat_prices: list[SeatPrices] = SeatPrices.query.filter_by(theatre=theatre).all()
         else:

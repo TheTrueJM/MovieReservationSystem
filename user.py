@@ -5,7 +5,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import date
 
-from models import * ###
+from models import Users, ShowTimes, Reservations, Seats, SeatPrices
 from api_model_fields import DateField, TimeField
 
 
@@ -71,13 +71,21 @@ movie_showtime_marshal = user_ns.inherit(
     }
 )
 
+showtime_reservation_seat_marshal = user_ns.model(
+    "showtime_reservation_seat_details", {
+        "seat_no": fields.Integer(required=True)
+    }
+)
+
+showtime_reservation_seats_marshal = user_ns.model(
+    "showtime_reservation_seats_details", {
+        "seats": fields.Nested(showtime_reservation_seat_marshal, required=True)
+    }
+)
+
 showtime_reservations_marshal = user_ns.inherit(
     "showtime_reservations_details", movie_showtime_marshal, {
-        "reservations": fields.Nested({
-            "seats": fields.Nested({
-                "seat_no": fields.Integer(required=True)
-            }, required=True)
-        }, required=True)
+        "reservations": fields.Nested(showtime_reservation_seats_marshal, required=True)
     }
 )
 
@@ -89,29 +97,34 @@ reservation_model = user_ns.model(
     }
 )
 
-reservation_marshal = user_ns.model(
-    "reservation_details", {
+
+seat_marshal = user_ns.model(
+    "seat_details", {
+        "seat_no": fields.Integer(required=True),
+        "customer": fields.String(required=True),
+        "cost": fields.Float(required=True)
+    }
+)
+
+extended_reservation_marshal = user_ns.model(
+    "reservation_details_extended", {
         "id": fields.Integer(required=True),
         "user_id": fields.Integer(required=True),
         "show_id": fields.Integer(required=True),
         "cost": fields.Float(required=True),
-        "seats": fields.Nested({
-            "seat_no": fields.Integer(required=True),
-            "customer": fields.String(required=True),
-            "cost": fields.Float(required=True)
-        }, required=True)
+        "seats": fields.Nested(seat_marshal, required=True)
     }
 )
 
 
-user_reservations_marshal = user_ns.inherit( ### Rename it
-    "user_reservations_details", reservation_marshal, {
+user_reservations_marshal = user_ns.inherit(
+    "user_reservations_details", extended_reservation_marshal, {
         "showtime": fields.Nested(movie_showtime_marshal, required=True, attribute="showtimes")
     }
 )
 
-user_reservation_marshal = user_ns.inherit( ### Rename it
-    "user_reservation_details", reservation_marshal, {
+user_reservation_marshal = user_ns.inherit(
+    "user_reservation_details", extended_reservation_marshal, {
         "showtime": fields.Nested(showtime_reservations_marshal, required=True, attribute="showtimes")
     }
 )
@@ -139,14 +152,14 @@ class UsernameResource(Resource):
         username: str = data.get("username")
         
         if not username:
-            abort(400, "Feedback on missing values")
+            abort(400, "Username must be supplied")
 
         if Users.query.filter_by(username=username).first():
             abort(401, f"User '{username}' already exists")
 
         user.update(username=username, password=user.password)
 
-        access_token = create_access_token(identity=username) ### expires_delta
+        access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
         return {
             "message": f"Username successfully updated to '{username}'",
@@ -165,10 +178,10 @@ class UserPasswordResource(Resource):
         new_password: str = data.get("new_password")
         
         if not new_password:
-            abort(400, "Feedback on missing values")
+            abort(400, "Password must be supplied")
 
         if not check_password_hash(user.password, current_password):
-            abort(401, f"Current password is incorrect")
+            abort(401, f"Incorrect current password supplied")
 
         user.update(username=user.username, password=generate_password_hash(new_password))
         return {"message": "Password successfully updated"}, 200
@@ -207,16 +220,19 @@ class UserReservation(Resource):
         customers: list = data["customers"]
 
         if len(seats) != len(customers):
-            abort(400, "Feedback on seats reserved to customers mismatch")
+            abort(400, "Invalid amount of seats reserved for supplied amount of customers")
+
+        if not seats:
+            abort(400, "Reservation must reserve at least 1 seat")
 
         for seat_no in seats:
             if seat_no < 1 or showtime.seats_total < seat_no:
-                abort(400, "Feedback on invalid seat selected")
+                abort(400, "An invalid seat was supplied")
             if Seats.query.join(Reservations).filter(Reservations.id!=reservation_id, Seats.seat_no==seat_no, Reservations.show_id==showtime.id).first():
-                abort(400, "Feedback on seat already reserved")
+                abort(400, "A supplied seat has already been reserved")
 
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
-            abort(400, "Feedback on invalid customer selected")
+            abort(400, "An invalid customer type was supplied")
 
         # Database Transaction
 
@@ -231,7 +247,7 @@ class UserReservation(Resource):
         return reservation, 200
 
     @login_required
-    def delete(self, user: Users, reservation_id: int):
+    def delete(self, user: Users, reservation_id: int): ## Delete Upcoming
         reservation: Reservations = self.get_reservation_or_404(reservation_id, user.id)
         reservation.delete()
         return {}, 204
