@@ -2,14 +2,45 @@
 *, *::before, *:after {box-sizing: border-box;}
 
 
+:root {
+    --font-header: 2.75rem;
+    --font-nav: 1.5rem;
+    --font-page-title: 2.5rem;
+
+    --font-title: 1.75rem;
+    --font-subtitle: 1.5rem;
+    --font-large: 1.375rem;
+    --font-regular: 1.25rem;
+    --font-small: 1.125rem;
+
+    --bg-header: hsl(0, 0%, 10%);
+    --bg-main: hsl(0, 0%, 85%);
+    --bg-alternate: hsl(0, 0%, 15%);
+
+    --fc-main: hsl(0, 0%, 15%);
+    --fc-alternate: hsl(0, 0%, 95%);
+
+    --border-small-light: 0.125rem solid hsla(0, 0%, 0%, 30%);
+    --border-small-heavy: 0.125rem solid hsla(0, 0%, 0%, 70%);
+    --border-medium-heavy: 0.25rem solid hsla(0, 0%, 0%, 80%);
+
+    --border-radius-largest: 1rem;
+    --border-radius-large: 0.75rem;
+    --border-radius-regular: 0.5rem;
+    --border-radius-small: 0.25rem;
+
+    --transition-effect: all 0.25s ease;
+}
+
+
 
 body {
     width: 100vw;
     height: 100vh;
     display: flex;
     flex-flow: column;
-    background-color: hsl(0, 0%, 85%);
-    color: hsl(0, 0%, 15%);
+    background-color: var(--bg-main);
+    color: var(--fc-main);
 }
 
 
@@ -54,10 +85,10 @@ body {
 
 
 header {
-    background-color: hsl(0, 0%, 10%);
-    color: hsl(0, 0%, 95%);
+    background-color: var(--bg-header);
+    color: var(--fc-alternate);
     padding: 0.5rem;
-    font-size: 2.75rem;
+    font-size: var(--font-header);
     font-weight: bold;
     text-align: center;
 }
@@ -68,9 +99,9 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: hsl(0, 0%, 15%);
-    color: hsl(0, 0%, 95%);
-    font-size: 1.5rem;
+    background-color: var(--bg-alternate);
+    color: var(--fc-alternate);
+    font-size: var(--font-nav);
 }
 
 #links, #user {
@@ -81,7 +112,7 @@ nav {
     padding: 0.75rem 1.75rem;
     color: inherit;
     text-decoration: none;
-    transition: background-color 0.25s ease;
+    transition: var(--transition-effect);
 }
 
 #links a:hover {
@@ -91,18 +122,19 @@ nav {
 #user a {
     margin: 0.5rem 0.5rem;
     padding: 0.125rem 0.75rem;
-    border: 0.125rem solid hsl(0, 0%, 95%);
+    border: var(--border-small-light);
+    border-color: var(--fc-alternate);
     border-radius: 0.5rem;
-    background-color: hsl(0, 0%, 95%);
-    color: hsl(0, 0%, 15%);
+    background-color: var(--fc-alternate);
+    color: var(--fc-main);
     text-decoration: none;
     font-weight: bold;
-    transition: background-color 0.25s ease;
+    transition: var(--transition-effect);
 }
 
 #user a:hover {
-    background-color: inherit;
-    color: inherit;
+    background-color: var(--fc-main);
+    color: var(--fc-alternate);
 }
 
 
@@ -112,10 +144,17 @@ main {
 }
 
 
+#pageTitle {
+    margin: 1rem;
+    font-size: var(--font-page-title);
+    text-decoration: underline;
+}
+
+
 .centerCard {
     width: 40%;
     padding: 5rem 3.75rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-regular);
     box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
     background-color: hsla(0, 0%, 0%, 25%);
 }
@@ -124,12 +163,13 @@ main {
 .card {
     overflow: hidden;
     margin: 1rem;
-    border: 0.125rem solid hsla(0, 0%, 0%, 30%);
-    border-radius: 0.5rem;
+    border: var(--border-small-light);
+    border-radius: var(--border-radius-regular);
     box-shadow: 2px 2px 12px hsla(0, 0%, 0%, 25%);
     color: inherit;
+    font-size: var(--font-regular);
     text-decoration: none;
-    transition: transform 0.25s ease;
+    transition: var(--transition-effect);
 }
 
 .card:hover {
@@ -138,49 +178,72 @@ main {
 
 
 #movieList .card {
-    width: 15rem;
-    height: 27rem;
+    width: min(250px, 80%);
     background-color: hsla(0, 0%, 0%, 7.5%);
 }
 
 #movieList .card img {
     width: 100%;
-    border-bottom: 0.125rem solid hsla(0, 0%, 0%, 30%);
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-bottom: var(--border-small-light);
 }
 
 #movieList .card .title {
-    height: 100%;
+    min-height: 3.75rem; height: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; line-clamp: 3;
+    overflow: hidden;
     padding: 0.25rem;
     align-content: center;
+    font-size: var(--font-small);
+    font-weight: bold;
+    text-overflow: ellipsis;
 }
 
 
 #showtimeList .card {
-    width: 27.5rem;
+    width: min(27.5rem, 80%);
     height: 10rem;
     background-color: hsl(0, 0%, 92.5%);
 }
 
 #showtimeList .card img {
     height: 100%;
-    border-right: 0.125rem solid hsla(0, 0%, 0%, 30%);
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-right: var(--light-border);
 }
 
 #showtimeList .details {
     width: 100%;
     padding: 0.5rem 0.25rem;
+    font-size: var(--font-regular);
+}
+
+#showtimeList .details .title {
+    font-size: var(--font-large);
+}
+
+#showtimeList .details .time {
+    font-size: var(--font-title);
+}
+
+#showtimeList .details .adminTime {
+    font-size: var(--font-subtitle);
 }
 
 
 #movieDetails {
-    width: 30rem;
+    width: calc(max(375px, 25%) - 1.5rem);
     margin: 0.75rem 1.25rem;
     padding: 0.75rem;
     align-items: center;
-    border-radius: 1rem;
+    border-radius: var(--border-radius-largest);
     box-shadow: 2px 2px 12px 4px hsla(0, 0%, 0%, 25%);
-    background-color: hsla(0, 0%, 15%);
-    color: hsl(0, 0%, 95%);
+    background-color: var(--bg-alternate);
+    color: var(--fc-alternate);
 }
 
 #movieDetails img {
@@ -190,6 +253,7 @@ main {
 
 #movieDetails .title {
     color: inherit;
+    font-size: var(--font-title);
     text-decoration: none;
 }
 
@@ -201,6 +265,7 @@ main {
 #movieDetails .details {
     width: 100%;
     padding: 0.5rem 2rem 1rem;
+    font-size: var(--font-large);
 }
 
 #movieDetails .description {
@@ -209,19 +274,26 @@ main {
 
 
 #movieMain {
-    flex: 1;
+    width: calc(min(75%, calc(100% - 375px)) - 1rem);
     padding: 0.5rem
 }
 
+#movieMain .date {
+    font-size: var(--font-title);
+}
 
-/* Make it be a slider? */
 #movieMain .showtimeList {
-    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
 }
 
 #movieMain .showtimeList .card {
+    flex-shrink: 0;
     width: 21rem;
+    margin: 0.75rem;
     padding: 0.25rem;
+    scroll-snap-align: center;
     background-color: hsla(0, 0%, 100%, 75%);
 }
 
@@ -230,6 +302,7 @@ main {
 }
 
 #movieMain .showtimeList .card .time {
+    font-size: var(--font-subtitle);
     padding: 0.25rem;
 }
 
@@ -241,13 +314,15 @@ main {
 #showtimeReservation #seatSelection {
     margin: 1rem;
     padding: 0.5rem;
-    border-radius: 0.75rem;
+    border: var(--border-small-light);
+    border-radius: var(--border-radius-large);
     background: hsla(0, 0%, 0%, 20%);
 }
 
 #showtimeReservation #seatSelection .title {
     margin-top: 0.25rem;
     margin-bottom: 0.5rem;
+    font-size: var(--font-title);
 }
 
 #showtimeReservation #seatSelector {
@@ -256,77 +331,85 @@ main {
 }
 
 #showtimeReservation #seatSelector button {
-    width: 3.75rem;
     height: 3.75rem;
+    aspect-ratio: 1/1;
     margin: 0.25rem;
     border: none;
-    border-radius: 0.25rem;
-    box-shadow: 2px 1px 2px hsla(0, 0%, 0%, 25%);
+    border-radius: var(--border-radius-small);
+    box-shadow: 2px 2px 2px hsla(0, 0%, 0%, 25%), -1px -1px 1px hsla(0, 0%, 100%, 25%);
     background-color: hsl(215, 57.5%, 55%);
-    color: hsl(0, 0%, 15%);
+    font-size: var(--font-small);
     cursor: pointer;
-    transition: background-color 0.25s ease;
+    transition: var(--transition-effect);
 }
 
-#showtimeReservation #seatSelector button:hover {
+#showtimeReservation #seatSelector .enabled:hover {
+    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
     background-color: hsl(215, 57.5%, 45%);
 }
 
-#showtimeReservation #seatSelector button:active {
-    box-shadow: 4px 2px 4px hsla(0, 0%, 0%, 25%);
+#showtimeReservation #seatSelector .enabled:active {
+    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 50%) inset, -2px -2px 2px hsla(0, 0%, 100%, 50%) inset;
     background-color: hsl(215, 57.5%, 35%);
 }
 
-#showtimeReservation #seatSelector .disabled, #showtimeReservation #seatSelector .disabled:hover {
-    box-shadow: 2px 1px 2px hsla(0, 0%, 0%, 10%);
+#showtimeReservation #seatSelector .disabled {
+    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
     background-color: hsl(0, 55%, 57.25%);
     cursor: default;
 }
 
 #showtimeReservation #seatSelector .selected {
+    box-shadow: 2px 2px 2px hsla(0, 0%, 0%, 25%) inset, -1px -1px 1px hsla(0, 0%, 100%, 25%) inset;
     background-color: hsl(125, 55%, 57.25%);
 }
 
 #showtimeReservation #seatSelector .selected:hover {
+    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
     background-color: hsl(125, 55%, 47.25%);
 }
 
 #showtimeReservation #seatSelector .selected:active {
+    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 50%) inset, -2px -2px 2px hsla(0, 0%, 100%, 50%) inset;
     background-color: hsl(125, 55%, 37.25%);
 }
 
 
 #showtimeReservation #seatPrices {
     margin: 1rem;
-    border: 0.125rem solid hsla(0, 0%, 0%, 75%);
-    border-radius: 0.75rem;
+    border: var(--border-small-heavy);
+    border-radius: var(--border-radius-large);
     overflow: hidden;
 }
 
-#showtimeReservation #seatPrices .seatPrice {
-    border-top: 0.125rem solid hsla(0, 0%, 0%, 75%);
+#showtimeReservation #seatPrices .title {
+    padding: 0.25rem;
+    background-color: var(--bg-alternate);
+    color: var(--fc-alternate);
+    font-size: var(--font-subtitle);
 }
 
-#showtimeReservation #seatPrices .seatPrice:first-child {
-    border-top: none;
+#showtimeReservation #seatPrices .seatPrice {
+    border-top: var(--border-small-heavy);
+    font-size: var(--font-large);
 }
 
 #showtimeReservation #seatPrices .seatPrice:nth-child(odd) {
-    background: hsla(0, 0%, 0%, 30%);
+    background: hsla(0, 0%, 0%, 35%);
 }
 
 #showtimeReservation #seatPrices .seatPrice:nth-child(even) {
     background: hsla(0, 0%, 0%, 15%);
 }
 
-#showtimeReservation #seatPrices .seatPrice .details .customer {
+#showtimeReservation #seatPrices .seatPrice .customer {
     padding: 0.5rem;
     width: 12.5rem;
 }
 
-#showtimeReservation #seatPrices .seatPrice .details .price {
+#showtimeReservation #seatPrices .seatPrice .price {
     padding: 0.5rem;
-    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    border-left: var(--border-small-heavy);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput {
@@ -336,9 +419,9 @@ main {
 #showtimeReservation #seatPrices .seatPrice .numberInput .count {
     width: 5rem;
     padding: 0.5rem;
-    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
-    border-right: 0.125rem solid hsla(0, 0%, 0%, 75%);
-    background-color: hsla(0, 0%, 100%, 65%);
+    border-left: var(--border-small-heavy);
+    border-right: var(--border-small-heavy);
+    background-color: hsla(0, 0%, 100%, 60%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput button {
@@ -346,11 +429,11 @@ main {
     border: none;
     font-size: inherit;
     cursor: pointer;
-    transition: background-color 0.25s ease;
+    transition: var(--transition-effect);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .decrease {
-    border-left: 0.125rem solid hsla(0, 0%, 0%, 75%);
+    border-left: var(--border-small-heavy);
     background-color: hsla(0, 80%, 65%, 50%);
 }
 
@@ -372,6 +455,24 @@ main {
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .increase:active {
     background-color: hsla(125, 85%, 50%, 50%);
+}
+
+#showtimeReservation .reservationButton {
+    margin: 1rem;
+    padding: 0.5rem;
+    border: var(--border-medium-heavy);
+    border-radius: var(--border-radius-regular);
+    background-color: hsla(0, 0%, 100%, 75%);
+    font-size: var(--font-large);
+    cursor: pointer;
+}
+
+#showtimeReservation .reservationButton:hover {
+    background-color: hsla(0, 0%, 100%, 50%);
+}
+
+#showtimeReservation .reservationButton:active {
+    background-color: hsla(0, 0%, 100%, 10%);
 }
 
 
@@ -400,11 +501,11 @@ main {
     margin: 0.75rem 0rem;
     padding: 0.375rem;
     border: 0.375rem solid hsla(125, 65%, 35%, 0.45);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-regular);
     background-color: hsla(0, 0%, 100%, 95%);
 }
 
-#authCard input:placeholder-shown {
+#authCard input:placeholder-shown{
     border: 0.375rem solid hsla(0, 0%, 0%, 50%);
     background-color: hsla(0, 0%, 100%, 75%);
 }
@@ -420,6 +521,10 @@ main {
 
 #authCard button:hover {
     background-color: hsla(0, 0%, 100%, 50%);
+}
+
+#authCard button:active {
+    background-color: hsla(0, 0%, 100%, 10%);
 }
 
 

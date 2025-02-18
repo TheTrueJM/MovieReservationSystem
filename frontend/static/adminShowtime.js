@@ -1,4 +1,4 @@
-import { API, SITE } from "./api.js";
+import { API, SITE } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     fetchMovieShowtime();
@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function displayMovie(movie) {
-        document.title += " " + movie.title;
+        document.title += " " + movie.title + " | Showtime";
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
-            <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold fontTitle">${movie.title}</a>
-            <div class="details textCenter fontLarge">
+            <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
+            <div class="details textCenter">
                 <div class="flex contentSpaced">
                     <div>${movie.length} Minutes</div>
                     <div class="textBold">${movie.genre}</div>

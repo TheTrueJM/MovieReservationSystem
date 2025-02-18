@@ -1,4 +1,4 @@
-import { API, SITE } from "./api.js";
+import { API, SITE } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     fetchMovies();

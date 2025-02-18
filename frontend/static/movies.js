@@ -1,4 +1,4 @@
-import { API, SITE } from "./api.js";
+import { API, SITE } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     fetchMovies();
@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function displayMovies(movies) {
         const movieList = document.getElementById("movieList");
-        movieList.innerHTML = "";
 
         movies.forEach(movie => {
             const movieDiv = document.createElement("a");
@@ -21,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             movieDiv.innerHTML = `
                 <img src="${movie.image_url}" alt="${movie.title} image">
-                <div class="title textCenter textBold fontSmall">${movie.title}</div>
+                <div class="title textCenter">${movie.title}</div>
             `;
 
             movieList.appendChild(movieDiv);

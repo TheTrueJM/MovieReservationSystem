@@ -1,7 +1,7 @@
-import { API, SITE } from "./api.js";
+import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    fetchMovie(); // Edit Date and Time Displays
+    fetchMovie();
 
     function fetchMovie() {
         const url = window.location.pathname;
@@ -17,37 +17,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
             })
-            .catch(error => { });
+            .catch(error => {});
     }
 
     function displayMovie(movie) {
         document.title += " " + movie.title;
 
         const movieDetails = document.getElementById("movieDetails");
-        console.log(movie)
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
-            <div class="textCenter textBold fontTitle">${movie.title}</div>
-            <div class="details textCenter fontLarge">
+            <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
+            <div class="details textCenter">
                 <div class="flex contentSpaced">
                     <div>${movie.length} Minutes</div>
                     <div class="textBold">${movie.genre}</div>
                 </div>
-                <div>Revenue: $${movie.revenue}</div>
+                <div>Revenue: $${movie.revenue.toFixed(2)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
     }
 
-    function displayShowtimes(showtimes) {
+    function displayShowtimes(showtimes) { // Edit Date and Time Displays
         const movieAside = document.getElementById("movieMain");
 
         let current_date; let showtimeList;
-        showtimes.forEach(showtime => { // LIST ORDERING -> Dates
+        showtimes.forEach(showtime => {
             if (showtime.date != current_date) {
                 current_date = showtime.date;
 
-                movieAside.innerHTML += `<h2>${showtime.date}</h2>`;
+                movieAside.innerHTML += `<div class="date textBold">${dateDisplay(current_date)}</div>`;
 
                 showtimeList = document.createElement("div");
                 showtimeList.classList.add("showtimeList", "flex")
@@ -55,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const showtimeDiv = document.createElement("a");
-            showtimeDiv.classList.add("card", "flexCol", "fontRegular");
+            showtimeDiv.classList.add("card", "flexCol");
             showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
@@ -63,8 +62,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p>${showtime.theatre.toUpperCase()}</p>
                     <p>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</p>
                 </div>
-                <div class="time textCenter textBold fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
-                <div class="revenue textCenter">Current Revenue: $${showtime.revenue}</div>
+                <div class="time textCenter textBold">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
+                <div class="revenue textCenter">Current Revenue: $${showtime.revenue.toFixed(2)}</div>
             `; // Current vs Total Revenue for Showtime Dates
 
             showtimeList.appendChild(showtimeDiv);
@@ -95,7 +94,6 @@ function createShowtime() {
 
     const date = document.getElementById("date").value;
     const timeStart = document.getElementById("startTime").value + ":00";
-    const timeEnd = document.getElementById("endTime").value + ":00";
     const seatsTotal = parseInt(document.getElementById("totalSeats").value);
     const theatre = document.getElementById("theatre").value;
 
@@ -111,7 +109,6 @@ function createShowtime() {
             "movie_id": id,
             "date": date,
             "time_start": timeStart,
-            "time_end": timeEnd,
             "seats_total": seatsTotal,
             "theatre": theatre
         })

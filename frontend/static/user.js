@@ -1,4 +1,4 @@
-import { API } from "./api.js";
+import { API } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     checkAuth();

@@ -1,4 +1,4 @@
-import { API, SITE } from "./api.js";
+import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     fetchShowtimes();
@@ -26,15 +26,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
             showtimeDiv.innerHTML = `
                 <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details flexCol contentSpaced textCenter fontRegular">
+                <div class="details flexCol contentSpaced textCenter">
                     <div class="textBold">${showtime.movie.title}</div>
-                    <div class="textBolder fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
+                    <div class="adminTime textBolder">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
                     <div>
                         <div class="flex contentSpaced">
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</div>
                         </div>
-                        <div>Current Revenue: $${showtime.revenue}</div>
+                        <div>Current Revenue: $${showtime.revenue.toFixed(2)}</div>
                     </div>
                 </div>
             `;

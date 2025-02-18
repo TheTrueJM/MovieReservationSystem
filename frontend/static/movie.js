@@ -1,7 +1,7 @@
-import { API, SITE } from "./api.js";
+import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetchMovie(); // Edit Date and Time Displays
+document.addEventListener("DOMContentLoaded", function () {
+    fetchMovie();
 
     function fetchMovie() {
         const url = window.location.pathname;
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
             })
-            .catch(error => {});
+            .catch(error => { });
     }
 
     function displayMovie(movie) {
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
             <img src="${movie.image_url}" alt="${movie.title} image">
-            <div class="textCenter textBold fontTitle">${movie.title}</div>
-            <div class="details flex contentSpaced fontLarge">
+            <a href="${SITE}movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
+            <div class="details flex contentSpaced">
                 <div>${movie.length} Minutes</div>
                 <div class="textBold">${movie.genre}</div>
             </div>
@@ -31,31 +31,31 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
     }
 
-    function displayShowtimes(showtimes) {
-        const movieAside = document.getElementById("movieMain");
+    function displayShowtimes(showtimes) { // Edit Date and Time Displays
+        const movieMain = document.getElementById("movieMain");
 
         let current_date; let showtimeList;
-        showtimes.forEach(showtime => { // LIST ORDERING -> Dates
+        showtimes.forEach(showtime => {
             if (showtime.date != current_date) {
                 current_date = showtime.date;
 
-                movieAside.innerHTML += `<h2>${showtime.date}</h2>`;
+                movieMain.innerHTML += `<div class="date textBold">${dateDisplay(current_date)}</div>`;
 
                 showtimeList = document.createElement("div");
                 showtimeList.classList.add("showtimeList", "flex")
-                movieAside.appendChild(showtimeList);
+                movieMain.appendChild(showtimeList);
             }
 
             const showtimeDiv = document.createElement("a");
-            showtimeDiv.classList.add("card", "flexCol", "fontRegular");
+            showtimeDiv.classList.add("card", "flexCol");
             showtimeDiv.href = `${SITE}showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
                 <div class="details flex contentSpaced">
-                    <p>${showtime.theatre.toUpperCase()}</p>
-                    <p>${showtime.seats_available} Seats Available</p>
+                    <div>${showtime.theatre.toUpperCase()}</div>
+                    <div>${showtime.seats_available} Seats Available</div>
                 </div>
-                <div class="time textCenter textBold fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
+                <div class="time textCenter textBold">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
             `;
 
             showtimeList.appendChild(showtimeDiv);
