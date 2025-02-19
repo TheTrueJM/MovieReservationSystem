@@ -146,6 +146,7 @@ class Reservations(db.Model):
 
         showtime: ShowTimes = ShowTimes.query.get(self.show_id)
         showtime.update_revenue()
+        showtime.update_seat_availability()
 
 class Seats(db.Model):
     reservation_id = db.Column(db.Integer, db.ForeignKey(Reservations.id), primary_key=True)
@@ -155,14 +156,14 @@ class Seats(db.Model):
 
     def save(self):
         reservation: Reservations = Reservations.query.get(self.reservation_id)
-        show: ShowTimes = ShowTimes.query.get(reservation.show_id)
+        showtime: ShowTimes = ShowTimes.query.get(reservation.show_id)
 
-        self.cost = SeatPrices.query.get((self.customer, show.theatre)).price
+        self.cost = SeatPrices.query.get((self.customer, showtime.theatre)).price
         db.session.add(self)
         db.session.commit()
         
         reservation.update_cost()
-        show.update_seat_availability()
+        showtime.update_seat_availability()
 
     def delete(self):
         db.session.delete(self)
@@ -170,5 +171,5 @@ class Seats(db.Model):
 
         reservation: Reservations = Reservations.query.get(self.reservation_id)
         reservation.update_cost()
-        show: ShowTimes = ShowTimes.query.get(reservation.show_id)
-        show.update_seat_availability()
+        showtime: ShowTimes = ShowTimes.query.get(reservation.show_id)
+        showtime.update_seat_availability()
