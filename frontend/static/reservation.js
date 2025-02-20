@@ -54,9 +54,10 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(seat_prices => {
                 displayShowtimeSeats(reservation, showtime, showtimeReservation);
-                displaySeatPrices(reservation, seat_prices, showtime.theatre, showtimeReservation)
-                displayUpdateReservation(reservation, showtimeReservation)
-                displayCancelReservation(reservation, showtimeReservation)
+                displaySeatPrices(reservation, seat_prices, showtime.theatre, showtimeReservation);
+                displayUpdateReservation(reservation, showtimeReservation);
+                displayCancelReservation(reservation, showtimeReservation);
+                displayFeedback(showtimeReservation);
             })
             .catch(error => console.error("Error fetching data:", error));
     }
@@ -171,6 +172,8 @@ document.addEventListener("DOMContentLoaded", function() {
         updateButton.textContent = "Update Reservation";
 
         updateButton.addEventListener("click", function() {
+            const feedback = document.getElementById("feedback");
+
             let customers = [];
             for (const customer in customerSeats) {
                 for (let i = 0; i < customerSeats[customer]; i++) {
@@ -181,8 +184,8 @@ document.addEventListener("DOMContentLoaded", function() {
             fetch(API + "user/reservations/" + reservation.id, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     "seats": selectedSeats,
@@ -193,14 +196,20 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (response.ok) {
                         return response.json();
                     } else {
-                        return response.json().then(error => { throw new Error(error.message); });
+                        return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
                     }
                 })
-                .then(data => {
-                    // location.reload();
-                    console.log(data);
+                .then(reservation => {
+                    feedback.innerHTML = "Reservation Successfully Updated. Reloading...";
+                    feedback.classList.add("feedbackSuccess")
+                    feedback.classList.remove("feedbackFail")
+                    setTimeout(() => {location.reload();}, 2500);
                 })
-                .catch(error => {});
+                .catch(error => {
+                    feedback.innerHTML = error.message;
+                    feedback.classList.add("feedbackFail")
+                    feedback.classList.remove("feedbackSuccess")
+                });
         });
 
         showtimeReservation.appendChild(updateButton);
@@ -212,16 +221,38 @@ document.addEventListener("DOMContentLoaded", function() {
         cancelButton.textContent = "Cancel Reservation";
 
         cancelButton.addEventListener("click", function() {
+            const feedback = document.getElementById("feedback");
+
             fetch(API + "user/reservations/" + reservation.id, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access_token")}`
                 }
             })
-                .then(response => console.log(response))
-                .catch(error => console.error("Error fetching data:", error));
+                .then(response => {
+                    if (response.ok) {
+                        feedback.innerHTML = "Reservation Successfully Canceled. Redirecting...";
+                        feedback.classList.add("feedbackSuccess")
+                        feedback.classList.remove("feedbackFail")
+                        setTimeout(() => {window.location.href = `${SITE}`;}, 2500);
+                    } else {
+                        throw new Error("Invalid User Authorisation");
+                    }
+                })
+                .catch(error => {
+                    feedback.innerHTML = error.message;
+                    feedback.classList.add("feedbackFail")
+                    feedback.classList.remove("feedbackSuccess")
+                });
         });
 
         showtimeReservation.appendChild(cancelButton);
+    }
+
+    function displayFeedback(showtimeReservation) {
+        const feedback = document.createElement("div");
+        feedback.id = "feedback"
+        feedback.classList.add("feedback", "textBold");
+        showtimeReservation.appendChild(feedback)
     }
 });

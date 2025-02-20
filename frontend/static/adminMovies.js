@@ -55,9 +55,9 @@ function createMovie() {
     const description = document.getElementById("description").value;
     const genre = document.getElementById("genre").value;
     const image = document.getElementById("image").value;
-    const length = parseInt(document.getElementById("length").value);
+    const length = parseInt(document.getElementById("length").value) || 0;
 
-    // Validate Variables
+    const feedback = document.getElementById("feedback");
 
     fetch(API + "admin/movies", {
         method: "POST",
@@ -77,11 +77,18 @@ function createMovie() {
             if (response.ok) {
                 return response.json();
             } else {
-                return response.json().then(error => { throw new Error(error.message); });
+                return response.json().then(error => { throw new Error(error.message || "Invalid Admin User Authorisation"); });
             }
         })
-        .then(data => {
-            console.log(data);
+        .then(movie => {
+            feedback.innerHTML = "Movie Successfully Created. Redirecting...";
+            feedback.classList.add("feedbackSuccess")
+            feedback.classList.remove("feedbackFail")
+            setTimeout(() => {window.location.href = `${SITE}admin/movie/${movie.id}`;}, 2500);
         })
-        .catch(error => {});
+        .catch(error => {
+            feedback.innerHTML = error.message;
+            feedback.classList.add("feedbackFail")
+            feedback.classList.remove("feedbackSuccess")
+        });
 }

@@ -152,7 +152,10 @@ document.addEventListener("DOMContentLoaded", function() {
         reservationButton.classList.add("reservationButton")
         reservationButton.textContent = "Create Reservation";
 
-        reservationButton.addEventListener("click", function() {
+        const feedback = document.createElement("div");
+        feedback.classList.add("feedback", "textBold");
+
+        reservationButton.addEventListener("click", function() {            
             let customers = [];
             for (const customer in customerSeats) {
                 for (let i = 0; i < customerSeats[customer]; i++) {
@@ -163,8 +166,8 @@ document.addEventListener("DOMContentLoaded", function() {
             fetch(API + "movies/showtimes/" + showtime.id, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     "seats": selectedSeats,
@@ -175,16 +178,23 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (response.ok) {
                         return response.json();
                     } else {
-                        return response.json().then(error => { throw new Error(error.message); });
+                        return response.json().then(error => { throw new Error(error.message || "Valid User Authentication is Required"); });
                     }
                 })
-                .then(data => {
-                    // location.reload();
-                    console.log(data);
+                .then(reservation => {
+                    feedback.innerHTML = "Reservation Successfully Created. Redirecting...";
+                    feedback.classList.add("feedbackSuccess")
+                    feedback.classList.remove("feedbackFail")
+                    setTimeout(() => {window.location.href = `${SITE}user/reservations/${reservation.id}`;}, 2500);
                 })
-                .catch(error => {});
+                .catch(error => {
+                    feedback.innerHTML = error.message;
+                    feedback.classList.add("feedbackFail")
+                    feedback.classList.remove("feedbackSuccess")
+                });
         });
 
         showtimeReservation.appendChild(reservationButton);
+        showtimeReservation.appendChild(feedback);
     }
 });

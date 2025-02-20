@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(movie => {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
+                fetchTheatreOptions();
             })
             .catch(error => {});
     }
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.title += " " + movie.title;
 
         const movieDetails = document.getElementById("movieDetails");
-        movieDetails.innerHTML = `
+        movieDetails.innerHTML += `
             <img src="${movie.image_url}" alt="${movie.title} image">
             <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
             <div class="details textCenter">
@@ -35,10 +36,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div>Revenue: $${movie.revenue.toFixed(2)}</div>
             </div>
             <div class="description">${movie.description}</div>
+            <div id="movieFeedback" class="feedback textCenter textBold"></div>
         `;
     }
 
-    function displayShowtimes(showtimes) { // Edit Date and Time Displays
+    function displayShowtimes(showtimes) {
         const movieAside = document.getElementById("movieMain");
 
         let current_date; let showtimeList;
@@ -69,6 +71,18 @@ document.addEventListener("DOMContentLoaded", function () {
             showtimeList.appendChild(showtimeDiv);
         });
     }
+
+    function fetchTheatreOptions() {
+        fetch(API + "movies/theatres")
+            .then(response => response.json())
+            .then(theatres => {
+                const theatreSelector = document.getElementById("theatre");
+                theatres.forEach(theatre => {
+                    theatreSelector.innerHTML += `<option value="${theatre.theatre}">${theatre.theatre.toUpperCase()}</option>`;
+                });
+            })
+            .catch(error => {});
+    }
 });
 
 
@@ -97,7 +111,7 @@ function createShowtime() {
     const seatsTotal = parseInt(document.getElementById("totalSeats").value);
     const theatre = document.getElementById("theatre").value;
 
-    // // Validate Variables
+    const feedback = document.getElementById("showtimeFeedback");
 
     fetch(API + "admin/showtimes", {
         method: "POST",
@@ -115,15 +129,23 @@ function createShowtime() {
     })
         .then(response => {
             if (response.ok) {
+                console.log(response)
                 return response.json();
             } else {
-                return response.json().then(error => { throw new Error(error.message); });
+                return response.json().then(error => { throw new Error(error.message || "Invalid Admin User Authorisation"); });
             }
         })
-        .then(data => {
-            console.log(data);
+        .then(showtime => {
+            feedback.innerHTML = "Showtime Successfully Created. Redirecting...";
+            feedback.classList.add("feedbackSuccess")
+            feedback.classList.remove("feedbackFail")
+            setTimeout(() => {window.location.href = `${SITE}admin/showtime/${showtime.id}`;}, 2500);
         })
-        .catch(error => {});
+        .catch(error => {
+            feedback.innerHTML = error.message;
+            feedback.classList.add("feedbackFail")
+            feedback.classList.remove("feedbackSuccess")
+        });
 }
 
 
@@ -133,12 +155,27 @@ function deleteMovie() {
     const url = window.location.pathname;
     const id = url.split('/').pop();
 
+    const feedback = document.getElementById("movieFeedback");
+
     fetch(API + "admin/movies/" + id, {
         method: "DELETE",
         headers: {
             "Authorization": `Bearer ${localStorage.getItem("access_token")}`
         }
     })
-        .then(response => console.log(response))
-        .catch(error => console.error("Error fetching data:", error));
+        .then(response => {
+            if (response.ok) {
+                feedback.innerHTML = "Movie Successfully Deleted. Redirecting...";
+                feedback.classList.add("feedbackSuccess")
+                feedback.classList.remove("feedbackFail")
+                setTimeout(() => {window.location.href = `${SITE}admin/movies`;}, 2500);
+            } else {
+                return response.json().then(error => { throw new Error(error.message || "Invalid Admin User Authorisation"); });
+            }
+        })
+        .catch(error => {
+            feedback.innerHTML = error.message;
+            feedback.classList.add("feedbackFail")
+            feedback.classList.remove("feedbackSuccess")
+        });
 }

@@ -25,23 +25,29 @@
 
     <main id="flexContent" class="flex">
         <div id="movieDetails" class="flexCol">
+            <button id="adminButton" class="delete textBold" onclick="deleteMovie()">- Delete Movie</button>
         </div>
         
         <div id="movieMain">
             <div id="pageTitle" class="textCenter textBold">Showtimes</div>
-            <button onclick="openModal()">Create Showtime</button>
-            <button onclick="deleteMovie()">Delete Movie</button>
+            <button id="adminButton" class="create textBold" onclick="openModal()">+ Create Showtime</button>
         </div>
 
         <dialog id="modal">
-            <h2>Create New Showtime</h2>
-            <input type="date" id="date" />
-            <input type="time" id="startTime" />
-            <input type="number" id="totalSeats" min=1 default=1 placeholder="Enter total theatre seats..." />
-            <input type="text" id="theatre" placeholder="Enter theatre type..." /> <!-- Selector -->
-
-            <button onclick="cancelModal()">Cancel</button>
-            <button onclick="createShowtime()">Create</button>
+            <div class="content flexCol">
+                <div class="title textBold">Create New Showtime</div>
+                <input type="date" id="date" required />
+                <input type="time" id="startTime" required />
+                <input type="number" id="totalSeats" min=1 default=1 placeholder="Enter total theatre seats..." required />
+                <select id="theatre" required>
+                    <option value="" disabled selected hidden>Select theatre type...</option>
+                </select>
+                <div class="buttons flex">
+                    <button class="textBold" onclick="cancelModal()">Cancel</button>
+                    <button class="textBold" onclick="createShowtime()">Create</button>
+                </div>
+                <div id="showtimeFeedback" class="feedback textBold"></div>
+            </div>
         </dialog>
     </main>
 

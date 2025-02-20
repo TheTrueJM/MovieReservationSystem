@@ -25,10 +25,11 @@
 
     <main class="contentCentered">
         <div id="authCard" class="centerCard flexCol textCenter">
-            <div class="title textBold fontTitle">User Login</div>
-            <input type="text" id="username" class="fontRegular" placeholder="Enter username..." />
-            <input type="password" id="password" class="fontRegular" placeholder="Enter password..." />
-            <button class="textBold fontLarge" onclick="login()">Login</button>
+            <div class="title textBold">User Login</div>
+            <input type="text" id="username" placeholder="Enter username..." required />
+            <input type="password" id="password" placeholder="Enter password..." required />
+            <button class="textBold" onclick="login()">Login</button>
+            <div id="feedback" class="feedback textBold"></div>
         </div>
     </main>
 

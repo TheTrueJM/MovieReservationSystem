@@ -4,7 +4,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime, timedelta, date, time
 
-from models import Users, Movies, ShowTimes, Reservations, TheatreTypes
+from models import Users, Movies, ShowTimes, TheatreTypes
 from inital_data import ADMIN_ROLE
 from api_model_fields import DateField, TimeField
 

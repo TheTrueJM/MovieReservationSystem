@@ -25,20 +25,25 @@
 
     <main>
         <div id="pageTitle" class="textCenter textBold">Movies</div>
-        <button onclick="openModal()">Create Movie</button>
+        <button id="adminButton" class="create textBold" onclick="openModal()">+ Create Movie</button>
 
         <div id="movieList" class="contentList">
         </div>
 
         <dialog id="modal">
-            <h2>Create New Movie</h2>
-            <input type="text" id="title" placeholder="Enter movie title..." />
-            <input type="text" id="genre" placeholder="Enter movie genre..." />
-            <input type="textarea" id="description" placeholder="Enter movie description..." />
-            <input type="text" id="image" placeholder="Enter url to movie poster..." />
-            <input type="number" id="length" min=1 default=1 placeholder="Enter movie minute length..." />
-            <button onclick="cancelModal()">Cancel</button>
-            <button onclick="createMovie()">Create</button>
+            <div class="content flexCol">
+                <div class="title textBold">Create New Movie</div>
+                <input type="text" id="title" placeholder="Enter movie title..." required />
+                <input type="text" id="genre" placeholder="Enter movie genre..." required />
+                <input type="textarea" id="description" placeholder="Enter movie description..." />
+                <input type="text" id="image" placeholder="Enter url to movie poster..." required />
+                <input type="number" id="length" min=1 default=1 placeholder="Enter movie minute length..." required />
+                <div class="buttons flex">
+                    <button class="textBold" onclick="cancelModal()">Cancel</button>
+                    <button class="textBold" onclick="createMovie()">Create</button>
+                </div>
+                <div id="feedback" class="feedback textBold"></div>
+            </div>
         </dialog>
     </main>
 
