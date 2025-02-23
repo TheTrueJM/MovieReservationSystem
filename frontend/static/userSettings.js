@@ -1,6 +1,6 @@
-import { API, SITE } from "./exports.js";
+import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     fetchReservations();
 
     function fetchReservations() {
@@ -11,11 +11,10 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(reservations => displayReservations(reservations))
-            .catch(error => {});
+            .catch(error => { });
     }
 
     function displayReservations(reservations) {
-        console.log(reservations)
         const reservationList = document.getElementById("reservationList");
         reservationList.innerHTML = "";
 
@@ -29,15 +28,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
             reservationDiv.innerHTML = `
                 <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details flexCol contentSpaced textCenter fontRegular">
-                    <div class="textBold">${showtime.movie.title}</div>
-                    <div class="textBolder fontSubtitle">${showtime.date} | ${showtime.time_start}</div>
+                <div class="details flexCol contentSpaced textCenter">
+                    <div class="title textBold">${showtime.movie.title}</div>
+                    <div class="time textBolder">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
                     <div>
                         <div class="flex contentSpaced">
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${reservation.seats.length} Seats Reserved</div>
                         </div>
-                        <div>Reservation Cost: $${reservation.cost}</div>
+                        <div>Reservation Cost: $${reservation.cost.toFixed(2)}</div>
                     </div>
                 </div>
             `;
@@ -48,10 +47,12 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-window.updateUsername=updateUsername;
+window.updateUsername = updateUsername;
 
 function updateUsername() {
     const username = document.getElementById("username").value;
+
+    const feedback = document.getElementById("usernameFeedback");
 
     fetch(API + "user/updateUsername", {
         method: "PUT",
@@ -67,23 +68,34 @@ function updateUsername() {
             if (response.ok) {
                 return response.json();
             } else {
-                return response.json().then(error => { throw new Error(error.message); });
+                return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
             }
         })
         .then(data => {
             localStorage.setItem("access_token", data.access_token);
             localStorage.setItem("refresh_token", data.refresh_token);
+
+            feedback.innerHTML = data.message + ". Reloading...";
+            feedback.classList.add("feedbackSuccess")
+            feedback.classList.remove("feedbackFail")
+            setTimeout(() => { location.reload(); }, 2500);
         })
-        .catch(error => {});
+        .catch(error => {
+            feedback.innerHTML = error.message;
+            feedback.classList.add("feedbackFail")
+            feedback.classList.remove("feedbackSuccess")
+        });
 }
 
 
-window.updatePassword=updatePassword;
+window.updatePassword = updatePassword;
 
 function updatePassword() {
     const currentPassword = document.getElementById("currentPassword").value;
     const newPassword = document.getElementById("newPassword").value;
     const confirm = document.getElementById("confirm").value;
+
+    const feedback = document.getElementById("passwordFeedback");
 
     if (newPassword == confirm) {
         fetch(API + "user/updatePassword", {
@@ -101,12 +113,23 @@ function updatePassword() {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    return response.json().then(error => { throw new Error(error.message); });
+                    return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
                 }
             })
             .then(data => {
-                console.log(data)
+                feedback.innerHTML = data.message + ". Reloading...";
+                feedback.classList.add("feedbackSuccess")
+                feedback.classList.remove("feedbackFail")
+                setTimeout(() => { location.reload(); }, 2500);
             })
-            .catch(error => {});
+            .catch(error => {
+                feedback.innerHTML = error.message;
+                feedback.classList.add("feedbackFail")
+                feedback.classList.remove("feedbackSuccess")
+            });
+    } else {
+        feedback.innerHTML = "Password does not match Confirmation"
+        feedback.classList.add("feedbackFail")
+        feedback.classList.remove("feedbackSuccess")
     }
 }

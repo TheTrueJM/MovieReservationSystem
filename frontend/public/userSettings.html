@@ -23,21 +23,23 @@
         </div>
     </nav>
 
-    <main>
-        <div id="pageTitle" class="textCenter textBold">User Settings</div>
-        <div id="updateUsername">
-            <h2>Update Username</h2>
+    <main id="userDetails" class="flexCol">
+        <div id="pageTitle" class="textCenter textBold">User Details</div>
+        <div id="updateUsername" class="userDetail flexCol">
+            <div class="title textCenter textBold">Update Username</div>
             <input type="text" id="username" placeholder="Enter new username..." />
-            <button onclick="updateUsername()">Update Username</button>
+            <button class="textBold" onclick="updateUsername()">Update Username</button>
+            <div id="usernameFeedback" class="feedback textCenter textBold"></div>
         </div>
-        <div id="updatePassword">
-            <h2>Update Password</h2>
+        <div id="updatePassword" class="userDetail flexCol">
+            <div class="title textCenter textBold">Update Password</div>
             <input type="password" id="currentPassword" placeholder="Enter current password..." />
             <input type="password" id="newPassword" placeholder="Enter new password..." />
             <input type="password" id="confirm" placeholder="Confirm new password..." />
-            <button onclick="updatePassword()">Update Password</button>
+            <button class="textBold" onclick="updatePassword()">Update Password</button>
+            <div id="passwordFeedback" class="feedback textCenter textBold"></div>
         </div>
-        <h1>User Reservations</h1>
+        <div class="reservationsTitle textCenter textBold">User Reservations</div>
         <div id="reservationList" class="contentList">
         </div>
     </main>

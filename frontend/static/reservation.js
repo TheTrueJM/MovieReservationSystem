@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         feedback.classList.remove("feedbackFail")
                         setTimeout(() => {window.location.href = `${SITE}`;}, 2500);
                     } else {
-                        throw new Error("Invalid User Authorisation");
+                        return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
                     }
                 })
                 .catch(error => {
