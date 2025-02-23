@@ -1,4 +1,4 @@
-import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
+import { API, SITE, toTitle, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     fetchMovieShowtime();
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             seatPrice.innerHTML = `
                 <div class="flex">
-                    <div class="customer textBold">${seat_price.customer[0].toUpperCase() + seat_price.customer.slice(1)}</div>
+                    <div class="customer textBold">${toTitle(seat_price.customer)}</div>
                     <div class="customerCount textCenter">${customerCount[seat_price.customer] || 0}</div>
                     <div class="price">$${seat_price.price.toFixed(2)}</div>
                 </div>

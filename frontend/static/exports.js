@@ -2,6 +2,12 @@ export const API = "http://localhost:5000/";
 export const SITE = "http://localhost:5500/";
 
 
+
+export function toTitle(text) {
+    return text[0].toUpperCase() + text.slice(1);
+}
+
+
 export function dateDisplay(date) {
     let fixedDate = date.split("-");
     return `${fixedDate[2]}/${fixedDate[1]}/${fixedDate[0]}`;

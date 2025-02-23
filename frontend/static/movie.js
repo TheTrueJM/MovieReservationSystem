@@ -1,4 +1,4 @@
-import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
+import { API, SITE, toTitle, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     fetchMovie();
@@ -25,13 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
             <a href="${SITE}movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
             <div class="details flex contentSpaced">
                 <div>${movie.length} Minutes</div>
-                <div class="textBold">${movie.genre}</div>
+                <div class="textBold">${toTitle(movie.genre)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
     }
 
-    function displayShowtimes(showtimes) { // Edit Date and Time Displays
+    function displayShowtimes(showtimes) {
         const movieMain = document.getElementById("movieMain");
 
         let current_date; let showtimeList;

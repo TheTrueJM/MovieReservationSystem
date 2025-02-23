@@ -1,4 +1,4 @@
-import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
+import { API, SITE, toTitle, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     let selectedSeats = [];
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <a href="${SITE}movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
             <div class="details flex contentSpaced">
                 <div>${movie.length} Minutes</div>
-                <div class="textBold">${movie.genre}</div>
+                <div class="textBold">${toTitle(movie.genre)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             seatPrice.innerHTML = `
                 <div class="flex">
-                    <div class="customer textBold">${seat_price.customer[0].toUpperCase() + seat_price.customer.slice(1)}</div>
+                    <div class="customer textBold">${toTitle(seat_price.customer)}</div>
                     <div class="price">$${seat_price.price.toFixed(2)}</div>
                 </div>
                 <div class="numberInput flex textBolder">

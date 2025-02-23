@@ -19,7 +19,16 @@ document.addEventListener("DOMContentLoaded", function() {
         const showtimeList = document.getElementById("showtimeList");
         showtimeList.innerHTML = "";
 
+
+        let checkDate = true;
+        const currentDate = new Date();
+        let revenuePhrase = "Current";
         showtimes.forEach(showtime => {
+            if (checkDate && new Date(showtime.date) <= currentDate) {
+                checkDate = false;
+                revenuePhrase = "Total";
+            }
+
             const showtimeDiv = document.createElement("a");
             showtimeDiv.classList.add("card", "flex");
             showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
@@ -34,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</div>
                         </div>
-                        <div>Current Revenue: $${showtime.revenue.toFixed(2)}</div>
+                        <div>${revenuePhrase} Revenue: $${showtime.revenue.toFixed(2)}</div>
                     </div>
                 </div>
             `;

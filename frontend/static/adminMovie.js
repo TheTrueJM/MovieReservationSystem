@@ -1,4 +1,4 @@
-import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
+import { API, SITE, toTitle, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     fetchMovie();
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="details textCenter">
                 <div class="flex contentSpaced">
                     <div>${movie.length} Minutes</div>
-                    <div class="textBold">${movie.genre}</div>
+                    <div class="textBold">${toTitle(movie.genre)}</div>
                 </div>
                 <div>Revenue: $${movie.revenue.toFixed(2)}</div>
             </div>
@@ -44,7 +44,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const movieAside = document.getElementById("movieMain");
 
         let current_date; let showtimeList;
+        let checkDate = true;
+        const currentDate = new Date();
+        let revenuePhrase = "Total";
         showtimes.forEach(showtime => {
+            if (checkDate && currentDate < new Date(showtime.date)) {
+                checkDate = false;
+                revenuePhrase = "Current";
+            }
+
             if (showtime.date != current_date) {
                 current_date = showtime.date;
 
@@ -65,8 +73,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</p>
                 </div>
                 <div class="time textCenter textBold">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
-                <div class="revenue textCenter">Current Revenue: $${showtime.revenue.toFixed(2)}</div>
-            `; // Current vs Total Revenue for Showtime Dates
+                <div class="revenue textCenter">${revenuePhrase} Revenue: $${showtime.revenue.toFixed(2)}</div>
+            `;
 
             showtimeList.appendChild(showtimeDiv);
         });
