@@ -1,4 +1,5 @@
-from flask_restx import Resource, Namespace, fields
+from flask_sqlalchemy import query
+from flask_restx import Resource, Namespace, fields, reqparse, inputs
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, abort
 from functools import wraps
@@ -110,6 +111,17 @@ seat_price_marshal = movies_ns.model(
 
 
 
+movie_filters = reqparse.RequestParser()
+movie_filters.add_argument("genre", type=str)
+
+showtime_filters = reqparse.RequestParser()
+showtime_filters.add_argument("theatre", type=str)
+showtime_filters.add_argument("date", type=inputs.date)
+showtime_filters.add_argument("date-start", type=inputs.date)
+showtime_filters.add_argument("date-end", type=inputs.date)
+
+
+
 def login_required(f):
     @wraps(f)
     @jwt_required()
@@ -124,8 +136,12 @@ def login_required(f):
 @movies_ns.route("/")
 class MoviesResource(Resource):
     @movies_ns.marshal_list_with(base_movie_marshal)
-    def get(self): # Filter Genre
-        movies: list[Movies] = Movies.query.all()
+    def get(self):
+        filters = movie_filters.parse_args()
+        if filters["genre"]:
+            movies: list[Movies] = Movies.query.filter_by(genre=filters["genre"].lower()).order_by(Movies.id.desc()).all()
+        else:
+            movies: list[Movies] = Movies.query.order_by(Movies.id.desc()).all()
         return movies, 200
 
 
@@ -144,8 +160,23 @@ class MovieResource(Resource):
 @movies_ns.route("/showtimes")
 class MovieShowTimes(Resource):
     @movies_ns.marshal_list_with(movie_showtime_marshal)
-    def get(self): # Filter Date + Time, Theatre
-        showtimes: list[ShowTimes] = ShowTimes.query.filter(date.today() <= ShowTimes.date).order_by(ShowTimes.date, ShowTimes.time_start).all()
+    def get(self):
+        showtime_query: query.Query = ShowTimes.query.filter(date.today() <= ShowTimes.date)
+
+        filters = showtime_filters.parse_args()
+
+        if filters["theatre"] and filters["theatre"] in {theatre.theatre for theatre in TheatreTypes.query.all()}:
+            showtime_query = showtime_query.filter_by(theatre=filters["theatre"])
+
+        if filters["date"]:
+            showtime_query = showtime_query.filter(ShowTimes.date == filters["date"].date())
+        elif filters["date-start"] or filters["date-end"]:
+            if filters["date-start"]:
+                showtime_query = showtime_query.filter(filters["date-start"].date() <= ShowTimes.date)
+            if filters["date-end"]:
+                showtime_query = showtime_query.filter(ShowTimes.date <= filters["date-end"].date())
+
+        showtimes: list[ShowTimes] = showtime_query.order_by(ShowTimes.date, ShowTimes.time_start).all()
         return showtimes, 200
 
 

@@ -194,6 +194,7 @@ class UserReservations(Resource):
     @user_ns.marshal_list_with(user_reservations_marshal)
     def get(self, user: Users): # Filter Date + Time, Theatre
         reservations: list[Reservations] = Reservations.query.filter_by(user_id=user.id).all()
+        reservations.sort(key = lambda reservations: reservations.showtimes.date, reverse = True)
         return reservations, 200
     
 
