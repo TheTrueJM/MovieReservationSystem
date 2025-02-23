@@ -2,7 +2,7 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, abort
 from functools import wraps
-from datetime import date
+from datetime import datetime, date
 
 from models import Users, Movies, ShowTimes, Reservations, Seats, SeatPrices, TheatreTypes
 from api_model_fields import DateField, TimeField
@@ -162,6 +162,10 @@ class MovieReservation(Resource):
     @movies_ns.marshal_with(extended_reservation_marshal)
     def post(self, user_id: int, show_id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(show_id)
+
+        current: datetime = datetime.now()
+        if showtime.date < current.date() or (showtime.date == current.date() and showtime.time_start <= current.time()):
+            abort(400, "Cannot create reservation on showtime that has already occurred")
 
         data: dict = request.get_json()
         seats: set = set(data["seats"])

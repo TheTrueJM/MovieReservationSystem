@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token
 from flask import request, abort
 from functools import wraps
-from datetime import date
+from datetime import datetime
 
 from models import Users, ShowTimes, Reservations, Seats, SeatPrices
 from api_model_fields import DateField, TimeField
@@ -215,6 +215,10 @@ class UserReservation(Resource):
         reservation: Reservations = self.get_reservation_or_404(reservation_id, user.id)
         showtime: ShowTimes = ShowTimes.query.get(reservation.show_id)
 
+        current: datetime = datetime.now()
+        if showtime.date < current.date() or (showtime.date == current.date() and showtime.time_start <= current.time()):
+            abort(400, "Cannot update reservation on showtime that has already occurred")
+
         data: dict = request.get_json()
         seats: set = set(data["seats"])
         customers: list = data["customers"]
@@ -247,7 +251,13 @@ class UserReservation(Resource):
         return reservation, 200
 
     @login_required
-    def delete(self, user: Users, reservation_id: int): ## Delete Upcoming
+    def delete(self, user: Users, reservation_id: int):
         reservation: Reservations = self.get_reservation_or_404(reservation_id, user.id)
+
+        showtime: ShowTimes = ShowTimes.query.get(reservation.show_id)
+        current: datetime = datetime.now()
+        if showtime.date < current.date() or (showtime.date == current.date() and showtime.time_start <= current.time()):
+            abort(400, "Cannot remove reservation on showtime that has already occurred")
+
         reservation.delete()
         return {}, 204

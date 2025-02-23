@@ -236,6 +236,10 @@ class AdminShowTime(Resource):
     def delete(self, id: int):
         showtime: ShowTimes = ShowTimes.query.get_or_404(id)
 
+        current: datetime = datetime.now()
+        if showtime.date < current.date() or (showtime.date == current.date() and showtime.time_start <= current.time()):
+            abort(400, "Cannot remove showtime that has already occurred")
+
         if showtime.reservations:
             abort(400, "Cannot remove showtime that has reservations")
 
