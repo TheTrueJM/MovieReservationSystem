@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     feedback.innerHTML = "Reservation Successfully Created. Redirecting...";
                     feedback.classList.add("feedbackSuccess")
                     feedback.classList.remove("feedbackFail")
-                    setTimeout(() => {window.location.href = `${SITE}user/reservations/${reservation.id}`;}, 2500);
+                    setTimeout(() => {window.location.href = `${SITE}user/reservation/${reservation.id}`;}, 2500);
                 })
                 .catch(error => {
                     feedback.innerHTML = error.message;

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         reservations.forEach(reservation => {
             const reservationDiv = document.createElement("a");
             reservationDiv.classList.add("card", "flex");
-            reservationDiv.href = `${SITE}user/reservations/${reservation.id}`;
+            reservationDiv.href = `${SITE}user/reservation/${reservation.id}`;
 
             const showtime = reservation.showtime;
             const movie = showtime.movie;

@@ -4,62 +4,62 @@ app = Flask(__name__)
 PORT = 5500
 
 
-@app.route('/')
+@app.route("/")
 def index():
     return redirect("/movies")
 
 
-@app.route('/signup')
+@app.route("/signup")
 def signup():
-    return render_template('signup.html')
+    return render_template("signup.html")
 
-@app.route('/login')
+@app.route("/login")
 def login():
-    return render_template('login.html')
+    return render_template("login.html")
 
 
-@app.route('/movies')
+@app.route("/movies")
 def movies():
-    return render_template('movies.html')
+    return render_template("movies.html")
 
-@app.route('/movies/<id>')
-def movie():
-    return render_template('movie.html')
+@app.route("/movie/<int:id>")
+def movie(id: int):
+    return render_template("movie.html")
 
-@app.route('/showtimes')
+@app.route("/showtimes")
 def showtimes():
-    return render_template('showtimes.html')
+    return render_template("showtimes.html")
 
-@app.route('/showtimes/<id>')
-def showtime():
-    return render_template('showtime.html')
+@app.route("/showtime/<int:id>")
+def showtime(id: int):
+    return render_template("showtime.html")
 
 
-@app.route('/user')
+@app.route("/user")
 def user_settings():
-    return render_template('userSettings.html')
+    return render_template("userSettings.html")
 
-@app.route('/user/reservations/<id>')
-def user_reservations():
-    return render_template('reservation.html')
+@app.route("/user/reservation/<int:id>")
+def user_reservations(id: int):
+    return render_template("reservation.html")
 
 
-@app.route('/admin/movies')
+@app.route("/admin/movies")
 def admin_movies():
-    return render_template('adminMovies.html')
+    return render_template("adminMovies.html")
 
-@app.route('/admin/movies/<id>')
-def admin_movie():
-    return render_template('adminMovie.html')
+@app.route("/admin/movie/<int:id>")
+def admin_movie(id: int):
+    return render_template("adminMovie.html")
 
-@app.route('/admin/showtimes')
+@app.route("/admin/showtimes")
 def admin_showtimes():
-    return render_template('adminShowtimes.html')
+    return render_template("adminShowtimes.html")
 
-@app.route('/admin/showtimes/<id>')
-def admin_showtime():
-    return render_template('adminShowtime.html')
+@app.route("/admin/showtime/<int:id>")
+def admin_showtime(id: int):
+    return render_template("adminShowtime.html")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(port=PORT)
