@@ -1,28 +1,8 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="en">
+{% block title %}Admin | {% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieSiteName | Admin |</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-    <header>
-        MovieSiteName
-    </header>
-
-    <nav>
-        <div id="links">
-            <a href="/movies">Movies</a>
-            <a href="/showtimes">Showtimes</a>
-        </div>
-        <div id="user">
-        </div>
-    </nav>
-
+{% block content %}
     <main id="flexContent" class="flex">
         <div id="movieDetails" class="flexCol">
             <button id="adminButton" class="delete textBold" onclick="deleteMovie()">- Delete Movie</button>
@@ -50,9 +30,8 @@
             </div>
         </dialog>
     </main>
+{% endblock %}
 
-    <script type="module" src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% block scripts %}
     <script type="module" src="{{ url_for('static', filename='js/adminMovie.js') }}"></script>
-</body>
-
-</html>
+{% endblock %}

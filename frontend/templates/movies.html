@@ -1,36 +1,15 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="en">
+{% block title %}Movies{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieSiteName | Movies</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-    <header>
-        MovieSiteName
-    </header>
-
-    <nav>
-        <div id="links">
-            <a href="/movies">Movies</a>
-            <a href="/showtimes">Showtimes</a>
-        </div>
-        <div id="user">
-        </div>
-    </nav>
-
+{% block content %}
     <main>
         <div id="pageTitle" class="textCenter textBold">Movies</div>
         <div id="movieList" class="contentList">
         </div>
     </main>
+{% endblock %}
 
-    <script type="module" src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% block scripts %}
     <script type="module" src="{{ url_for('static', filename='js/movies.js') }}"></script>
-</body>
-
-</html>
+{% endblock %}

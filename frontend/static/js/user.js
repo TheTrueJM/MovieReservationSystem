@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function() {
     checkAuth();
 
     function checkAuth() {
-        const userDiv = document.getElementById("user");
-
         fetch(API + "auth/refresh", {
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("refresh_token")}`
@@ -14,26 +12,21 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => {
                 if (response.ok) {
                     return response.json();
-                } else {
-                    return response.json().then(error => { throw new Error(error.message); });
                 }
             })
             .then(data => {
                 localStorage.setItem("access_token", data.access_token);
 
-                userDiv.innerHTML = `
-                    <a href="/user">User Details</a>
-                    <a href="/" onclick="localStorage.clear()">Logout</a>
-                `;
+                const userDiv = document.getElementById("user");
+                const unauthDiv = userDiv.querySelector(".unauth");
+                const authDiv = userDiv.querySelector(".auth");
+
+                unauthDiv.hidden = true;
+                authDiv.hidden = false;
 
                 checkAdmin();
             })
-            .catch(error => {
-                userDiv.innerHTML = `
-                    <a href="/login">Login</a>
-                    <a href="/signup">Sign Up</a>
-                `;
-            });
+            .catch(error => {});
     }
 
     function checkAdmin() {

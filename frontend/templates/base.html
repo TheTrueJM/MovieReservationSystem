@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieSiteName | {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <c-header>
+    </c-header>
+
+    {% block content %}{% endblock %}
+
+    <script type="module" src="{{ url_for('static', filename='js/components.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/user.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

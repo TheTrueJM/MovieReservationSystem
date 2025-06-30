@@ -1,28 +1,8 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="en">
+{% block title %}Login{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieSiteName | Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-    <header>
-        MovieSiteName
-    </header>
-
-    <nav>
-        <div id="links">
-            <a href="/movies">Movies</a>
-            <a href="/showtimes">Showtimes</a>
-        </div>
-        <div id="user">
-        </div>
-    </nav>
-
+{% block content %}
     <main class="contentCentered">
         <div id="authCard" class="centerCard flexCol textCenter">
             <div class="title textBold">User Login</div>
@@ -32,9 +12,8 @@
             <div id="feedback" class="feedback textBold"></div>
         </div>
     </main>
+{% endblock %}
 
-    <script type="module" src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% block scripts %}
     <script type="module" src="{{ url_for('static', filename='js/login.js') }}"></script>
-</body>
-
-</html>
+{% endblock %}

@@ -1,7 +1,6 @@
 from flask import Flask, redirect, render_template
 
 app = Flask(__name__)
-PORT = 5500
 
 
 @app.route("/")
@@ -62,4 +61,4 @@ def admin_showtime(id: int):
 
 
 if __name__ == "__main__":
-    app.run(port=PORT)
+    app.run(port=5500)
