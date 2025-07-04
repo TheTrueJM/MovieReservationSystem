@@ -4,7 +4,9 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-*, *::before, *:after {
+*,
+*::before,
+*:after {
     box-sizing: border-box;
 }
 
@@ -37,9 +39,55 @@
     --border-radius-regular: 0.5rem;
     --border-radius-small: 0.25rem;
 
+    --ff: Arial, Helvetica, sans-serif;
+
+    --f-header: bold 2rem/1.4em var(--ff);
+    --f-title: bold 1.5rem/1.4em var(--ff);
+    --f-large: bold 1.375rem/1.4em var(--ff);
+    --f-regular: 1.125rem/1.4em var(--ff);
+    --f-small: 1rem/1.4em var(--ff);
+
+    --bg-dark10: hsl(0, 0%, 10%);
+    --bg-dark15: hsl(0, 0%, 15%);
+    --bg-dark25: hsl(0, 0%, 25%);
+    --bg-light90: hsl(0, 0%, 90%);
+    --bg-light85: hsl(0, 0%, 85%);
+    --bg-light75: hsl(0, 0%, 75%);
+    --bg-light65: hsl(0, 0%, 65%);
+    --bg-light55: hsl(0, 0%, 55%);
+
+    --bg-gradient: linear-gradient(0deg, var(--bg-light85) 90%, var(--bg-light90));
+    --bg-gradient-hover: linear-gradient(0deg, var(--bg-light85), var(--bg-light90));
+    --bg-gradient-active: linear-gradient(0deg, var(--bg-light75), var(--bg-light85));
+
+    --fc-light: hsl(0, 0%, 95%);
+    --fc-light-muted: hsl(0, 0%, 70%);
+    --fc-dark:  hsl(0, 0%, 5%);
+    --fc-dark-muted: hsl(0, 0%, 30%);
+
+    --fc-success: hsl(125, 45%, 35%);
+    --fc-fail: hsl(0, 60%, 50%);
+
+    --b-small: 0.125rem solid hsl(0, 0%, 35%);
+    --b-regular: 0.25rem solid hsl(0, 0%, 35%);
+    --b-large: 0.375rem solid hsl(0, 0%, 25%);
+
+    --br-small: 0.325rem;
+    --br-regular: 0.5rem;
+    --br-large: 0.75rem;
+
+    --shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.075), 2px 4px 4px hsla(0, 0%, 0%, 0.15);
+    --shadow-inset: var(--shadow) inset;
+    --shadow-inset-hover: 2px 4px 4px hsla(0, 0%, 0%, 0.075) inset, 4px 8px 8px hsla(0, 0%, 0%, 0.15) inset;
+    --shadow-inset-active: 2px 4px 4px hsla(0, 0%, 0%, 0.15) inset, 4px 8px 8px hsla(0, 0%, 0%, 0.30) inset;
+
+    --highlight: -1px -1px 1px hsla(0, 0%, 100%, 0.30);
+    --highlight-inset: -1px -1px 1px hsla(0, 0%, 100%, 0.30) inset;
+    --highlight-inset-hover: -2px -2px 2px hsla(0, 0%, 100%, 0.30) inset;
+    --highlight-inset-active: -2px -2px 2px hsla(0, 0%, 100%, 0.60) inset;
+
     --transition-effect: all 0.25s ease;
 }
-
 
 
 body {
@@ -47,8 +95,9 @@ body {
     height: 100vh;
     display: flex;
     flex-flow: column;
-    background-color: var(--bg-main);
-    color: var(--fc-main);
+    background-color: var(--bg-light75);
+    color: var(--fc-dark);
+    font: var(--f-regular)
 }
 
 
@@ -93,21 +142,22 @@ body {
     font-weight: bolder;
 }
 
+
 .feedbackSuccess {
-    color: hsl(125, 45%, 35%);
+    color: var(--fc-success);
 }
 
 .feedbackFail {
-    color: hsl(0, 60%, 50%);
+    color: var(--fc-fail);
 }
 
 
+
 header {
-    background-color: var(--bg-header);
-    color: var(--fc-alternate);
     padding: 0.5rem;
-    font-size: var(--font-header);
-    font-weight: bold;
+    background-color: var(--bg-dark10);
+    color: var(--fc-light);
+    font: var(--f-header);
     text-align: center;
 }
 
@@ -117,12 +167,13 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-alternate);
-    color: var(--fc-alternate);
-    font-size: var(--font-nav);
+    background-color: var(--bg-dark15);
+    color: var(--fc-light-muted);
+    font: var(--f-title);
 }
 
-#links, #user {
+#links,
+#user {
     display: flex;
 }
 
@@ -134,25 +185,29 @@ nav {
 }
 
 #links a:hover {
-    background-color: hsla(0, 0%, 100%, 10%);
+    background-color: var(--bg-dark25);
+    color: var(--fc-light);
+}
+
+#links a.selected {
+    background-color: var(--bg-dark25);
 }
 
 #user a {
     margin: 0.5rem 0.5rem;
     padding: 0.125rem 0.75rem;
-    border: var(--border-small-light);
-    border-color: var(--fc-alternate);
-    border-radius: 0.5rem;
-    background-color: var(--fc-alternate);
-    color: var(--fc-main);
+    border: var(--b-small);
+    border-color: var(--bg-light85);
+    border-radius: var(--br-small);
+    background-color: var(--bg-light85);
+    color: var(--fc-dark);
     text-decoration: none;
-    font-weight: bold;
     transition: var(--transition-effect);
 }
 
 #user a:hover {
-    background-color: var(--fc-main);
-    color: var(--fc-alternate);
+    background-color: var(--bg-dark15);
+    color: var(--fc-light);
 }
 
 
@@ -163,13 +218,16 @@ main {
 }
 
 
+
 #pageTitle {
     margin: 1rem;
-    font-size: var(--font-page-title);
+    font: var(--f-title);
+    text-align: center;
     text-decoration: underline;
 }
 
 
+/* Start */
 .centerCard {
     width: 40%;
     padding: 3.75rem 2.5rem;
@@ -177,83 +235,165 @@ main {
     box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
     background-color: hsla(0, 0%, 0%, 25%);
 }
+/* End */
+
+
+.modal {
+    width: min(625px, 90%);
+    justify-self: center;
+    align-self: center;
+    border: var(--b-regular);
+    border-radius: var(--br-large);
+    background: var(--bg-light75);
+    box-shadow: var(--shadow);
+}
+
+.modal::backdrop {
+    background-color: hsla(0, 0%, 0%, 0.5);
+}
+
+.modal .content {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    padding: 1.5rem;
+    align-items: center;
+    font: var(--f-regular);
+}
+
+.modal .content .title {
+    margin-bottom: 0.75rem;
+    font: var(--f-large);
+    text-decoration: underline;
+}
+
+.modal .content input,
+.modal .content select {
+    width: 100%;
+    margin: 0.25rem;
+    padding: 0.25rem;
+    border: var(--b-small);
+    border-color: hsla(125, 65%, 35%);
+    border-radius: var(--br-small);
+    background-color: var(--bg-light90);
+    font: inherit;
+}
+
+.modal .content input:placeholder-shown,
+.modal .content input:invalid,
+.modal .content select:invalid {
+    border: var(--b-small);
+    background-color: var(--bg-light85);
+}
+
+.modal .content .buttons {
+    width: 100%;
+    margin-top: 0.75rem;
+}
+
+.modal .content .buttons button {
+    width: 50%;
+    margin: 0.25rem;
+    padding: 0.25rem;
+    border: var(--b-regular);
+    border-color: var(--bg-dark25);
+    border-radius: var(--br-regular);
+    background: var(--bg-gradient);
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal .content .buttons button:hover {
+    background: var(--bg-gradient-hover);
+}
+
+.modal .content .buttons button:active {
+    background: var(--bg-gradient-active);
+}
+
+.modal .content .feedback {
+    margin-top: 0.75rem;
+    font: var(--f-large);
+    text-align: center;
+}
+
+
+.floatButton {
+    position: absolute;
+    bottom: 0rem;
+    right: 0rem;
+    margin: 2.5%;
+    padding: 0.5rem 1.5rem;
+    border: var(--b-large);
+    border-radius: var(--br-regular);
+    background: var(--bg-gradient);
+    color: var(--fc-dark);
+    font: var(--f-large);
+    cursor: pointer;
+    transition: var(--transition-effect);
+}
+
+.floatButton:hover {
+    background: var(--bg-gradient-hover);
+    transform: scale(1.0125);
+}
+
+.floatButton:active {
+    background: var(--bg-gradient-active);
+}
+
+.floatButton.left {
+    left: 0rem;
+    right: auto;
+}
+
+
+.floatButton.create {
+    background: hsl(107, 55%, 55%);
+}
+
+.floatButton.create:hover {
+    background: hsl(108, 60%, 60%);
+}
+
+.floatButton.create:active {
+    background: hsl(106, 50%, 50%);
+}
+
+.floatButton.delete {
+    background: hsl(0, 55%, 55%);
+}
+
+.floatButton.delete:hover {
+    background: hsl(0, 60%, 60%);
+}
+
+.floatButton.delete:active {
+    background: hsl(0, 50%, 50%);
+}
 
 
 .card {
     overflow: hidden;
     margin: 1rem;
-    border: var(--border-small-light);
-    border-radius: var(--border-radius-regular);
-    box-shadow: 2px 2px 12px hsla(0, 0%, 0%, 25%);
+    border: var(--b-small);
+    border-radius: var(--br-regular);
+    box-shadow: var(--shadow);
+    background: var(--bg-gradient);
     color: inherit;
-    font-size: var(--font-regular);
+    font: var(--f-regular);
     text-decoration: none;
     transition: var(--transition-effect);
 }
 
 .card:hover {
+    background: var(--bg-gradient-hover);
     transform: scale(1.025);
 }
 
 
-#modal {
-    width: clamp(350px, 30%, 750px);
-    justify-self: center;
-    align-self: center;
-    border: var(--border-medium-heavy);
-    border-radius: var(--border-radius-large);
-    background-color: var(--bg-main);
-}
-
-#modal .content {
-    width: 100%;
-    padding: 1.5rem;
-    align-items: center;
-    font-size: var(--font-large);
-}
-
-#modal .content .title {
-    margin-bottom: 1.5rem;
-    font-size: var(--font-title);
-    text-decoration: underline;
-}
-
-#modal .content input, #modal .content select {
-    width: 100%;
-    margin: 0.25rem;
-    padding: 0.25rem;
-    border: var(--border-small-light);
-    border-color: hsla(125, 65%, 35%, 50%);
-    border-radius: var(--border-radius-small);
-    background-color: hsla(0, 0%, 100%, 95%);
-    font-size: inherit;
-}
-
-#modal .content input:placeholder-shown, #modal .content input:invalid, #modal .content select:invalid {
-    border: var(--border-small-light);
-    background-color: hsla(0, 0%, 100%, 75%);
-}
-
-#modal .content .buttons {
-    width: 100%;
-    margin-top: 1rem;
-}
-
-#modal .content .buttons button {
-    width: 50%;
-    margin: 0.25rem;
-    padding: 0.25rem;
-    border: var(--border-small-heavy);
-    border-radius: var(--border-radius-regular);
-    font-size: inherit;
-}
-
-#modal .content .feedback {
-    margin-top: 0.75rem;
-    font-size: var(--font-subtitle);
-}
-
-
+/* Start */
 #authCard .title {
     margin-bottom: 2.5rem;
     font-size: var(--font-title);
@@ -296,18 +436,18 @@ main {
     margin-top: 1.75rem;
     font-size: var(--font-large);
 }
+/* End */
 
 
 #movieList .card {
     width: min(250px, 80%);
-    background-color: hsla(0, 0%, 0%, 7.5%);
 }
 
 #movieList .card img {
     width: 100%;
     aspect-ratio: 2 / 3;
     object-fit: cover;
-    border-bottom: var(--border-small-light);
+    border-bottom: var(--b-small);
 }
 
 #movieList .card .title {
@@ -320,42 +460,40 @@ main {
     overflow: hidden;
     padding: 0.25rem;
     align-content: center;
-    font-size: var(--font-small);
+    text-align: center;
     font-weight: bold;
     text-overflow: ellipsis;
 }
 
 
+
 #showtimeList .card {
     width: min(27.5rem, 80%);
     height: 10rem;
-    background-color: hsl(0, 0%, 92.5%);
 }
 
 #showtimeList .card img {
     height: 100%;
     aspect-ratio: 2 / 3;
     object-fit: cover;
-    border-right: var(--light-border);
+    border-right: var(--b-small);
 }
 
 #showtimeList .details {
     width: 100%;
     padding: 0.5rem 0.25rem;
-    font-size: var(--font-regular);
-}
-
-#showtimeList .details .title {
-    font-size: var(--font-large);
+    text-align: center;
 }
 
 #showtimeList .details .time {
-    font-size: var(--font-title);
+    font: var(--f-large);
 }
 
-#showtimeList .details .adminTime {
-    font-size: var(--font-subtitle);
+#showtimeList .details .theatre {
+    color: var(--fc-dark-muted);
+    font: var(--f-small);
 }
+
 
 
 #movieDetails {
@@ -364,10 +502,11 @@ main {
     margin: 0.75rem 1.25rem;
     padding: 0.75rem;
     align-items: center;
-    border-radius: var(--border-radius-largest);
-    box-shadow: 2px 2px 12px 4px hsla(0, 0%, 0%, 25%);
-    background-color: var(--bg-alternate);
-    color: var(--fc-alternate);
+    border-radius: var(--br-large);
+    box-shadow: var(--shadow);
+    background-color: var(--bg-dark15);
+    color: var(--fc-light);
+    font: var(--f-regular);
 }
 
 #movieDetails img {
@@ -377,29 +516,27 @@ main {
 
 #movieDetails .title {
     color: inherit;
-    font-size: var(--font-title);
+    font: var(--f-large);
+    text-align: center;
     text-decoration: none;
 }
 
 #movieDetails .title:hover {
-    color: hsl(0, 0%, 75%);
+    color: var(--fc-light-muted);
     text-decoration: underline;
 }
 
 #movieDetails .details {
     width: 100%;
-    padding: 0.5rem 2rem 1rem;
-    font-size: var(--font-large);
+    padding: 0.5rem 2rem;
+    text-align: center;
 }
 
 #movieDetails .description {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 10;
-    line-clamp: 10;
     overflow-y: scroll;
     scrollbar-color: hsla(0, 0%, 25%, 75%) transparent;
-    font-size: var(--font-small);
+    color: var(--fc-light-muted);
+    font: var(--f-small);
     text-align: justify;
 }
 
@@ -412,20 +549,23 @@ main {
 }
 
 #movieDetails .feedback {
-    margin: 0.75rem;
-    font-size: var(--font-large);
+    margin: 0.5rem;
+    text-align: center;
+    font-weight: bold;
 }
 
 
 
 #movieMain {
     width: calc(min(75%, calc(100% - 375px)) - 1rem);
+    position: relative;
     padding: 0.5rem;
     overflow-y: scroll;
 }
 
 #movieMain .date {
-    font-size: var(--font-title);
+    color: var(--fc-dark);
+    font: var(--f-large);
 }
 
 #movieMain .showtimeList {
@@ -437,43 +577,42 @@ main {
 #movieMain .showtimeList .card {
     flex-shrink: 0;
     width: 21rem;
-    margin: 0.75rem;
+    margin: 0.25rem 0.5rem;
     padding: 0.25rem;
     scroll-snap-align: center;
-    background-color: hsla(0, 0%, 100%, 75%);
 }
 
 #movieMain .showtimeList .details {
     margin-bottom: 0.25rem;
+    color: var(--fc-dark-muted);
+    text-align: center;
 }
 
 #movieMain .showtimeList .card .time {
-    font-size: var(--font-subtitle);
     padding: 0.25rem;
-}
-
-#movieMain .showtimeList .revenue {
-    margin-top: 0.25rem;
+    font: var(--f-large);
 }
 
 #movieMain .feedback {
     margin: 2.5rem 1rem;
-    font-size: var(--font-subtitle);
+    font: var(--f-large);
+    font-weight: bold;
 }
 
 
 #showtimeReservation #seatSelection {
     margin: 1rem;
-    padding: 0.5rem;
-    border: var(--border-small-light);
-    border-radius: var(--border-radius-large);
-    background: hsla(0, 0%, 0%, 20%);
+    padding: 0.375rem;
+    border: var(--b-small);
+    border-radius: var(--br-large);
+    box-shadow: var(--shadow);
+    background-color: var(--bg-light65);
 }
 
 #showtimeReservation #seatSelection .title {
-    margin-top: 0.25rem;
-    margin-bottom: 0.5rem;
-    font-size: var(--font-title);
+    margin: 0.375rem;
+    font: var(--f-large);
+    text-align: center;
 }
 
 #showtimeReservation #seatSelector {
@@ -482,170 +621,155 @@ main {
 }
 
 #showtimeReservation #seatSelector button {
-    height: 3.75rem;
+    height: 3rem;
     aspect-ratio: 1/1;
-    margin: 0.25rem;
+    margin: 0.375rem;
     border: none;
-    border-radius: var(--border-radius-small);
-    box-shadow: 2px 2px 2px hsla(0, 0%, 0%, 25%), -1px -1px 1px hsla(0, 0%, 100%, 25%);
-    background-color: hsl(215, 57.5%, 55%);
-    font-size: var(--font-small);
+    border-radius: var(--br-small);
+    box-shadow: var(--shadow), var(--highlight);
+    background-color: hsl(215, 55%, 55%);
+    font: var(--font-regular);
     transition: var(--transition-effect);
 }
 
 #showtimeReservation #seatSelector .enabled {
+    font-weight: bold;
     cursor: pointer;
 }
 
 #showtimeReservation #seatSelector .enabled:hover {
-    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
-    background-color: hsl(215, 57.5%, 45%);
+    box-shadow: var(--shadow-inset-hover), var(--highlight-inset-hover);
+    background-color: hsl(215, 55%, 50%);
 }
 
 #showtimeReservation #seatSelector .enabled:active {
-    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 50%) inset, -2px -2px 2px hsla(0, 0%, 100%, 50%) inset;
-    background-color: hsl(215, 57.5%, 35%);
+    box-shadow: var(--shadow-inset-active), var(--highlight-inset-active);
+    background-color: hsl(215, 55%, 45%);
 }
 
 #showtimeReservation #seatSelector .disabled {
-    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
-    background-color: hsl(0, 55%, 57.25%);
-    cursor: default;
+    box-shadow: var(--shadow-inset), var(--highlight-inset);
+    background-color: hsl(0, 55%, 55%);
 }
 
 #showtimeReservation #seatSelector .selected {
-    box-shadow: 2px 2px 2px hsla(0, 0%, 0%, 25%) inset, -1px -1px 1px hsla(0, 0%, 100%, 25%) inset;
-    background-color: hsl(125, 55%, 57.25%);
+    box-shadow: var(--shadow-inset), var(--highlight-inset);
+    background-color: hsl(125, 55%, 55%);
 }
 
 #showtimeReservation #seatSelector .selected:hover {
-    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 25%) inset, -2px -2px 2px hsla(0, 0%, 100%, 25%) inset;
-    background-color: hsl(125, 55%, 47.25%);
+    box-shadow: var(--shadow-inset-hover), var(--highlight-inset-hover);
+    background-color: hsl(125, 55%, 50%);
 }
 
 #showtimeReservation #seatSelector .selected:active {
-    box-shadow: 4px 4px 4px hsla(0, 0%, 0%, 50%) inset, -2px -2px 2px hsla(0, 0%, 100%, 50%) inset;
-    background-color: hsl(125, 55%, 37.25%);
+    box-shadow: var(--shadow-inset), var(--highlight-inset);
+    background-color: hsl(125, 55%, 45%);
 }
 
 
 #showtimeReservation #seatPrices {
     margin: 1rem;
-    border: var(--border-small-heavy);
-    border-radius: var(--border-radius-large);
+    border: var(--b-small);
+    border-radius: var(--br-large);
+    box-shadow: var(--shadow);
     overflow: hidden;
 }
 
 #showtimeReservation #seatPrices .title {
-    padding: 0.25rem;
-    background-color: var(--bg-alternate);
-    color: var(--fc-alternate);
-    font-size: var(--font-subtitle);
+    padding: 0.375rem;
+    background-color: var(--bg-dark25);
+    color: var(--fc-light);
+    font: var(--f-large);
 }
 
 #showtimeReservation #seatPrices .seatPrice {
-    border-top: var(--border-small-heavy);
-    font-size: var(--font-large);
+    border-top: var(--b-small);
+    font: var(--f-regular);
 }
 
 #showtimeReservation #seatPrices .seatPrice:nth-child(odd) {
-    background: hsla(0, 0%, 0%, 35%);
+    background-color: var(--bg-light55);
 }
 
 #showtimeReservation #seatPrices .seatPrice:nth-child(even) {
-    background: hsla(0, 0%, 0%, 15%);
+    background-color: var(--bg-light65);
 }
 
 #showtimeReservation #seatPrices .seatPrice .customer {
-    width: 12.5rem;
+    width: 10rem;
+    padding: 0.5rem;
+    font-weight: bold;
+}
+
+#showtimeReservation #seatPrices .seatPrice .customerCount {
+    width: 2.5rem;
     padding: 0.5rem;
 }
 
 #showtimeReservation #seatPrices .seatPrice .price {
     padding: 0.5rem;
-    border-left: var(--border-small-heavy);
-}
-
-#showtimeReservation #seatPrices .seatPrice .customerCount {
-    width: 5rem;
-    padding: 0.5rem;
+    border-left: var(--b-small);
 }
 
 #showtimeReservation #seatPrices .seatPrice .revenue {
     width: 7.5rem;
     padding: 0.5rem;
-    border-left: var(--border-small-heavy);
+    border-left: var(--b-small);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput {
-    background-color: hsla(0, 0%, 0%, 40%);
+    font-weight: bold;
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .count {
     width: 5rem;
     padding: 0.5rem;
-    border-left: var(--border-small-heavy);
-    border-right: var(--border-small-heavy);
-    background-color: hsla(0, 0%, 100%, 60%);
+    border-left: var(--b-small);
+    border-right: var(--b-small);
+    text-align: center;
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput button {
     width: 3.75rem;
     border: none;
-    font-size: inherit;
+    font: inherit;
     cursor: pointer;
     transition: var(--transition-effect);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .decrease {
-    border-left: var(--border-small-heavy);
-    background-color: hsla(0, 80%, 65%, 50%);
+    border-left: var(--b-small);
+    background-color: hsla(0, 80%, 55%, 40%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .decrease:hover {
-    background-color: hsla(0, 80%, 55%, 50%);
+    background-color: hsla(0, 80%, 65%, 40%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .decrease:active {
-    background-color: hsla(0, 80%, 45%, 50%);
+    background-color: hsla(0, 80%, 45%, 40%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .increase {
-    background-color: hsla(125, 85%, 70%, 50%);
+    background-color: hsla(125, 85%, 60%, 40%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .increase:hover {
-    background-color: hsla(125, 85%, 60%, 50%);
+    background-color: hsla(125, 85%, 70%, 40%);
 }
 
 #showtimeReservation #seatPrices .seatPrice .numberInput .increase:active {
-    background-color: hsla(125, 85%, 50%, 50%);
-}
-
-#showtimeReservation .reservationButton {
-    margin: 1rem;
-    padding: 0.5rem 1.5rem;
-    border: var(--border-medium-heavy);
-    border-radius: var(--border-radius-regular);
-    background-color: hsla(0, 0%, 100%, 75%);
-    font-size: var(--font-large);
-    cursor: pointer;
-}
-
-#showtimeReservation .reservationButton:hover {
-    background-color: hsla(0, 0%, 100%, 50%);
-}
-
-#showtimeReservation .reservationButton:active {
-    background-color: hsla(0, 0%, 100%, 10%);
+    background-color: hsla(125, 85%, 50%, 40%);
 }
 
 #showtimeReservation .feedback {
     margin: 0rem 1rem;
-    font-size: var(--font-large);
+    font: var(--f-large);
 }
 
 
+/* Start */
 #userDetails {
     align-items: center;
 }
@@ -664,7 +788,8 @@ main {
     font-size: var(--font-subtitle);
 }
 
-#userDetails .userDetail input, #userDetails .userDetail button {
+#userDetails .userDetail input,
+#userDetails .userDetail button {
     margin: 0.25rem;
     padding: 0.25rem;
     border-radius: var(--border-radius-regular);
@@ -709,40 +834,4 @@ main {
 #reservationList .time {
     font-size: var(--font-subtitle);
 }
-
-
-#adminButton {
-    position: absolute;
-    bottom: 0rem;
-    right: 0rem;
-    margin: 3.75%;
-    padding: 0.5rem;
-    border: var(--border-medium-heavy);
-    border-radius: var(--border-radius-regular);
-    font-size: var(--font-title);
-    cursor: pointer;
-}
-
-#adminButton.create {
-    background-color: rgb(125, 225, 100);
-}
-
-#adminButton.create:hover {
-    background-color: rgb(100, 175, 80);
-}
-
-#adminButton.create:active {
-    background-color: rgb(75, 125, 60);
-}
-
-#adminButton.delete {
-    background-color: rgb(225, 100, 100);
-}
-
-#adminButton.delete:hover {
-    background-color: rgb(175, 80, 80);
-}
-
-#adminButton.delete:active {
-    background-color: rgb(125, 60, 60);
-}
+/* End */

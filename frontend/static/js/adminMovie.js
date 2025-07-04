@@ -26,17 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML += `
-            <img src="${movie.image_url}" alt="${movie.title} image">
-            <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
-            <div class="details textCenter">
+            <img src="${movie.image_url}" alt="${movie.title} Poster">
+            <a href="${SITE}admin/movie/${movie.id}" class="title">${movie.title}</a>
+            <div class="details">
                 <div class="flex contentSpaced">
                     <div>${movie.length} Minutes</div>
-                    <div class="textBold">${toTitle(movie.genre)}</div>
+                    <div>${toTitle(movie.genre)}</div>
                 </div>
                 <div>Revenue: $${movie.revenue.toFixed(2)}</div>
             </div>
+            <div id="movieFeedback" class="feedback"></div>
             <div class="description">${movie.description}</div>
-            <div id="movieFeedback" class="feedback textCenter textBold"></div>
         `;
     }
 
@@ -68,12 +68,14 @@ document.addEventListener("DOMContentLoaded", function () {
             showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
-                <div class="details flex contentSpaced">
-                    <p>${showtime.theatre.toUpperCase()}</p>
-                    <p>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</p>
+                <div class="details">
+                    <div class="flex contentSpaced">
+                        <div>${showtime.theatre.toUpperCase()}</div>
+                        <div>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</div>
+                    </div>
+                    <div>${revenuePhrase} Revenue: $${showtime.revenue.toFixed(2)}</div>
                 </div>
                 <div class="time textCenter textBold">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
-                <div class="revenue textCenter">${revenuePhrase} Revenue: $${showtime.revenue.toFixed(2)}</div>
             `;
 
             showtimeList.appendChild(showtimeDiv);
@@ -94,17 +96,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-const modal = document.getElementById("modal");
+const showtimeModal = document.getElementById("showtimeModal");
 
 window.openModal=openModal;
 window.cancelModal=cancelModal;
 
 function openModal() {
-    modal.showModal();
+    showtimeModal.showModal();
 }
 
 function cancelModal() {
-    modal.close();
+    showtimeModal.close();
 }
 
 

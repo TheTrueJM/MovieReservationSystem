@@ -4,25 +4,24 @@
 
 {% block content %}
     <main>
-        <div id="pageTitle" class="textCenter textBold">Movies</div>
-        <button id="adminButton" class="create textBold" onclick="openModal()">+ Create Movie</button>
+        <button class="floatButton create" onclick="openModal()">+ Post Movie</button>
 
         <div id="movieList" class="contentList">
         </div>
 
-        <dialog id="modal">
-            <div class="content flexCol">
-                <div class="title textBold">Create New Movie</div>
+        <dialog id="movieModal" class="modal">
+            <div class="content">
+                <div class="title">New Movie</div>
                 <input type="text" id="title" placeholder="Enter movie title..." required />
                 <input type="text" id="genre" placeholder="Enter movie genre..." required />
                 <input type="textarea" id="description" placeholder="Enter movie description..." />
                 <input type="text" id="image" placeholder="Enter url to movie poster..." required />
                 <input type="number" id="length" min=1 default=1 placeholder="Enter movie minute length..." required />
                 <div class="buttons flex">
-                    <button class="textBold" onclick="cancelModal()">Cancel</button>
-                    <button class="textBold" onclick="createMovie()">Create</button>
+                    <button onclick="cancelModal()">Cancel</button>
+                    <button onclick="createMovie()">Post</button>
                 </div>
-                <div id="feedback" class="feedback textBold"></div>
+                <div id="movieFeedback" class="feedback textBold"></div>
             </div>
         </dialog>
     </main>

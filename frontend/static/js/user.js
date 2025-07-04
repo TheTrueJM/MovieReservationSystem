@@ -18,11 +18,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem("access_token", data.access_token);
 
                 const userDiv = document.getElementById("user");
-                const unauthDiv = userDiv.querySelector(".unauth");
-                const authDiv = userDiv.querySelector(".auth");
+                const unauthDivs = userDiv.querySelectorAll(".unauth");
+                const authDivs = userDiv.querySelectorAll(".auth");
 
-                unauthDiv.hidden = true;
-                authDiv.hidden = false;
+                unauthDivs.forEach(unauthDiv => { unauthDiv.hidden = true; });
+                authDivs.forEach(authDiv => { authDiv.hidden = false; });
 
                 checkAdmin();
             })
@@ -39,10 +39,14 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 if (data.admin_status) {
                     const linksDiv = document.getElementById("links");
-                    linksDiv.innerHTML += `
-                        <a href="/admin/movies">Admin Movies</a>
-                        <a href="/admin/showtimes">Admin Showtimes</a>
-                    `;
+                    const adminMoviesDiv = linksDiv.querySelector(".adminMovies");
+                    const adminShowtimesDiv = linksDiv.querySelector(".adminShowtimes");
+
+                    adminMoviesDiv.hidden = false;
+                    adminShowtimesDiv.hidden = false;
+
+                    adminMoviesDiv.setAttribute("href", "/admin/movies")
+                    adminShowtimesDiv.setAttribute("href", "/admin/showtimes")
                 }
             })
             .catch(error => {});

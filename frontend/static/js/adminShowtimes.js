@@ -1,7 +1,14 @@
 import { API, SITE, dateDisplay, timeDisplay } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
+    selectNav()
     fetchShowtimes();
+
+    function selectNav() {
+        const linksDiv = document.getElementById("links");
+        const adminShowtimesDiv = linksDiv.querySelector(".adminShowtimes");
+        adminShowtimesDiv.classList.add("selected");
+    }
 
     function fetchShowtimes() {
         fetch(API + "admin/showtimes", {
@@ -34,11 +41,11 @@ document.addEventListener("DOMContentLoaded", function() {
             showtimeDiv.href = `${SITE}admin/showtime/${showtime.id}`;
 
             showtimeDiv.innerHTML = `
-                <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details flexCol contentSpaced textCenter">
-                    <div class="textBold">${showtime.movie.title}</div>
-                    <div class="adminTime textBolder">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
-                    <div>
+                <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} Poster">
+                <div class="details flexCol contentSpaced">
+                    <div>${showtime.movie.title}</div>
+                    <div class="time">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
+                    <div class="theatre">
                         <div class="flex contentSpaced">
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${showtime.seats_total - showtime.seats_available}/${showtime.seats_total} Seats Reserved</div>

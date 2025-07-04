@@ -25,11 +25,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
-            <img src="${movie.image_url}" alt="${movie.title} image">
-            <a href="${SITE}movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
+            <img src="${movie.image_url}" alt="${movie.title} Poster">
+            <a href="${SITE}movie/${movie.id}" class="title">${movie.title}</a>
             <div class="details flex contentSpaced">
                 <div>${movie.length} Minutes</div>
-                <div class="textBold">${toTitle(movie.genre)}</div>
+                <div>${toTitle(movie.genre)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function displayShowtime(showtime) {
         const showtimeDetails = document.getElementById("showtimeDetails");
         showtimeDetails.innerHTML = `
-            <div id="pageTitle" class="textCenter textBold">${dateDisplay(showtime.date)} ~ ${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
+            <div id="pageTitle">${dateDisplay(showtime.date)} ~ ${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
         `;
     }
 
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
         seatSelection.classList.add("flexCol")
         showtimeReservation.appendChild(seatSelection);
 
-        seatSelection.innerHTML = `<div class="title textCenter textBold">Select Theatre Seats</div>`
+        seatSelection.innerHTML = `<div class="title">Select Theatre Seats</div>`
 
         const seatSelector = document.createElement("div");
         seatSelector.id = "seatSelector";
@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         for (let i = 1; i <= showtime.seats_total; i++) {
             const seatOption = document.createElement("button");
-            seatOption.classList.add("textBold")
             seatOption.textContent = i;
 
             if (reservedSeats.includes(i)) {
@@ -107,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
         seatPrices.id = "seatPrices";
         showtimeReservation.appendChild(seatPrices);
 
-        seatPrices.innerHTML += `<div class="title flex textBold">Customer Prices - ${theatre.toUpperCase()} Theatre Experience</div>`
+        seatPrices.innerHTML += `<div class="title flex">Customer Prices - ${theatre.toUpperCase()} Theatre Experience</div>`
 
         seat_prices.forEach(seat_price => {
             customerSeats[seat_price.customer] = 0;
@@ -117,12 +116,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
             seatPrice.innerHTML = `
                 <div class="flex">
-                    <div class="customer textBold">${toTitle(seat_price.customer)}</div>
+                    <div class="customer">${toTitle(seat_price.customer)}</div>
                     <div class="price">$${seat_price.price.toFixed(2)}</div>
                 </div>
-                <div class="numberInput flex textBolder">
+                <div class="numberInput flex">
                     <button class="decrease">-</button>
-                    <div class="count textCenter">0</div>
+                    <div class="count">0</div>
                     <button class="increase">+</button>
                 </div>
             `;
@@ -149,11 +148,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function displayCreateReservation(showtime, showtimeReservation) {
         const reservationButton = document.createElement("button");
-        reservationButton.classList.add("reservationButton")
-        reservationButton.textContent = "Create Reservation";
+        reservationButton.classList.add("floatButton")
+        reservationButton.textContent = "Place Reservation";
 
         const feedback = document.createElement("div");
-        feedback.classList.add("feedback", "textBold");
+        feedback.classList.add("feedback");
 
         reservationButton.addEventListener("click", function() {            
             let customers = [];

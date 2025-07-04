@@ -1,7 +1,14 @@
 import { API, SITE } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
+    selectNav();
     fetchMovies();
+
+    function selectNav() {
+        const linksDiv = document.getElementById("links");
+        const moviesDiv = linksDiv.querySelector(".movies");
+        moviesDiv.classList.add("selected");
+    }
 
     function fetchMovies() {
         fetch(API + "movies")
@@ -19,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function() {
             movieDiv.href = `${SITE}movie/${movie.id}`;
 
             movieDiv.innerHTML = `
-                <img src="${movie.image_url}" alt="${movie.title} image">
-                <div class="title textCenter">${movie.title}</div>
+                <img src="${movie.image_url}" alt="${movie.title} Poster">
+                <div class="title">${movie.title}</div>
             `;
 
             movieList.appendChild(movieDiv);

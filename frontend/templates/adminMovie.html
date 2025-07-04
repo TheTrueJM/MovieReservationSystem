@@ -3,19 +3,19 @@
 {% block title %}Admin | {% endblock %}
 
 {% block content %}
-    <main id="flexContent" class="flex">
+    <main class="flex">
         <div id="movieDetails" class="flexCol">
-            <button id="adminButton" class="delete textBold" onclick="deleteMovie()">- Delete Movie</button>
+            <button class="floatButton delete" onclick="deleteMovie()">- Remove Movie</button>
         </div>
         
         <div id="movieMain">
             <div id="pageTitle" class="textCenter textBold">Showtimes</div>
-            <button id="adminButton" class="create textBold" onclick="openModal()">+ Create Showtime</button>
+            <button class="floatButton create" onclick="openModal()">+ Post Showtime</button>
         </div>
 
-        <dialog id="modal">
-            <div class="content flexCol">
-                <div class="title textBold">Create New Showtime</div>
+        <dialog id="showtimeModal" class="modal">
+            <div class="content">
+                <div class="title">New Showtime</div>
                 <input type="date" id="date" required />
                 <input type="time" id="startTime" required />
                 <input type="number" id="totalSeats" min=1 default=1 placeholder="Enter total theatre seats..." required />
@@ -23,8 +23,8 @@
                     <option value="" disabled selected hidden>Select theatre type...</option>
                 </select>
                 <div class="buttons flex">
-                    <button class="textBold" onclick="cancelModal()">Cancel</button>
-                    <button class="textBold" onclick="createShowtime()">Create</button>
+                    <button onclick="cancelModal()">Cancel</button>
+                    <button onclick="createShowtime()">Post</button>
                 </div>
                 <div id="showtimeFeedback" class="feedback textBold"></div>
             </div>

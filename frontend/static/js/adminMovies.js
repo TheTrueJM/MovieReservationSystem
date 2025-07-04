@@ -1,7 +1,14 @@
 import { API, SITE } from "./exports.js";
 
 document.addEventListener("DOMContentLoaded", function() {
+    selectNav();
     fetchMovies();
+
+    function selectNav() {
+        const linksDiv = document.getElementById("links");
+        const adminMoviesDiv = linksDiv.querySelector(".adminMovies");
+        adminMoviesDiv.classList.add("selected");
+    }
 
     function fetchMovies() {
         fetch(API + "admin/movies", {
@@ -25,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             movieDiv.innerHTML = `
                 <img src="${movie.image_url}" alt="${movie.title} image">
-                <div class="title  textCenter textBold">${movie.title}</div>
+                <div class="title">${movie.title}</div>
             `;
 
             movieList.appendChild(movieDiv);
@@ -34,17 +41,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-const modal = document.getElementById("modal");
+const movieModal = document.getElementById("movieModal");
 
 window.openModal=openModal;
 window.cancelModal=cancelModal;
 
 function openModal() {
-    modal.showModal();
+    movieModal.showModal();
 }
 
 function cancelModal() {
-    modal.close();
+    movieModal.close();
 }
 
 
@@ -57,7 +64,7 @@ function createMovie() {
     const image = document.getElementById("image").value;
     const length = parseInt(document.getElementById("length").value) || 0;
 
-    const feedback = document.getElementById("feedback");
+    const movieFeedback = document.getElementById("movieFeedback");
 
     fetch(API + "admin/movies", {
         method: "POST",
@@ -81,14 +88,14 @@ function createMovie() {
             }
         })
         .then(movie => {
-            feedback.innerHTML = "Movie Successfully Created. Redirecting...";
-            feedback.classList.add("feedbackSuccess")
-            feedback.classList.remove("feedbackFail")
+            movieFeedback.innerHTML = "Movie Successfully Created. Redirecting...";
+            movieFeedback.classList.add("feedbackSuccess")
+            movieFeedback.classList.remove("feedbackFail")
             setTimeout(() => {window.location.href = `${SITE}admin/movie/${movie.id}`;}, 2500);
         })
         .catch(error => {
-            feedback.innerHTML = error.message;
-            feedback.classList.add("feedbackFail")
-            feedback.classList.remove("feedbackSuccess")
+            movieFeedback.innerHTML = error.message;
+            movieFeedback.classList.add("feedbackFail")
+            movieFeedback.classList.remove("feedbackSuccess")
         });
 }

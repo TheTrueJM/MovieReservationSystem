@@ -18,14 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function displayMovie(movie) {
         document.title += " " + movie.title;
-
+        
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
-            <img src="${movie.image_url}" alt="${movie.title} image">
-            <a href="${SITE}movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
+            <img src="${movie.image_url}" alt="${movie.title} Poster">
+            <a href="${SITE}movie/${movie.id}" class="title">${movie.title}</a>
             <div class="details flex contentSpaced">
                 <div>${movie.length} Minutes</div>
-                <div class="textBold">${toTitle(movie.genre)}</div>
+                <div>${toTitle(movie.genre)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (showtime.date != current_date) {
                 current_date = showtime.date;
 
-                movieMain.innerHTML += `<div class="date textBold">${dateDisplay(current_date)}</div>`;
+                movieMain.innerHTML += `<div class="date">${dateDisplay(current_date)}</div>`;
 
                 showtimeList = document.createElement("div");
                 showtimeList.classList.add("showtimeList", "flex")

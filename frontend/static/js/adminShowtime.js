@@ -27,12 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const movieDetails = document.getElementById("movieDetails");
         movieDetails.innerHTML = `
-            <img src="${movie.image_url}" alt="${movie.title} image">
-            <a href="${SITE}admin/movie/${movie.id}" class="title textCenter textBold">${movie.title}</a>
-            <div class="details textCenter">
+            <img src="${movie.image_url}" alt="${movie.title} Poster">
+            <a href="${SITE}admin/movie/${movie.id}" class="title">${movie.title}</a>
+            <div class="details">
                 <div class="flex contentSpaced">
                     <div>${movie.length} Minutes</div>
-                    <div class="textBold">${movie.genre}</div>
+                    <div>${movie.genre}</div>
                 </div>
                 <div>Revenue: $${movie.revenue}</div>
             </div>
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayShowtime(showtime) {
         const showtimeDetails = document.getElementById("showtimeDetails");
         showtimeDetails.innerHTML = `
-            <div id="pageTitle" class="textCenter textBold">${dateDisplay(showtime.date)} ~ ${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
+            <div id="pageTitle">${dateDisplay(showtime.date)} ~ ${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
         `;
     }
 
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         seatSelection.classList.add("flexCol")
         showtimeReservation.appendChild(seatSelection);
 
-        seatSelection.innerHTML = `<div class="title textCenter textBold">Showtime Theatre Seats</div>`
+        seatSelection.innerHTML = `<div class="title">Showtime Theatre Seats</div>`
 
         const seatSelector = document.createElement("div");
         seatSelector.id = "seatSelector";
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
         seatPrices.id = "seatPrices";
         showtimeReservation.appendChild(seatPrices);
 
-        seatPrices.innerHTML += `<div class="title flex textBold">Customer Revenue $${showtime.revenue.toFixed(2)} - ${showtime.theatre.toUpperCase()} Theatre Experience</div>`
+        seatPrices.innerHTML += `<div class="title flex">Customer Revenue $${showtime.revenue.toFixed(2)} - ${showtime.theatre.toUpperCase()} Theatre Experience</div>`
 
         seat_prices.forEach(seat_price => {
             const seatPrice = document.createElement("div");
@@ -115,8 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             seatPrice.innerHTML = `
                 <div class="flex">
-                    <div class="customer textBold">${toTitle(seat_price.customer)}</div>
-                    <div class="customerCount textCenter">${customerCount[seat_price.customer] || 0}</div>
+                    <div class="customer">${toTitle(seat_price.customer)}</div>
+                    <div class="customerCount">${customerCount[seat_price.customer] || 0}</div>
                     <div class="price">$${seat_price.price.toFixed(2)}</div>
                 </div>
                 <div class="revenue">$${(customerRevenue[seat_price.customer] || 0).toFixed(2)}</div>
