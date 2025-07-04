@@ -15,8 +15,8 @@ class CHeader extends HTMLElement {
                 </div>
                 
                 <div id="user">
-                    <a href="/login" class="unauth">Login</a>
-                    <a href="/signup" class="unauth">Sign Up</a>
+                    <a id="loginButton" class="unauth">Login</a>
+                    <a id="signupButton" class="unauth">Sign Up</a>
                     
                     <a href="/user" class="auth" hidden>User Details</a>
                     <a href="/" onclick="localStorage.clear()" class="auth" hidden>Logout</a>

@@ -4,7 +4,7 @@
 
 {% block content %}
     <main>
-        <button class="floatButton create" onclick="openModal()">+ Post Movie</button>
+        <button class="floatButton create" onclick="openMovieModal()">+ Post Movie</button>
 
         <div id="movieList" class="contentList">
         </div>
@@ -18,7 +18,7 @@
                 <input type="text" id="image" placeholder="Enter url to movie poster..." required />
                 <input type="number" id="length" min=1 default=1 placeholder="Enter movie minute length..." required />
                 <div class="buttons flex">
-                    <button onclick="cancelModal()">Cancel</button>
+                    <button onclick="cancelMovieModal()">Cancel</button>
                     <button onclick="createMovie()">Post</button>
                 </div>
                 <div id="movieFeedback" class="feedback textBold"></div>

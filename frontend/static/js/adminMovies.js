@@ -43,14 +43,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 const movieModal = document.getElementById("movieModal");
 
-window.openModal=openModal;
-window.cancelModal=cancelModal;
+window.openMovieModal=openMovieModal;
+window.cancelMovieModal=cancelMovieModal;
 
-function openModal() {
+function openMovieModal() {
     movieModal.showModal();
 }
 
-function cancelModal() {
+function cancelMovieModal() {
     movieModal.close();
 }
 

@@ -98,14 +98,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const showtimeModal = document.getElementById("showtimeModal");
 
-window.openModal=openModal;
-window.cancelModal=cancelModal;
+window.openShowtimeModal=openShowtimeModal;
+window.cancelShowtimeModal=cancelShowtimeModal;
 
-function openModal() {
+function openShowtimeModal() {
     showtimeModal.showModal();
 }
 
-function cancelModal() {
+function cancelShowtimeModal() {
     showtimeModal.close();
 }
 

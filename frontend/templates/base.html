@@ -15,6 +15,33 @@
 
     {% block content %}{% endblock %}
 
+    <dialog id="loginModal" class="modal">
+        <div class="content">
+            <div class="title">User Login</div>
+            <input type="text" id="loginUsername" placeholder="Enter username..." required />
+            <input type="password" id="loginPassword" placeholder="Enter password..." required />
+            <div class="buttons flex">
+                <button onclick="cancelLoginModal()">Cancel</button>
+                <button onclick="login()">Login</button>
+            </div>
+            <div id="loginFeedback" class="feedback textBold"></div>
+        </div>
+    </dialog>
+
+    <dialog id="signupModal" class="modal">
+        <div class="content">
+            <div class="title">User Sign Up</div>
+            <input type="text" id="signupUsername" placeholder="Enter username..." required />
+            <input type="password" id="signupPassword" placeholder="Enter password..." required />
+            <input type="password" id="signupConfirm" placeholder="Confirm password..." required />
+            <div class="buttons flex">
+                <button onclick="cancelSignupModal()">Cancel</button>
+                <button onclick="signup()">Sign Up</button>
+            </div>
+            <div id="signupFeedback" class="feedback textBold"></div>
+        </div>
+    </dialog>
+
     <script type="module" src="{{ url_for('static', filename='js/components.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/user.js') }}"></script>
     {% block scripts %}{% endblock %}

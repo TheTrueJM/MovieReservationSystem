@@ -10,7 +10,7 @@
         
         <div id="movieMain">
             <div id="pageTitle" class="textCenter textBold">Showtimes</div>
-            <button class="floatButton create" onclick="openModal()">+ Post Showtime</button>
+            <button class="floatButton create" onclick="openShowtimeModal()">+ Post Showtime</button>
         </div>
 
         <dialog id="showtimeModal" class="modal">
@@ -23,7 +23,7 @@
                     <option value="" disabled selected hidden>Select theatre type...</option>
                 </select>
                 <div class="buttons flex">
-                    <button onclick="cancelModal()">Cancel</button>
+                    <button onclick="cancelShowtimeModal()">Cancel</button>
                     <button onclick="createShowtime()">Post</button>
                 </div>
                 <div id="showtimeFeedback" class="feedback textBold"></div>
