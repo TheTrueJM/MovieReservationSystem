@@ -12,9 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function fetchMovies() {
         fetch(API + "movies")
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(movies => displayMovies(movies))
-            .catch(error => {});
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayMovies(movies) {

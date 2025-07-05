@@ -10,9 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
             .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
+                if (response.ok) { return response.json(); }
             })
             .then(data => {
                 localStorage.setItem("access_token", data.access_token);
@@ -35,7 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+            })
             .then(data => {
                 if (data.admin_status) {
                     const linksDiv = document.getElementById("links");

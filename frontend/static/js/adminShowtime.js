@@ -12,14 +12,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(showtime => {
                 displayMovie(showtime.movie);
                 displayShowtime(showtime);
                 displayReservation(showtime);
                 displayFeedback();
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => {
+                if (error.message == 401) { window.location.href = "/error401"; }
+                else if (error.message == 404) { window.location.href = "/error404"; }
+                else { window.location.href = "/error500"; }
+            });
     }
 
     function displayMovie(movie) {
@@ -51,12 +58,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const showtimeReservation = document.getElementById("showtimeReservation");
 
         fetch(API + "movies/seatPricing?theatre=" + showtime.theatre)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(seat_prices => {
                 displayShowtimeSeats(showtime, showtimeReservation);
                 displaySeatRevenue(seat_prices, showtime, showtimeReservation)
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayShowtimeSeats(showtime, showtimeReservation) {

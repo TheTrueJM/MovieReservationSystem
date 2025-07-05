@@ -12,33 +12,6 @@
 
 
 :root {
-    --font-header: 2.75rem;
-    --font-nav: 1.5rem;
-    --font-page-title: 2.5rem;
-
-    --font-title: 1.75rem;
-    --font-subtitle: 1.5rem;
-    --font-large: 1.375rem;
-    --font-regular: 1.25rem;
-    --font-small: 1.125rem;
-
-    --bg-header: hsl(0, 0%, 10%);
-    --bg-main: hsl(0, 0%, 85%);
-    --bg-alternate: hsl(0, 0%, 15%);
-
-    --fc-main: hsl(0, 0%, 15%);
-    --fc-alternate: hsl(0, 0%, 95%);
-
-    --border-small-light: 0.125rem solid hsla(0, 0%, 0%, 30%);
-    --border-small-heavy: 0.125rem solid hsla(0, 0%, 0%, 70%);
-    --border-medium-heavy: 0.25rem solid hsla(0, 0%, 0%, 80%);
-    --border-large-light: 0.375rem solid hsla(0, 0%, 0%, 50%);
-
-    --border-radius-largest: 1rem;
-    --border-radius-large: 0.75rem;
-    --border-radius-regular: 0.5rem;
-    --border-radius-small: 0.25rem;
-
     --ff: Arial, Helvetica, sans-serif;
 
     --f-header: bold 2rem/1.4em var(--ff);
@@ -97,7 +70,7 @@ body {
     flex-flow: column;
     background-color: var(--bg-light75);
     color: var(--fc-dark);
-    font: var(--f-regular)
+    font: var(--f-regular);
 }
 
 
@@ -227,25 +200,14 @@ main {
 }
 
 
-/* Start */
-.centerCard {
-    width: 40%;
-    padding: 3.75rem 2.5rem;
-    border-radius: var(--border-radius-regular);
-    box-shadow: 2px 4px 8px hsla(0, 0%, 0%, 25%);
-    background-color: hsla(0, 0%, 0%, 25%);
-}
-/* End */
-
-
 .modal {
     width: min(625px, 90%);
     justify-self: center;
     align-self: center;
     border: var(--b-regular);
     border-radius: var(--br-large);
-    background: var(--bg-light75);
     box-shadow: var(--shadow);
+    background: var(--bg-light75);
 }
 
 .modal::backdrop {
@@ -392,51 +354,6 @@ main {
     transform: scale(1.025);
 }
 
-
-/* Start */
-#authCard .title {
-    margin-bottom: 2.5rem;
-    font-size: var(--font-title);
-}
-
-#authCard input {
-    margin: 0.75rem 0rem;
-    padding: 0.375rem;
-    border: var(--border-large-light);
-    border-color: hsla(125, 65%, 35%, 50%);
-    border-radius: var(--border-radius-regular);
-    background-color: hsla(0, 0%, 100%, 95%);
-    font-size: var(--font-regular);
-}
-
-#authCard input:placeholder-shown {
-    border: var(--border-large-light);
-    background-color: hsla(0, 0%, 100%, 75%);
-}
-
-#authCard button {
-    margin-top: 1.75rem;
-    padding: 0.5rem;
-    border: var(--border-medium-heavy);
-    border-radius: var(--border-radius-regular);
-    background-color: hsla(0, 0%, 100%, 75%);
-    font-size: var(--font-large);
-    cursor: pointer;
-}
-
-#authCard button:hover {
-    background-color: hsla(0, 0%, 100%, 50%);
-}
-
-#authCard button:active {
-    background-color: hsla(0, 0%, 100%, 10%);
-}
-
-#authCard .feedback {
-    margin-top: 1.75rem;
-    font-size: var(--font-large);
-}
-/* End */
 
 
 #movieList .card {
@@ -591,6 +508,7 @@ main {
 #movieMain .showtimeList .card .time {
     padding: 0.25rem;
     font: var(--f-large);
+    text-align: center;
 }
 
 #movieMain .feedback {
@@ -628,7 +546,7 @@ main {
     border-radius: var(--br-small);
     box-shadow: var(--shadow), var(--highlight);
     background-color: hsl(215, 55%, 55%);
-    font: var(--font-regular);
+    font: var(--f-regular);
     transition: var(--transition-effect);
 }
 
@@ -769,69 +687,72 @@ main {
 }
 
 
-/* Start */
+
 #userDetails {
     align-items: center;
 }
 
 #userDetails .userDetail {
-    width: min(90%, 40rem);
+    width: min(750px, 90%);
+    display: flex;
+    flex-flow: column;
     margin: 1rem;
-    padding: 0.5rem;
-    border-radius: var(--border-radius-large);
-    background-color: var(--bg-alternate);
-    color: var(--fc-alternate);
+    padding: 1rem;
+    align-items: center;
+    border-radius: var(--br-large);
+    box-shadow: var(--shadow);
+    background: var(--bg-dark25);
+    color: var(--fc-light);
+    font: var(--f-regular);
 }
 
 #userDetails .userDetail .title {
     margin-bottom: 0.5rem;
-    font-size: var(--font-subtitle);
+    font: var(--f-large);
 }
 
 #userDetails .userDetail input,
 #userDetails .userDetail button {
+    width: 100%;
     margin: 0.25rem;
     padding: 0.25rem;
-    border-radius: var(--border-radius-regular);
-    font-size: var(--font-regular);
+    font: var(--f-regular);
+    font: inherit;
+}
+
+#userDetails .userDetail input {
+    border: var(--b-small);
+    border-color: hsla(125, 65%, 35%);
+    border-radius: var(--br-small);
+    background-color: var(--bg-light90);
+}
+
+#userDetails .userDetail input:placeholder-shown,
+#userDetails .userDetail input:invalid {
+    border: var(--b-small);
+    background-color: var(--bg-light85);
+}
+
+#userDetails .userDetail button {
+    margin-top: 0.75rem;
+    border: var(--b-regular);
+    border-radius: var(--br-regular);
+    background: var(--bg-gradient);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#userDetails .userDetail button:hover {
+    background: var(--bg-gradient-hover);
+}
+
+#userDetails .userDetail button:active {
+    background: var(--bg-gradient-active);
 }
 
 #userDetails .userDetail .feedback {
-    margin-top: 0.25rem;
-    font-size: var(--font-large);
+    margin-top: 0.75rem;
+    font: var(--f-large);
+    font-weight: bold;
+    text-align: center;
 }
-
-#userDetails .reservationsTitle {
-    margin: 1rem;
-    font-size: var(--font-page-title);
-    text-decoration: underline;
-}
-
-
-#reservationList .card {
-    width: min(27.5rem, 80%);
-    height: 10rem;
-    background-color: hsl(0, 0%, 92.5%);
-}
-
-#reservationList .card img {
-    height: 100%;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    border-right: var(--light-border);
-}
-
-#reservationList .details {
-    width: 100%;
-    padding: 0.5rem 0.25rem;
-    font-size: var(--font-regular);
-}
-
-#reservationList .details .title {
-    font-size: var(--font-large);
-}
-
-#reservationList .time {
-    font-size: var(--font-subtitle);
-}
-/* End */

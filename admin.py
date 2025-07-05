@@ -106,7 +106,7 @@ def admin_required(f):
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
 
         if current_user.role != ADMIN_ROLE:
-            abort(404, "Requested page not found") ###
+            abort(401, "You are not authorised to access the requested page")
         
         return f(*args, **kwargs)
     return decorated

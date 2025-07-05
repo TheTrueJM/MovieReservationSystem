@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+    <main>
+        <div>
+            <div id="pageTitle">{{error.code}}: {{error.status}}</div>
+            <div class="textCenter">
+                {{error.message}}
+            </div>
+        </div>
+    </main>
+{% endblock %}

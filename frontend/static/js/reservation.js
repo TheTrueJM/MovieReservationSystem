@@ -15,13 +15,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(reservation => {
                 displayMovie(reservation.showtime.movie);
                 displayShowtime(reservation.showtime);
                 displayReservation(reservation, reservation.showtime);
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => {
+                if (error.message == 404) { window.location.href = "/error404"; }
+                else { window.location.href = "/error500"; }
+            });
     }
 
     function displayMovie(movie) {
@@ -51,7 +57,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const showtimeReservation = document.getElementById("showtimeReservation");
 
         fetch(API + "movies/seatPricing?theatre=" + showtime.theatre)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(seat_prices => {
                 displayShowtimeSeats(reservation, showtime, showtimeReservation);
                 displaySeatPrices(reservation, seat_prices, showtime.theatre, showtimeReservation);
@@ -59,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 displayCancelReservation(reservation, showtimeReservation);
                 displayFeedback(showtimeReservation);
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayShowtimeSeats(reservation, showtime, showtimeReservation) {
@@ -192,11 +201,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 })
             })
                 .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
-                    }
+                    if (response.ok) { return response.json(); }
+                    else { return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); }); }
                 })
                 .then(reservation => {
                     feedback.innerHTML = "Reservation Successfully Updated. Reloading...";

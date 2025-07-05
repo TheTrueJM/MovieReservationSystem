@@ -8,12 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = url.split("/").pop();
 
         fetch(API + "movies/" + id)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(movie => {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
             })
-            .catch(error => { });
+            .catch(error => {
+                if (error.message == 404) { window.location.href = "/error404"; }
+                else { window.location.href = "/error500"; }
+            });
     }
 
     function displayMovie(movie) {
@@ -55,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div>${showtime.theatre.toUpperCase()}</div>
                     <div>${showtime.seats_available} Seats Available</div>
                 </div>
-                <div class="time textCenter textBold">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
+                <div class="time">${timeDisplay(showtime.time_start)} - ${timeDisplay(showtime.time_end)}</div>
             `;
 
             showtimeList.appendChild(showtimeDiv);

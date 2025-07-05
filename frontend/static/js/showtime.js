@@ -11,13 +11,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const id = url.split('/').pop();
 
         fetch(API + "movies/showtimes/" + id)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(showtime => {
                 displayMovie(showtime.movie);
                 displayShowtime(showtime);
                 displayReservation(showtime);
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => {
+                if (error.message == 404) { window.location.href = "/error404"; }
+                else { window.location.href = "/error500"; }
+            });
     }
 
     function displayMovie(movie) {
@@ -47,13 +53,16 @@ document.addEventListener("DOMContentLoaded", function() {
         const showtimeReservation = document.getElementById("showtimeReservation");
 
         fetch(API + "movies/seatPricing?theatre=" + showtime.theatre)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(seat_prices => {
                 displayShowtimeSeats(showtime, showtimeReservation);
                 displaySeatPrices(seat_prices, showtime.theatre, showtimeReservation)
                 displayCreateReservation(showtime, showtimeReservation)
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayShowtimeSeats(showtime, showtimeReservation) {
@@ -174,11 +183,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 })
             })
                 .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return response.json().then(error => { throw new Error(error.message || "Valid User Authentication is Required"); });
-                    }
+                    if (response.ok) { return response.json(); }
+                    else { return response.json().then(error => { throw new Error(error.message || "Valid User Authentication is Required"); }); }
                 })
                 .then(reservation => {
                     feedback.innerHTML = "Reservation Successfully Created. Redirecting...";

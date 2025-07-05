@@ -12,9 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function fetchShowtimes() {
         fetch(API + "movies/showtimes")
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(showtimes => displayShowtimes(showtimes))
-            .catch(error => {});
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayShowtimes(showtimes) {

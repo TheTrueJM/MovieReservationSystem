@@ -12,13 +12,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(movie => {
                 displayMovie(movie);
                 displayShowtimes(movie.showtimes);
                 fetchTheatreOptions();
             })
-            .catch(error => {});
+            .catch(error => {
+                if (error.message == 401) { window.location.href = "/error401"; }
+                else if (error.message == 404) { window.location.href = "/error404"; }
+                else { window.location.href = "/error500"; }
+            });
     }
 
     function displayMovie(movie) {
@@ -84,14 +91,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function fetchTheatreOptions() {
         fetch(API + "movies/theatres")
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(theatres => {
                 const theatreSelector = document.getElementById("theatre");
                 theatres.forEach(theatre => {
                     theatreSelector.innerHTML += `<option value="${theatre.theatre}">${theatre.theatre.toUpperCase()}</option>`;
                 });
             })
-            .catch(error => {});
+            .catch(error => { window.location.href = "/error500"; });
     }
 });
 
@@ -138,12 +148,8 @@ function createShowtime() {
         })
     })
         .then(response => {
-            if (response.ok) {
-                console.log(response)
-                return response.json();
-            } else {
-                return response.json().then(error => { throw new Error(error.message || "Invalid Admin User Authorisation"); });
-            }
+            if (response.ok) { return response.json(); }
+            else { return response.json().then(error => { throw new Error(error.message || "Invalid Admin User Authorisation"); }); }
         })
         .then(showtime => {
             feedback.innerHTML = "Showtime Successfully Created. Redirecting...";

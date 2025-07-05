@@ -9,13 +9,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Authorization": `Bearer ${localStorage.getItem("access_token")}`
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                else { throw new Error(response.status); }
+            })
             .then(reservations => displayReservations(reservations))
-            .catch(error => { });
+            .catch(error => { window.location.href = "/error500"; });
     }
 
     function displayReservations(reservations) {
-        const reservationList = document.getElementById("reservationList");
+        const reservationList = document.getElementById("showtimeList");
         reservationList.innerHTML = "";
 
         reservations.forEach(reservation => {
@@ -27,11 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const movie = showtime.movie;
 
             reservationDiv.innerHTML = `
-                <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} image">
-                <div class="details flexCol contentSpaced textCenter">
-                    <div class="title textBold">${showtime.movie.title}</div>
-                    <div class="time textBolder">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
-                    <div>
+                <img src="${showtime.movie.image_url}" alt="${showtime.movie.title} Poster">
+                <div class="details flexCol contentSpaced">
+                    <div class="title">${showtime.movie.title}</div>
+                    <div class="time">${dateDisplay(showtime.date)} | ${timeDisplay(showtime.time_start)}</div>
+                    <div class="theatre">
                         <div class="flex contentSpaced">
                             <div>${showtime.theatre.toUpperCase()}</div>
                             <div>${reservation.seats.length} Seats Reserved</div>
@@ -65,11 +68,8 @@ function updateUsername() {
         })
     })
         .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
-            }
+            if (response.ok) { return response.json(); }
+            else { return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); }); }
         })
         .then(data => {
             localStorage.setItem("access_token", data.access_token);
@@ -110,11 +110,8 @@ function updatePassword() {
             })
         })
             .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); });
-                }
+                if (response.ok) { return response.json(); }
+                else { return response.json().then(error => { throw new Error(error.message || "Invalid User Authorisation"); }); }
             })
             .then(data => {
                 feedback.innerHTML = data.message + ". Reloading...";
