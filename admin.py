@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from flask_sqlalchemy import query
 from flask_restx import Resource, Namespace, fields, reqparse, inputs
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -5,8 +6,8 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime, timedelta, date, time
 
-from models import Users, Movies, ShowTimes, TheatreTypes
-from inital_data import ADMIN_ROLE
+from models import Users, Movies, ShowTimes, CustomerTypes, TheatreTypes, SeatPrices
+from user_roles import ADMIN_ROLE
 from api_model_fields import DateField, TimeField
 
 
@@ -19,7 +20,7 @@ movie_model = admin_ns.model(
         "title": fields.String(required=True),
         "description": fields.String(required=True),
         "genre": fields.String(required=True),
-        "image_url": fields.String(required=True), # fields.URL
+        "image_url": fields.String(required=True),
         "length": fields.Integer(required=True)
     }
 )
@@ -86,9 +87,33 @@ extended_showtime_reservations_marshal = admin_ns.inherit(
 )
 
 
+customer_model = admin_ns.model(
+    "customer_details", {
+        "customer": fields.String(required=True),
+    }
+)
+
+theatre_model = admin_ns.model(
+    "theatre_details", {
+        "theatre": fields.String(required=True),
+    }
+)
+
+seat_price_model = admin_ns.model(
+    "seat_price", {
+        "customer": fields.String(required=True),
+        "theatre": fields.String(required=True),
+        "price": fields.Float(required=True)
+    }
+)
+
+
 
 movie_filters = reqparse.RequestParser()
+movie_filters.add_argument("query", type=str)
 movie_filters.add_argument("genre", type=str)
+movie_filters.add_argument("minutes-min", type=int)
+movie_filters.add_argument("minutes-max", type=int)
 
 showtime_filters = reqparse.RequestParser()
 showtime_filters.add_argument("theatre", type=str)
@@ -105,6 +130,9 @@ def admin_required(f):
         current_user_name = get_jwt_identity()
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
 
+        if not current_user:
+            abort(400, "Invalid user authentication identity token provided")
+
         if current_user.role != ADMIN_ROLE:
             abort(401, "You are not authorised to access the requested page")
         
@@ -118,11 +146,23 @@ class AdminMovies(Resource):
     @admin_required
     @admin_ns.marshal_list_with(extended_movie_marshal)
     def get(self):
+        movie_query: query.Query = Movies.query
+
         filters = movie_filters.parse_args()
+
+        if filters["query"]:
+            movie_query = movie_query.filter(or_(Movies.title.ilike(f"%{filters["query"]}%"), Movies.description.ilike(f"%{filters["query"]}%")))
+        
         if filters["genre"]:
-            movies: list[Movies] = Movies.query.filter_by(genre=filters["genre"].lower()).order_by(Movies.id.desc()).all()
-        else:
-            movies: list[Movies] = Movies.query.order_by(Movies.id.desc()).all()
+            movie_query = movie_query.filter_by(genre=filters["genre"].lower())
+        
+        if filters["minutes-min"]:
+            movie_query = movie_query.filter(filters["minutes-min"] <= Movies.length)
+        if filters["minutes-max"]:
+            movie_query = movie_query.filter(Movies.length <= filters["minutes-max"])
+
+        movies: list[Movies] = movie_query.order_by(Movies.id.desc()).all()
+
         return movies, 200
     
     @admin_required
@@ -138,6 +178,11 @@ class AdminMovies(Resource):
 
         if not title or not genre or not image_url:
             abort(400, "Required movie values must be supplied")
+
+        if 100 < len(title):
+            abort(400, "Movie title must not be greater than 100 characters")
+        if 25 < len(genre):
+            abort(400, "Movie genre must not be greater than 25 characters")
 
         if length < 1:
             abort(400, "Movie length must be at least 1 minute")
@@ -210,7 +255,7 @@ class AdminShowTimes(Resource):
 
         if filters["date"]:
             showtime_query = showtime_query.filter(ShowTimes.date == filters["date"].date())
-        elif filters["date-start"] or filters["date-end"]:
+        else:
             if filters["date-start"]:
                 showtime_query = showtime_query.filter(filters["date-start"].date() <= ShowTimes.date)
             if filters["date-end"]:
@@ -246,8 +291,8 @@ class AdminShowTimes(Resource):
             abort(400, "Showtime must start and end on the same day. The movie's length is too long to start at the supplied time")
         
         seats: int = data.get("seats_total")
-        if seats < 1:
-            abort(400, "Seating capacity must be at least 1")
+        if seats < 1 or 500 < seats:
+            abort(400, "Seating capacity must be at least 1 and not be greater than 500")
 
         new_showtime = ShowTimes(movie_id=movie_id, date=_date, time_start=time_start, time_end=datetime_end.time(), seats_total=seats, seats_available=seats, theatre=theatre)
         new_showtime.save()
@@ -276,3 +321,112 @@ class AdminShowTime(Resource):
 
         showtime.delete()
         return {}, 204
+    
+
+
+@admin_ns.route("/customers")
+class CustomersResource(Resource):
+    @admin_ns.marshal_list_with(customer_model)
+    def get(self):
+        customers: list[CustomerTypes] = CustomerTypes.query.all()
+        return customers, 200
+    
+    @admin_required
+    @admin_ns.expect(customer_model, validate=True)
+    @admin_ns.marshal_with(customer_model)
+    def post(self):
+        data: dict = request.get_json()
+        customer: str = data.get("customer").lower()
+
+        if CustomerTypes.query.get(customer):
+            abort(400, "Customer type already exists")
+
+        new_customer = CustomerTypes(customer=customer)
+        new_customer.save()
+
+        return new_customer, 201
+
+@admin_ns.route("/theatres")
+class TheatresResource(Resource):
+    @admin_ns.marshal_list_with(theatre_model)
+    def get(self):
+        theatres: list[TheatreTypes] = TheatreTypes.query.all()
+        return theatres, 200
+    
+    @admin_required
+    @admin_ns.expect(theatre_model, validate=True)
+    @admin_ns.marshal_with(theatre_model)
+    def post(self):
+        data: dict = request.get_json()
+        theatre: str = data.get("theatre").lower()
+
+        if TheatreTypes.query.get(theatre):
+            abort(400, "Theatre type already exists")
+
+        new_theatre = TheatreTypes(theatre=theatre)
+        new_theatre.save()
+
+        return new_theatre, 201
+
+
+
+@admin_ns.route("/seatPricing")
+class SeatPricingResource(Resource):
+    @admin_required
+    @admin_ns.marshal_list_with(seat_price_model)
+    def get(self):
+        theatre: str | None = request.args.get("theatre")
+        if theatre:
+            seat_prices: list[SeatPrices] = SeatPrices.query.filter_by(theatre=theatre).all()
+        else:
+            seat_prices: list[SeatPrices] = SeatPrices.query.all()
+        return seat_prices, 200
+    
+    @admin_required
+    @admin_ns.expect(seat_price_model, validate=True)
+    @admin_ns.marshal_with(seat_price_model)
+    def post(self):
+        data: dict = request.get_json()
+        customer: str = data.get("customer")
+        theatre: str = data.get("theatre")
+        price: float = data.get("price")
+
+        if not customer or not theatre or not price:
+            abort(400, "Required seat price values must be supplied")
+
+        if SeatPrices.query.filter_by(customer=customer, theatre=theatre).first():
+            abort(400, "A price for this seat type already exists")
+
+        if not CustomerTypes.query.get(customer):
+            abort(400, "Invalid customer type supplied")
+        if not TheatreTypes.query.get(theatre):
+            abort(400, "Invalid theatre type supplied")
+
+        if price < 0:
+            abort(400, "Seat price must be at least $0.00")
+
+        new_seat_price = SeatPrices(customer=customer, theatre=theatre, price=round(price, 2))
+        new_seat_price.save()
+
+        return new_seat_price, 201
+
+    @admin_required
+    @admin_ns.expect(seat_price_model, validate=True)
+    @admin_ns.marshal_with(seat_price_model)
+    def put(self):
+        data: dict = request.get_json()
+        customer: str = data.get("customer")
+        theatre: str = data.get("theatre")
+        price: float = data.get("price")
+
+        seat_price: SeatPrices = SeatPrices.query.filter_by(customer=customer, theatre=theatre).first()
+
+        if not seat_price:
+            abort(400, "Invalid customer or theatre type supplied")
+
+        if price < 0:
+            abort(400, "Seat price must be at least $0.00")
+
+        seat_price.update(price=round(price, 2))
+
+        return seat_price, 200

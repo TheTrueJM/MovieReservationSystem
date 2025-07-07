@@ -1,17 +1,24 @@
-from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices
-from models import Users
-
+import os
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
+from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices
+from models import Users
+from user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
 
 
-DEFAULT_USER_ROLE: str = "regular"
-ADMIN_ROLE: str = "admin"
+load_dotenv()
+
 
 
 def initialise_data():
     create_user_roles({DEFAULT_USER_ROLE, ADMIN_ROLE})
-    create_admin_user("AdminUser", "TestingPass") ### 
+
+    if os.getenv("CREATE_ADMIN", "False").lower() in {"true", "t", 1}:
+        if os.getenv("ADMIN_USERNAME") and os.getenv("ADMIN_PASSWORD"):
+            create_admin_user(os.getenv("ADMIN_USERNAME"), os.getenv("ADMIN_PASSWORD"))
+        else:
+            print("!!! Enviroment Variables 'ADMIN_USERNAME' and 'ADMIN_PASSWORD' must be set to create an admin user")
 
     create_theatre_types({"standard", "premium"})
     create_customer_types({"child", "student", "adult", "senior"})

@@ -75,10 +75,10 @@ def internal_error(e):
         "message": "An unexpected error occurred on the server. Please try again later if this issue persists."
     })
 
-def handle_error(error: dict): # Add Status/Title?
+def handle_error(error: dict):
     error.setdefault("code", 500),
     error.setdefault("status", "Server Error"),
-    error.setdefault("message", "An internal server error occured")
+    error.setdefault("message", "An unexpected error occurred on the server. Please try again later if this issue persists.")
     return render_template("error.html", error=error), error["code"]
 
 @app.route("/error401")

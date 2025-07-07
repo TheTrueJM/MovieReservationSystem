@@ -46,7 +46,7 @@ base_movie_marshal = user_ns.model(
         "title": fields.String(required=True),
         "description": fields.String(required=True),
         "genre": fields.String(required=True),
-        "image_url": fields.String(required=True), # fields.URL
+        "image_url": fields.String(required=True),
         "length": fields.Integer(required=True)
     }
 )
@@ -137,6 +137,10 @@ def login_required(f):
     def decorated(*args, **kwargs):
         current_user_name = get_jwt_identity()
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
+
+        if not current_user:
+            abort(400, "Invalid user authentication identity token provided")
+
         return f(*args, current_user, **kwargs)
     return decorated
 

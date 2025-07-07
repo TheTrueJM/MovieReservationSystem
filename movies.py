@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from flask_sqlalchemy import query
 from flask_restx import Resource, Namespace, fields, reqparse, inputs
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -5,7 +6,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime, date
 
-from models import Users, Movies, ShowTimes, Reservations, Seats, SeatPrices, TheatreTypes
+from models import Users, Movies, ShowTimes, Reservations, Seats, TheatreTypes, SeatPrices
 from api_model_fields import DateField, TimeField
 
 
@@ -18,7 +19,7 @@ base_movie_marshal = movies_ns.model(
         "title": fields.String(required=True),
         "description": fields.String(required=True),
         "genre": fields.String(required=True),
-        "image_url": fields.String(required=True), # fields.URL
+        "image_url": fields.String(required=True),
         "length": fields.Integer(required=True)
     }
 )
@@ -103,8 +104,8 @@ theatre_marshal = movies_ns.model(
 
 seat_price_marshal = movies_ns.model(
     "seat_price_details", {
-        "theatre": fields.String(required=True),
         "customer": fields.String(required=True),
+        "theatre": fields.String(required=True),
         "price": fields.Float(required=True)
     }
 )
@@ -112,7 +113,10 @@ seat_price_marshal = movies_ns.model(
 
 
 movie_filters = reqparse.RequestParser()
+movie_filters.add_argument("query", type=str)
 movie_filters.add_argument("genre", type=str)
+movie_filters.add_argument("minutes-min", type=int)
+movie_filters.add_argument("minutes-max", type=int)
 
 showtime_filters = reqparse.RequestParser()
 showtime_filters.add_argument("theatre", type=str)
@@ -128,6 +132,10 @@ def login_required(f):
     def decorated(*args, **kwargs):
         current_user_name = get_jwt_identity()
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
+
+        if not current_user:
+            abort(400, "Invalid user authentication identity token provided")
+
         return f(*args, current_user.id, **kwargs)
     return decorated
 
@@ -136,12 +144,24 @@ def login_required(f):
 @movies_ns.route("/")
 class MoviesResource(Resource):
     @movies_ns.marshal_list_with(base_movie_marshal)
-    def get(self):
+    def get(self):    
+        movie_query: query.Query = Movies.query
+
         filters = movie_filters.parse_args()
+
+        if filters["query"]:
+            movie_query = movie_query.filter(or_(Movies.title.ilike(f"%{filters["query"]}%"), Movies.description.ilike(f"%{filters["query"]}%")))
+        
         if filters["genre"]:
-            movies: list[Movies] = Movies.query.filter_by(genre=filters["genre"].lower()).order_by(Movies.id.desc()).all()
-        else:
-            movies: list[Movies] = Movies.query.order_by(Movies.id.desc()).all()
+            movie_query = movie_query.filter_by(genre=filters["genre"].lower())
+        
+        if filters["minutes-min"]:
+            movie_query = movie_query.filter(filters["minutes-min"] <= Movies.length)
+        if filters["minutes-max"]:
+            movie_query = movie_query.filter(Movies.length <= filters["minutes-max"])
+
+        movies: list[Movies] = movie_query.order_by(Movies.id.desc()).all()
+
         return movies, 200
 
 

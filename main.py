@@ -24,7 +24,7 @@ def create_app(config):
         db.create_all()
         initialise_data()
 
-    api = Api(app, doc="/docs", format_checker=FormatChecker()) ### Disable?
+    api = Api(app, doc="/docs", format_checker=FormatChecker())
 
     api.add_namespace(auth_ns)
     api.add_namespace(movies_ns)

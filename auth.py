@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, get_jw
 from flask import request, abort
 
 from models import Users
-from inital_data import DEFAULT_USER_ROLE, ADMIN_ROLE
+from user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
 
 
 
@@ -48,6 +48,10 @@ admin_marshal = auth_ns.model(
 )
 
 
+
+def retrieve_user(username: str) -> Users | None:
+    return Users.query.filter_by(username=username).first()
+
 @auth_ns.route("/signup")
 class AuthSignUp(Resource):
     @auth_ns.expect(signup_model, validate=True)
@@ -60,7 +64,10 @@ class AuthSignUp(Resource):
         if not username or not password:
             abort(400, "Username and Password must be supplied")
 
-        if Users.query.filter_by(username=username).first():
+        if 50 < len(username):
+            abort(400, "Username must not be greater than 50 characters")
+
+        if retrieve_user(username):
             abort(401, f"User '{username}' already exists")
 
         new_user: Users = Users(username=data.get("username"), password=generate_password_hash(password), role=DEFAULT_USER_ROLE)
@@ -86,26 +93,33 @@ class AuthLogin(Resource):
         if not username or not password:
             abort(400, "Username and Password must be supplied")
 
-        db_user: Users | None = Users.query.filter_by(username=username).first()
+        db_user: Users | None = retrieve_user(username)
 
-        if isinstance(db_user, Users) and check_password_hash(db_user.password, password):
-            access_token = create_access_token(identity=db_user.username)
-            refresh_token = create_refresh_token(identity=db_user.username)
-            return {
-                "message": "User login successful",
-                "access_token": access_token, "refresh_token": refresh_token
-            }, 200
-        else:
+        if not db_user or not check_password_hash(db_user.password, password):
             abort(401, "Incorrect Username or Password supplied")
+            
+        access_token = create_access_token(identity=db_user.username)
+        refresh_token = create_refresh_token(identity=db_user.username)
+        return {
+            "message": "User login successful",
+            "access_token": access_token, "refresh_token": refresh_token
+        }, 200
 
+
+def validate_user(username: str) -> Users:
+    current_user = retrieve_user(username)
+    if not current_user:
+        abort(400, "Invalid user authentication identity token provided")
+    return current_user
 
 @auth_ns.route("/refresh")
 class AuthTokenRefresh(Resource):
     @jwt_required(refresh=True)
     @auth_ns.marshal_with(refresh_marshal)
     def get(self):
-        current_user = get_jwt_identity()
-        new_access_token = create_access_token(identity=current_user)
+        current_user_name: str = get_jwt_identity()
+        validate_user(current_user_name)
+        new_access_token = create_access_token(identity=current_user_name)
         return {"access_token": new_access_token}, 200
     
 
@@ -114,6 +128,6 @@ class AuthAdminStatus(Resource):
     @jwt_required()
     @auth_ns.marshal_with(admin_marshal)
     def get(self):
-        current_user_name = get_jwt_identity()
-        current_user: Users = Users.query.filter_by(username=current_user_name).first()
+        current_user_name: str = get_jwt_identity()
+        current_user: Users = validate_user(current_user_name)
         return {"admin_status": current_user.role == ADMIN_ROLE}, 200
