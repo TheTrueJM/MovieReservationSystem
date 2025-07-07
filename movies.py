@@ -237,8 +237,6 @@ class MovieReservation(Resource):
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
             abort(400, "An invalid customer type was supplied")
 
-        # Database Transaction
-
         new_reservation = Reservations(user_id=user_id, show_id=show_id)
         new_reservation.save()
 

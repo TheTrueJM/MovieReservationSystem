@@ -242,9 +242,7 @@ class UserReservation(Resource):
 
         if any(not SeatPrices.query.get((customer, showtime.theatre)) for customer in customers):
             abort(400, "An invalid customer type was supplied")
-
-        # Database Transaction
-
+        
         old_seats: list[Seats] = Seats.query.filter_by(reservation_id=reservation_id)
         for seat in old_seats:
             seat.delete()
