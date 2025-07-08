@@ -2,19 +2,25 @@ import os
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
-from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices
+from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices, Movies
 from models import Users
 from user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
+from tmdb_import import valid_authentication, movies_import, genres_import, get_movie_runtime
 
 
 load_dotenv()
 
 
 
+def check_env_variable_true(env_variable: str) -> bool:
+    return os.getenv(env_variable, "False").lower() in {"true", "t", "1"}
+
+
+
 def initialise_data():
     create_user_roles({DEFAULT_USER_ROLE, ADMIN_ROLE})
 
-    if os.getenv("CREATE_ADMIN", "False").lower() in {"true", "t", 1}:
+    if check_env_variable_true("CREATE_ADMIN"):
         if os.getenv("ADMIN_USERNAME") and os.getenv("ADMIN_PASSWORD"):
             create_admin_user(os.getenv("ADMIN_USERNAME"), os.getenv("ADMIN_PASSWORD"))
         else:
@@ -34,6 +40,12 @@ def initialise_data():
         ("adult", "premium"): 20.0,
         ("senior", "premium"): 15.0
     })
+
+    if check_env_variable_true("IMPORT_TMDB_MOVIES"):
+        if valid_authentication():
+            import_movies_data()
+        else:
+            print("!!! Enviroment Variable 'TMDB_API_KEY' must be set to a valid TMDB API Ket to import movies data")
 
 
 
@@ -70,3 +82,25 @@ def create_seating_prices(seat_prices: dict[(str, str): float]):
         if not SeatPrices.query.get((customer, theatre)):
             seat_price = SeatPrices(customer=customer, theatre=theatre, price=price)
             seat_price.save()
+
+
+def import_movies_data():
+    try:
+        movies: list[dict] = movies_import()
+        genres: dict[int, str] = genres_import()
+
+        for movie in movies["results"]:
+            if not Movies.query.filter_by(title=movie["title"]).first():
+                genre: str = genres[movie["genre_ids"][0]] if 1 <= len(movie["genre_ids"]) else "None"
+                image_url: str = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movie["poster_path"]
+                length: int = 60
+
+                if check_env_variable_true("INCLUDE_RUNTIME"):
+                    length = get_movie_runtime(movie["id"])
+
+                new_movie = Movies(title=movie["title"], description=movie["overview"], genre=genre, image_url=image_url, length=length)
+                new_movie.save()
+    
+    except Exception as e:
+        print("!!! An error occured while importing movies data from the TMDB API")
+        print(e)
