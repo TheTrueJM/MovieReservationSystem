@@ -5,7 +5,7 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime
 
-from models import Users, ShowTimes, Reservations, Seats, SeatPrices
+from database.models import Users, ShowTimes, Reservations, Seats, SeatPrices
 from api_model_fields import DateField, TimeField
 
 

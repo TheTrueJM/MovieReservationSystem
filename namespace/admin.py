@@ -6,8 +6,8 @@ from flask import request, abort
 from functools import wraps
 from datetime import datetime, timedelta, date, time
 
-from models import Users, Movies, ShowTimes, CustomerTypes, TheatreTypes, SeatPrices
-from user_roles import ADMIN_ROLE
+from database.models import Users, Movies, ShowTimes, CustomerTypes, TheatreTypes, SeatPrices
+from database.user_roles import ADMIN_ROLE
 from api_model_fields import DateField, TimeField
 
 

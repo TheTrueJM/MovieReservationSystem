@@ -3,8 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 from flask import request, abort
 
-from models import Users
-from user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
+from database.models import Users
+from database.user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
 
 
 

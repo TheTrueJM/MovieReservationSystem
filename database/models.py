@@ -1,5 +1,5 @@
 from sqlalchemy import CheckConstraint
-from database import db
+from database.sql_database import db
 
 
 

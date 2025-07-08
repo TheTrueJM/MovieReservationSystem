@@ -4,12 +4,12 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from jsonschema import FormatChecker
 
-from database import db
-from inital_data import initialise_data
-from auth import auth_ns
-from admin import admin_ns
-from user import user_ns
-from movies import movies_ns
+from database.sql_database import db
+from database.inital_data import initialise_data
+from namespace.auth import auth_ns
+from namespace.admin import admin_ns
+from namespace.user import user_ns
+from namespace.movies import movies_ns
 
 
 def create_app(config):
