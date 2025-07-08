@@ -10,6 +10,7 @@ from models import Users, Movies, ShowTimes, Reservations, Seats, TheatreTypes, 
 from api_model_fields import DateField, TimeField
 
 
+
 movies_ns = Namespace("movies", description="A namespace for Movies")
 
 

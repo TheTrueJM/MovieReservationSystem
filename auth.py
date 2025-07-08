@@ -52,6 +52,7 @@ admin_marshal = auth_ns.model(
 def retrieve_user(username: str) -> Users | None:
     return Users.query.filter_by(username=username).first()
 
+
 @auth_ns.route("/signup")
 class AuthSignUp(Resource):
     @auth_ns.expect(signup_model, validate=True)
@@ -106,11 +107,13 @@ class AuthLogin(Resource):
         }, 200
 
 
+
 def validate_user(username: str) -> Users:
     current_user = retrieve_user(username)
     if not current_user:
         abort(400, "Invalid user authentication identity token provided")
     return current_user
+
 
 @auth_ns.route("/refresh")
 class AuthTokenRefresh(Resource):

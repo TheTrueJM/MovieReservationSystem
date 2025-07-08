@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Error{% endblock %}
+{% block title %}Error {{code}} - {{status}}{% endblock %}
 
 {% block content %}
     <main>
         <div>
-            <div id="pageTitle">{{error.code}}: {{error.status}}</div>
+            <div id="pageTitle">{{code}}: {{status}}</div>
             <div class="textCenter">
-                {{error.message}}
+                {{message}}
             </div>
         </div>
     </main>

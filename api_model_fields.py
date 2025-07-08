@@ -2,7 +2,6 @@ from flask_restx import fields
 from datetime import datetime, date, time
 
 
-
 class DateField(fields.Raw):
     __schema_type__ = "string"
     __schema_format__ = "date"
@@ -31,7 +30,6 @@ class DateField(fields.Raw):
     def output(self, key, obj: object, **kwargs):
         value = obj.__getattribute__(key)
         return date.strftime(value, self.date_format)
-
 
 class TimeField(fields.Raw):
     __schema_type__ = "string"

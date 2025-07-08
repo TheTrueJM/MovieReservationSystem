@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, abort
 
+
 app = Flask(__name__)
 
 
@@ -53,33 +54,18 @@ def admin_showtime(id: int):
 
 @app.errorhandler(401)
 def unauthorised(e):
-    return handle_error({
-        "code": 401,
-        "status": "Unauthorised Access",
-        "message": "You are not authorised to access the requested resource."
-    })
+    return handle_error(401, "Unauthorised Access", "You are not authorised to access the requested resource.")
 
 @app.errorhandler(404)
 def not_found(e):
-    return handle_error({
-        "code": 404,
-        "status": "Resource Not Found",
-        "message": "The requested resource could not be found. It may have been moved or deleted."
-    })
+    return handle_error(404, "Resource Not Found", "The requested resource could not be found. It may have been moved or deleted.")
 
 @app.errorhandler(500)
 def internal_error(e):
-    return handle_error({
-        "code": 500,
-        "status": "Server Error",
-        "message": "An unexpected error occurred on the server. Please try again later if this issue persists."
-    })
+    return handle_error(500, "Server Error", "An unexpected error occurred on the server. Please try again later if this issue persists.")
 
-def handle_error(error: dict):
-    error.setdefault("code", 500),
-    error.setdefault("status", "Server Error"),
-    error.setdefault("message", "An unexpected error occurred on the server. Please try again later if this issue persists.")
-    return render_template("error.html", error=error), error["code"]
+def handle_error(code: int, status: str, message: str):
+    return render_template("error.html", code=code, status=status, message=message), code
 
 @app.route("/error401")
 def trigger_error_401():

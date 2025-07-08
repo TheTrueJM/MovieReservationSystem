@@ -2,6 +2,7 @@ from sqlalchemy import CheckConstraint
 from database import db
 
 
+
 class UserRoles(db.Model):
     role = db.Column(db.String, primary_key=True)
 
