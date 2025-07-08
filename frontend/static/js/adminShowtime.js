@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div>${movie.length} Minutes</div>
                     <div>${movie.genre}</div>
                 </div>
-                <div>Revenue: $${movie.revenue}</div>
+                <div>Revenue: $${movie.revenue.toFixed(2)}</div>
             </div>
             <div class="description">${movie.description}</div>
         `;

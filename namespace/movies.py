@@ -7,7 +7,7 @@ from functools import wraps
 from datetime import datetime, date
 
 from database.models import Users, Movies, ShowTimes, Reservations, Seats, TheatreTypes, SeatPrices
-from api_model_fields import DateField, TimeField
+from .api_model_fields import DateField, TimeField
 
 
 

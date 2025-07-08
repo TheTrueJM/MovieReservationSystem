@@ -2,10 +2,10 @@ import os
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
-from models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices, Movies
-from models import Users
-from user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
-from tmdb_import import valid_authentication, movies_import, genres_import, get_movie_runtime
+from .models import UserRoles, TheatreTypes, CustomerTypes, SeatPrices, Movies
+from .models import Users
+from .user_roles import DEFAULT_USER_ROLE, ADMIN_ROLE
+from .tmdb_import import valid_authentication, movies_import, genres_import, get_movie_runtime
 
 
 

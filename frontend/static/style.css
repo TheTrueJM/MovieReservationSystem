@@ -89,6 +89,7 @@ body {
     display: flex;
     flex-flow: row;
     flex-wrap: wrap;
+    width: 100%;
     justify-content: center;
 }
 

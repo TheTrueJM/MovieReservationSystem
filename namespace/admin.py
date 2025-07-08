@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, date, time
 
 from database.models import Users, Movies, ShowTimes, CustomerTypes, TheatreTypes, SeatPrices
 from database.user_roles import ADMIN_ROLE
-from api_model_fields import DateField, TimeField
+from .api_model_fields import DateField, TimeField
 
 
 
