@@ -3,7 +3,7 @@ class CHeader extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
             <header>
-                MovieSiteName
+                Film Reserve
             </header>
 
             <nav>
