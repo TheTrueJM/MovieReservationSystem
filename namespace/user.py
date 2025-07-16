@@ -140,7 +140,7 @@ def login_required(f):
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
 
         if not current_user:
-            abort(400, "Invalid user authentication identity token provided")
+            abort(401, "Invalid user authentication identity token provided")
 
         return f(*args, current_user, **kwargs)
     return decorated

@@ -112,8 +112,8 @@ seat_price_model = admin_ns.model(
 movie_filters = reqparse.RequestParser()
 movie_filters.add_argument("query", type=str)
 movie_filters.add_argument("genre", type=str)
-movie_filters.add_argument("minutes-min", type=int)
-movie_filters.add_argument("minutes-max", type=int)
+movie_filters.add_argument("runtime-min", type=int)
+movie_filters.add_argument("runtime-max", type=int)
 
 showtime_filters = reqparse.RequestParser()
 showtime_filters.add_argument("theatre", type=str)
@@ -131,7 +131,7 @@ def admin_required(f):
         current_user: Users = Users.query.filter_by(username=current_user_name).first()
 
         if not current_user:
-            abort(400, "Invalid user authentication identity token provided")
+            abort(401, "Invalid user authentication identity token provided")
 
         if current_user.role != ADMIN_ROLE:
             abort(401, "You are not authorised to access the requested page")
@@ -156,10 +156,10 @@ class AdminMovies(Resource):
         if filters["genre"]:
             movie_query = movie_query.filter_by(genre=filters["genre"].lower())
         
-        if filters["minutes-min"]:
-            movie_query = movie_query.filter(filters["minutes-min"] <= Movies.length)
-        if filters["minutes-max"]:
-            movie_query = movie_query.filter(Movies.length <= filters["minutes-max"])
+        if filters["runtime-min"]:
+            movie_query = movie_query.filter(filters["runtime-min"] <= Movies.length)
+        if filters["runtime-max"]:
+            movie_query = movie_query.filter(Movies.length <= filters["runtime-max"])
 
         movies: list[Movies] = movie_query.order_by(Movies.id.desc()).all()
 
