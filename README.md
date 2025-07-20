@@ -1,14 +1,18 @@
-# Blogging Platform API \[WORK-IN-PROGRESS README\]
+# Blogging Platform API
 A solution to the [Movie Reservation System](https://roadmap.sh/projects/movie-reservation-system) project available on [roadmap.sh](https://roadmap.sh).
 
-\[Project Information and Description\]
+This project is a simple web application for a movie theatre reservation system, comprised of a backend RESTful API and a frontend Web Server. 
+
+The backend API supports CRUD operations through HTTP request methods, for creating, reading, updating, and deleting user, movie, showtime, and reservation data. To perform operations, users must authenticate to recieve a JSON Web Token (JWT) which handles their session.
+
+The frontent Server provides a user-friendly interface to access the backend API through using a web browser. 
 
 ## Features
-- **User Authentication:** \[Feature Description\]
-- **Movie Browsing:** \[Feature Description\]
-- **Showtime Browsing:** \[Feature Description\]
-- **Theatre Seats Reservation:** \[Feature Description\]
-- **Admin Operations:** \[Feature Description\]
+- **User Authentication:** User's can authenticate into the application using their credentials. Different user roles exist, such as regular and admin, which provide users different levels of access or permission in the application
+- **Movie Browsing:** Movies results can be viewed and filtered (search keywords, genre, runtime)
+- **Showtime Browsing:** Showtime results can be viewed and filtered (theatre type, date)
+- **Theatre Seats Reservation:** Authenticated user's can select and reserve theatre seats for a specific movie showtime
+- **Admin Operations:** Authenticated admin user's can manage movies and showtime information
 
 ## Installation
 ```bash
@@ -24,7 +28,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Enviroment Variable Setup
+### Enviroment Variable Setup (.env File)
 ```bash
 # Set the Flask Server's Secret Key
 SECRET_KEY=#Enter Secret Key, e.g. MySecret
