@@ -51,12 +51,12 @@ INCLUDE_RUNTIME=True # true / T / 1 are also Valid, Defaults to False
 ```
 
 ### Run
-> Backend API
+> Backend API (localhost:5000)
 ```bash
 py ./run.py
 ```
 
-> Frontend Server
+> Frontend Server (localhost:5500)
 ```bash
 # Open New Terminal Window
 cd frontend
